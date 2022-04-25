@@ -52,16 +52,16 @@ The POST request adds the option to pass arbitrary JSON contents to the server i
 For Vanilla and Module, these will run right out of the box with node.js:
 
 ```
->node server.js
+> node server.js
 ```
 
 For Express, node.js will climb up your directory tree looking for your package.json file and node_modules/ folder, so put the directory somewhere under these.
 
-Otherwise, you can initialize node with the following commands, directly in the express/folder:
+Otherwise, you can initialize node with the following commands, directly above or in the express/ folder if you like:
 
 ```
->node init
->node install express
+> npm init
+> npm install express
 ```
 
 ## Testing in the Browser
@@ -69,7 +69,7 @@ Otherwise, you can initialize node with the following commands, directly in the 
 By default, server.js opens on port 8080, which can be changed by passing an optional port number:
 
 ```
->node server.js 8000
+> node server.js 8000
 ```
 
 Now just enter the localhost url in your browser, which will load index.html by default:
@@ -78,6 +78,17 @@ Now just enter the localhost url in your browser, which will load index.html by 
 localhost:8080
 ```
 
-The testing page runs several test routines on initialization specified in client.js, and the results from the server are written to the large output text field.
+The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the large output text field.
+
+You can run similar tests directly by adding URL parameters, and see how the server parses the arguments in the console:
+
+```
+localhost:8080/api
+localhost:8080/api?a=b&c=d
+localhost:8080/api/A/B
+```
+
+
+
 
 
