@@ -6,6 +6,13 @@
 
 * This utility template makes implementing a REST API trivial, and more versatile with vanilla RPC (remote procedure) support.
 
+| template      | dependencies |
+| ------------- |:-------------:|
+| Vanilla       | node defaults |
+| Module        | package.json file |
+| Express       | express install |
+
+
 ## *Vanilla*
 
 
@@ -16,10 +23,4 @@
 
 ## *Express*
 
-
-| template      | dependencies |
-| ------------- |:-------------:|
-| Vanilla       | node defaults |
-| Module        | package.json file |
-| Express       | express install |
 
