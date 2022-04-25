@@ -45,3 +45,18 @@ The example GET handlers in server.js demonstrate parameter passing via traditio
 |  URL params    | /api/val1/val2 |
 
 The POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
+
+
+## installation
+
+For Vanilla and Module, these will run right out of the box with node.js:
+
+<span style="font-family:courier;"> >node server.js</span>
+
+For Express, node.js will climb up your directory tree looking for your package.json file and node_modules/ folder, so put the directory somewhere under these.
+
+Otherwise, you can initialize node with the following commands, directly in the express/folder:
+
+<span style="font-family:courier;"> >node init</span>
+<span style="font-family:courier;"> >node install express</span>
+
