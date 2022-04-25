@@ -80,7 +80,7 @@ localhost:8080
 
 The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the large output text field. Some results also appear in your browser's JavaScript Console.
 
-You can run also similar tests directly by adding URL parameters, and see how the server parses the arguments in the command console:
+You can also run similar tests directly by adding URL parameters, and see how the server parses the arguments in the command console:
 
 ```
 localhost:8080/api
