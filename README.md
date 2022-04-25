@@ -88,6 +88,10 @@ localhost:8080/api?a=b&c=d
 localhost:8080/api/A/B
 ```
 
+Each call to the /api handler (and each press of the API button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
+
+## Testing RPC
+
 The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
 The response text is written to the client-page output field, revealing the internals of this client-server exchange.
