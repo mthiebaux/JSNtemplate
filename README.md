@@ -78,9 +78,9 @@ Now just enter the localhost url in your browser, which will load index.html by 
 localhost:8080
 ```
 
-The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the large output text field.
+The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the large output text field. Some results also appear in your browser's JavaScript Console.
 
-You can run similar tests directly by adding URL parameters, and see how the server parses the arguments in the console:
+You can run also similar tests directly by adding URL parameters, and see how the server parses the arguments in the command console:
 
 ```
 localhost:8080/api
@@ -88,7 +88,10 @@ localhost:8080/api?a=b&c=d
 localhost:8080/api/A/B
 ```
 
-The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call. The response text is then written to the output field, revealing the internals of this transaction.
+The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
+The response text is written to the client-page output field, revealing the internals of this client-server exchange.
+
+![This is an image](./images/example_client.png)
 
 
