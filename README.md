@@ -88,7 +88,7 @@ localhost:8080/api?a=b&c=d
 localhost:8080/api/A/B
 ```
 
-
+The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call. The response text is then written to the output field, revealing the internals of this transaction.
 
 
 
