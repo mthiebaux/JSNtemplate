@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+
+		<title>express client</title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<script src="./client.js"></script>
+		<script src="./lib.js"></script>
+
+		<link rel="stylesheet" href="./style.css">
+
+	</head>
+	<body>
+
+		<div id="page_header">
+
+			<h1><em>Express</em> Client</h1>
+
+		</div>
+
+		<div>
+
+			<div id="page_contents">
+
+				input:
+				<button onclick="clear_text_buffer( 'input_buffer' )"
+					>clear</button>
+				<br>
+
+				<input id="input_buffer"
+					type="text"
+					placeholder="enter args"
+					onkeydown="default_enter_input_event( this, event )"
+					size="80em"></input>
+				<br>
+
+				<button onclick="submit_api()" style="background-color:lightgrey"
+					>API</button>
+				<button onclick="submit_command( 'add' )" style="background-color:lightgrey"
+					>add</button>
+				<button onclick="submit_command( 'mul' )" style="background-color:lightgrey"
+					>mul</button>
+
+				<p>
+
+				output:
+				<button onclick="clear_text_buffer( 'output_log' )"
+					>clear</button>
+				<br>
+
+				<textarea id="output_log" readonly=true rows="20" cols="40"></textarea>
+				<br>
+
+			</div>
+
+		</div>
+
+		<div class="page_footer">
+			<p>
+			<em> © thiebaux 2022 </em>
+		</div>
+
+	</body>
+
+	<script type="text/javascript">
+
+		client_app_init( "input_buffer", "output_log" );
+
+	</script>
+
+</html>
