@@ -47,12 +47,12 @@ The example GET handlers in server.js demonstrate parameter passing via traditio
 The POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
 
 
-## installation
+## Installation
 
 For Vanilla and Module, these will run right out of the box with node.js:
 
 ```
-<span style="font-family:courier;"> >node server.js</span>
+>node server.js
 ```
 
 For Express, node.js will climb up your directory tree looking for your package.json file and node_modules/ folder, so put the directory somewhere under these.
@@ -60,6 +60,24 @@ For Express, node.js will climb up your directory tree looking for your package.
 Otherwise, you can initialize node with the following commands, directly in the express/folder:
 
 ```
-<span style="font-family:courier;"> >node init</span>
-<span style="font-family:courier;"> >node install express</span>
+>node init
+>node install express
 ```
+
+## Testing in the Browser
+
+By default, server.js opens on port 8080, which can be changed by passing an optional port number:
+
+```
+>node server.js 8000
+```
+
+Now just enter the localhost url in your browser, which will load index.html by default:
+
+```
+localhost:8080
+```
+
+The testing page runs several test routines on initialization specified in client.js, and the results from the server are written to the large output text field.
+
+
