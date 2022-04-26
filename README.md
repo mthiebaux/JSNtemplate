@@ -72,7 +72,7 @@ By default, server.js opens on port 8080, which can be changed by passing an opt
 > node server.js 8001
 ```
 
-Enter the localhost url in your browser, which will load index.html by default:
+Then enter the localhost url in your browser, which will load index.html by default:
 
 ```
 localhost:8080
@@ -111,11 +111,9 @@ response: {
 
 ## Testing RPC
 
-The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
+The input text field is set up to add and multiply numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
-The response text is written to the output test field, revealing the internals of this client-server exchange.
-
-The RPC function response includes the request report, the body input payload, and the result:
+The RPC function response object is written to the output text field, revealing the internals of this client-server exchange. This includes the request report, the body input payload, and the result:
 
 ```
 response: {
