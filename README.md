@@ -161,7 +161,6 @@ server.post( '/RPC', ( request, response ) => {
 });
 ```
 
-
-![This is an image](./images/example_client.png)
+![This is an image](./images/express_client.png)
 
 
