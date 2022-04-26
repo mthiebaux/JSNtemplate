@@ -69,7 +69,7 @@ Otherwise, you can initialize node with the following commands, directly above o
 By default, server.js opens on port 8080, which can be changed by passing an optional port number:
 
 ```
-> node server.js 8000
+> node server.js 8001
 ```
 
 Enter the localhost url in your browser, which will load index.html by default:
@@ -78,7 +78,7 @@ Enter the localhost url in your browser, which will load index.html by default:
 localhost:8080
 ```
 
-The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the large output text field. Some results also appear in your browser's JavaScript Console.
+The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the output text field. Some results also appear in your browser's JavaScript Console.
 
 You can also run similar tests directly by adding URL parameters, and see how the server parses the arguments in the command console:
 
@@ -88,13 +88,33 @@ localhost:8080/api?a=b&c=d
 localhost:8080/api/A/B
 ```
 
-The 'api' button will append the input text to a GET request. Each call to the /api handler (and each press of the API button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
+The 'api' button will append contents from the input text field to a GET request. Each call to the /api handler (and each press of the API button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
+
+The output response object will appear something like the following, mirroring the parsed inputs:
+
+```
+response: {
+    "method": "GET",
+    "url": "/api/A/B?a=b&c=d",
+    "path": "/api/A/B",
+    "params": {
+        "arg1": "A",
+        "arg2": "B"
+    },
+    "query": {
+        "a": "b",
+        "c": "d"
+    },
+    "count": 332
+}
+```
+
 
 ## Testing RPC
 
 The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
-The response text is written to the client-page output field, revealing the internals of this client-server exchange.
+The response text is written to the output test field, revealing the internals of this client-server exchange.
 
 ![This is an image](./images/example_client.png)
 

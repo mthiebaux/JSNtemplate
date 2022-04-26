@@ -33,8 +33,8 @@ server.use( express.json() ); // needed for request.body parser
 function get_query_report( request )	{
 
 	return( {
-		url: request.url, // unparsed
 		method: request.method,
+		url: request.url, // unparsed
 		path: request.path,
 		params: request.params,
 		query: request.query,
