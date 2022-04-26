@@ -1,8 +1,8 @@
 # JSNtemplate
 
- **Vanilla JS Client/Server with RPC**
+ **Vanilla Node.js Client/Server with RPC**
 
-* Comparing a bare-bones CJS server with full featured 'express' server module
+* Comparing a bare-bones CJS server with full featured 'express' server module.
 
 * This utility template makes implementing a server API very easy, and demonstrates versatile vanilla RPC (remote procedure) support.
 
@@ -44,7 +44,7 @@ The example GET handlers in server.js demonstrate parameter passing via traditio
 |  Query string  | /api?a=1&b=2 |
 |  URL params    | /api/val1/val2 |
 
-The POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
+A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
 
 
 ## Installation
@@ -80,7 +80,7 @@ localhost:8080
 
 The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the output text field. Some results also appear in your browser's JavaScript Console.
 
-You can also run similar tests directly by adding URL parameters, and see how the server parses the arguments in the command console:
+You can run similar tests directly by adding URL parameters, and see how the server reports parsed arguments in the command terminal:
 
 ```
 localhost:8080/api
@@ -138,6 +138,30 @@ response: {
     }
 }
 ```
+
+The RPC handler simply pulls the function name from the POST request body, checks that it exists as a function in the globalThis object, executes it, and adds the return value to the output object:
+
+```
+import { /* globalThis.rpc_process_command */ } from './lib.js';
+
+server.post( '/RPC', ( request, response ) => {
+
+		let output = {
+			report: get_query_report( request ),
+			input: request.body
+		};
+		if( typeof globalThis[ request.body.rpc ] === "function" )	{
+			output.result = globalThis[ request.body.rpc ]( request.body );
+		}
+		else	{
+			let msg = "RPC: " + request.body.rpc + " NOT FOUND";
+			output.result = { error: msg };
+		}
+		response.send( output );
+	}
+);
+```
+
 
 ![This is an image](./images/example_client.png)
 

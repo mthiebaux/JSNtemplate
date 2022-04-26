@@ -2,7 +2,7 @@
 globalThis.rpc_process_command =
 function rpc_process_command( input )	{
 
-	console.log( input );
+//	console.log( input );
 
 	let output = {};
 	if( input.cmd === "add" )	{
