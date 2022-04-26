@@ -90,7 +90,7 @@ localhost:8080/api/A/B
 
 The 'api' button will append contents from the input text field to a GET request. Each call to the /api handler (and each press of the API button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
 
-The output response object will appear something like the following, mirroring the parsed inputs:
+The output response object will report something like the following, mirroring the parsed inputs:
 
 ```
 response: {
@@ -109,12 +109,37 @@ response: {
 }
 ```
 
-
 ## Testing RPC
 
 The input text field is set up for adding and multiplying numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
 The response text is written to the output test field, revealing the internals of this client-server exchange.
+
+The RPC function response includes the request report, the body input payload, and the result:
+
+```
+response: {
+    "report": {
+        "method": "POST",
+        "url": "/RPC",
+        "path": "/RPC",
+        "params": {},
+        "query": {},
+        "count": 338
+    },
+    "input": {
+        "rpc": "rpc_process_command",
+        "cmd": "add",
+        "args": [
+            2,
+            2
+        ]
+    },
+    "result": {
+        "value": 4
+    }
+}
+```
 
 ![This is an image](./images/example_client.png)
 
