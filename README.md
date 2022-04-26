@@ -31,7 +31,7 @@ One key drawback to the basic http server is that you must explicitly handle any
 
 The Module app is essentially the same as Vanilla, but includes a regular package.json text file with a single entry added: { "type": "module", } to enable sharing the RPC library file.
 
-Despite the name, there is no node_modules/ folder needed, and no packages required other than what Node.js includes by default.
+Despite the name, there are no node_modules/ needed, and no packages required other than what Node.js includes by default.
 
 ## *Express*
 
@@ -39,7 +39,7 @@ As the name suggests, the Express app imports the 'express' module which brings 
 
 The example GET handlers in server.js demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
-| param type     | example query | size |
+| param type     | example query |
 | -------------- |:-------------:|
 |  Query string  | /api?var1=val1&var2=val2 |
 |  URL params    | /api/val1/val2 |
