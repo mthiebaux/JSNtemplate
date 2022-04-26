@@ -41,7 +41,7 @@ The example GET handlers in server.js demonstrate parameter passing via traditio
 
 | param type     | example query | param object
 | -------------- |:-------------:|:-------------:|
-|  Query string  | /api?a=1&b=2 |    query: { a: 1, b: 2 }  |
+|  Query string  | /api?arg1=1&arg2=2 |    { arg1: 1, arg1: 2 }  |
 |  URL params    | /api/val1/val2 |  { arg1: 'val1', arg2: 'val2' }  |
 
 A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
