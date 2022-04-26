@@ -41,7 +41,7 @@ The example GET handlers in server.js demonstrate parameter passing via traditio
 
 | param type     | example query |
 | -------------- |:-------------:|
-|  Query string  | /api?var1=1&var2=2 |
+|  Query string  | /api?a=1&b=2 |
 |  URL params    | /api/val1/val2 |
 
 The POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
@@ -72,7 +72,7 @@ By default, server.js opens on port 8080, which can be changed by passing an opt
 > node server.js 8000
 ```
 
-Now just enter the localhost url in your browser, which will load index.html by default:
+Enter the localhost url in your browser, which will load index.html by default:
 
 ```
 localhost:8080
@@ -88,7 +88,7 @@ localhost:8080/api?a=b&c=d
 localhost:8080/api/A/B
 ```
 
-Each call to the /api handler (and each press of the API button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
+The 'api' button will append the input text to a GET request. Each call to the /api handler (and each press of the API button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
 
 ## Testing RPC
 
