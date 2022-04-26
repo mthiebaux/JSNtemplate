@@ -9,10 +9,10 @@
 * While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call. The function name is passed through a POST body.
 
 | template      | dependencies |
-| ------------- |:-------------:|
-| Vanilla       | node defaults |
-| Module        | package.json file |
-| Express       | express install |
+| ------------- |:-------------:|:-------------:|
+| Vanilla       | node defaults | 15 KB |
+| Module        | package.json file | 15 KB |
+| Express       | express install | 1.8 MB |
 
 
 ## *Vanilla*
@@ -39,7 +39,7 @@ As the name suggests, the Express app imports the 'express' module which brings 
 
 The example GET handlers in server.js demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
-| param type     | example query |
+| param type     | example query | size |
 | -------------- |:-------------:|
 |  Query string  | /api?var1=val1&var2=val2 |
 |  URL params    | /api/val1/val2 |

@@ -30,62 +30,58 @@ server.use( express.static( '.' ) );
 server.use( express.json() ); // needed for request.body parser
 //server.use( express.urlencoded( { extended: true } ) ); // for ??
 
+function get_query_report( request )	{
 
-server.get(
-	'/api',
-	( request, response ) => {
+	return( {
+		url: request.url, // unparsed
+		method: request.method,
+		path: request.path,
+		params: request.params,
+		query: request.query,
+		count: get_and_increment_data_count( "data.json" )
+	} );
+}
 
-		console.log( request.method + " : " + request.path + " : " + JSON.stringify( request.query ) );
+function get_api_response( request, response )	{
 
-		response.send( { msg: "GET api", count: get_and_increment_data_count( "data.json" ) } );
-	}
-);
+	let report = get_query_report( request );
 
-server.get(
-	'/api/:arg1/:arg2',
-	( request, response ) => {
+	console.log( report );
+	response.send( report );
+}
+server.get( '/api', get_api_response );
+server.get( '/api/:arg', get_api_response );
+server.get( '/api/:arg1/:arg2', get_api_response );
+server.get( '/api/:a1/:a2/:a3', get_api_response );
+server.get( '/api/:a1/:a2/:a3/:a4', get_api_response );
 
-		console.log(
-			request.method + " : " +
-			request.path + " : " +
-			JSON.stringify( request.query ) + " :",
-			request.params
-		);
+///////////////////////////
 
-		response.send( { msg: "GET api", count: get_and_increment_data_count( "data.json" ) } );
-	}
-);
+function post_test_handler( request, response )	{
 
+	let output = {
+		report: get_query_report( request ),
+		input: request.body,
+		result: { test: "OK" }
+	};
 
-server.post(
-	'/test',
-	( request, response ) => {
-
-		console.log( request.method + " : " + request.path + " : " + JSON.stringify( request.query ) );
-
-		let output = {
-			url: request.url, // unparsed
-			input: "empty",
-			result: { test: "OK" }
-		};
-
-		response.send( output );
-	}
-);
+	console.log( output );
+	response.send( output );
+}
+server.post( '/test', post_test_handler );
+server.post( '/test/:arg', post_test_handler );
+server.post( '/test/:arg1/:arg2', post_test_handler );
 
 server.post(
 	'/RPC',
 	( request, response ) => {
 
-		console.log( request.method + " : " + request.path + " : " + JSON.stringify( request.query ) );
-
 		let output = {
-			url: request.url, // unparsed
+			report: get_query_report( request ),
 			input: request.body
 		};
 
 		if( typeof globalThis[ request.body.rpc ] === "function" )	{
-
 			output.result = globalThis[ request.body.rpc ]( request.body ); // from lib.js
 		}
 		else	{
@@ -93,6 +89,7 @@ server.post(
 			output.result = { error: msg };
 		}
 
+		console.log( output );
 		response.send( output );
 	}
 );
