@@ -39,10 +39,10 @@ As the name suggests, the Express app imports the 'express' module which brings 
 
 The example GET handlers in server.js demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
-| param type     | example query |
-| -------------- |:-------------:|
-|  Query string  | /api?a=1&b=2 |
-|  URL params    | /api/val1/val2 |
+| param type     | example query | param object
+| -------------- |:-------------:|:-------------:|
+|  Query string  | /api?a=1&b=2 |    query: { a: 1, b: 2 }  |
+|  URL params    | /api/val1/val2 |  { arg1: 'val1', arg2: 'val2' }  |
 
 A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
 
