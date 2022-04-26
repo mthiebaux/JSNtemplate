@@ -42,6 +42,8 @@ function get_query_report( request )	{
 	} );
 }
 
+///////////////////////////
+
 function get_api_response( request, response )	{
 
 	let report = get_query_report( request );
