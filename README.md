@@ -8,7 +8,7 @@
 
 * While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call. The function name is passed through a POST body.
 
-| template      | dependencies |
+| template      | dependencies | size
 | ------------- |:-------------:|:-------------:|
 | Vanilla       | node defaults | 15 KB |
 | Module        | package.json file | 15 KB |
