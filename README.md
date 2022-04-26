@@ -146,20 +146,19 @@ import { /* globalThis.rpc_process_command */ } from './lib.js';
 
 server.post( '/RPC', ( request, response ) => {
 
-		let output = {
-			report: get_query_report( request ),
-			input: request.body
-		};
-		if( typeof globalThis[ request.body.rpc ] === "function" )	{
-			output.result = globalThis[ request.body.rpc ]( request.body );
-		}
-		else	{
-			let msg = "RPC: " + request.body.rpc + " NOT FOUND";
-			output.result = { error: msg };
-		}
-		response.send( output );
-	}
-);
+    let output = {
+        report: get_query_report( request ),
+        input: request.body
+    };
+    if( typeof globalThis[ request.body.rpc ] === "function" )	{
+        output.result = globalThis[ request.body.rpc ]( request.body );
+    }
+    else	{
+        let msg = "RPC: " + request.body.rpc + " NOT FOUND";
+        output.result = { error: msg };
+    }
+    response.send( output );
+});
 ```
 
 
