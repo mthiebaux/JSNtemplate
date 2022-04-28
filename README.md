@@ -11,7 +11,6 @@
 | template      | dependencies      | size
 | ------------- |:-----------------:|:-------------:|
 | Vanilla       | node defaults     | 15 KB |
-| Module        | package.json file | 15 KB |
 | Express       | express install   | 1.8 MB |
 
 
