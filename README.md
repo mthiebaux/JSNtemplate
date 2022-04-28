@@ -53,9 +53,8 @@ For Vanilla, server.js will run right out of the box with node.js:
 > node server.js
 ```
 
-For Express, node.js will climb up your directory tree looking for your package.json file and node_modules/ folder, so put the directory somewhere under these.
-
-Otherwise, you can initialize node with the following commands, above or in the express/ folder if you like:
+For Express, node will climb up your directory tree looking for a package.json file and node_modules/ folders.
+If they are not already in your directory path, you can initialize node with the following commands, above or in the express/ folder:
 
 ```
 > npm init
