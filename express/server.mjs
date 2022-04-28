@@ -67,8 +67,10 @@ server.post( '/test', post_test_handler );
 server.post( '/test/:arg', post_test_handler );
 server.post( '/test/:arg1/:arg2', post_test_handler );
 
+
 globalThis.rpc_stub =
 function rpc_stub( input )	{
+
 	return { stub: "OK" };
 }
 
