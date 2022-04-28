@@ -27,7 +27,7 @@ function get_and_increment_data_count( filename )	{
 	return( -1 );
 }
 
-function get_query_report( request )	{
+function get_request_report( request )	{
 
 	return( {
 		method: request.method,
@@ -42,7 +42,7 @@ function get_query_report( request )	{
 
 function get_api_response( request, response )	{
 
-	let report = get_query_report( request );
+	let report = get_request_report( request );
 
 	console.log( report );
 	response.send( report );
@@ -56,7 +56,7 @@ server.get( '/api/:a1/:a2/:a3/:a4', get_api_response );
 function post_test_handler( request, response )	{
 
 	let output = {
-		report: get_query_report( request ),
+		report: get_request_report( request ),
 		result: { test: "OK" }
 	};
 
@@ -79,7 +79,7 @@ server.post(
 	( request, response ) => {
 
 		let output = {
-			report: get_query_report( request )
+			report: get_request_report( request )
 		};
 
 		if( typeof globalThis[ request.body.rpc ] === "function" )	{
