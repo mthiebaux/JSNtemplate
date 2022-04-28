@@ -8,7 +8,7 @@ function client_app_init( input_id, log_id )	{
 	output_log_id = log_id;
 
 // Feature testing:
-
+if( 0 )	{
 	let result = {};
 	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "add", args: [ 2, 2 ] } );
 	console.log( result );
@@ -19,9 +19,13 @@ function client_app_init( input_id, log_id )	{
 	fetch_get_request( "api?a=b&c=d", output_log_response );
 	fetch_get_request( "api/A/B", output_log_response );
 	fetch_get_request( "api/A/B?a=b&c=d", output_log_response );
-
+}
+if( 0 )	{
 	fetch_post_request( "test?a=b&c=d", {}, output_log_response );
-	fetch_post_request( "RPC", { rpc: "rpc_stub" }, output_log_response );
+	fetch_post_request( "RPC", { rpc: "rpc_stub", cmd: null, args: [] }, output_log_response );
+	fetch_post_request( "RPC", { rpc: "no_rpc" }, output_log_response );
+}
+	submit_command( "add" );
 }
 
 /////////////////////////////////////////////////////////
@@ -139,7 +143,7 @@ function clear_text_buffer( id ) 	{
 function default_enter_input_event( text_input, text_event ) { // text utility: on enter
 
 	if( text_event.code == "Enter" ) 	{
-		console.log( "Enter, clear" );
+		console.log( "Enter, add, clear" );
 		submit_command( "add" );
 		text_input.value = '';
 	}
