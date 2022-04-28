@@ -4,7 +4,7 @@
 
 <img src="./images/express_client.png" width="500">
 
-* Comparing a bare-bones CJS server with full featured 'express' server module. These utility templates make implementing a server API an easy task, and demonstrates versatile vanilla RPC (remote procedure) support.
+* Comparing a bare-bones CJS server with full featured 'express' server module. These utility templates make implementing a server API an easy task, and demonstrate versatile vanilla RPC (remote procedure) support.
 
 * While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
@@ -19,11 +19,11 @@
 
 Vanilla just means a 'bare bones' implementation, using older, built-in JavaScript features such as XMLHttpRequest() on the client side, and http.createServer() on the server side.
 
-While there may not be a good reason to build with what are often deprecated utilities, they are lightweight, often with no dependencies bloating the project with loads of unused features.
+While there may be only a few good reasons to build with what are often deprecated interfaces, they are lightweight, with few dependencies bloating the project with loads of unused features.
 
 More specifically, they illustrate what is really happening behind the scenes when using popular modules like 'express', which hide a lot of complexity while greatly simplifying specific tasks.
 
-There are no node_modules/ needed, and no packages required other than what Node.js includes by default. One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
+There are no packages required other than what Node.js includes by default. One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
 
 
 ## *Express*
@@ -48,7 +48,7 @@ Clone the repo:
 > git clone https://github.com/mthiebaux/JSNtemplate.git
 ```
 
-For *Vanilla*, server.js will run right out of the box with node.js:
+For *Vanilla*, server.js runs right out of the box with node.js:
 
 ```
 > cd JSNtemplate/vanilla

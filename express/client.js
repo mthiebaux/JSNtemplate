@@ -21,7 +21,7 @@ if( 1 )	{
 	fetch_get_request( "api/A/B", output_log_response );
 	fetch_get_request( "api/A/B?a=b&c=d", output_log_response );
 }
-if( 1 )	{
+if( 0 )	{
 	fetch_post_request( "test/A/B?a=b&c=d", {}, output_log_response );
 	fetch_post_request( "RPC", { rpc: "rpc_stub", cmd: null, args: [] }, output_log_response );
 	fetch_post_request( "RPC", { rpc: "no_rpc" }, output_log_response );
