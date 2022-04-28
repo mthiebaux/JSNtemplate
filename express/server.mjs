@@ -68,11 +68,7 @@ server.post( '/test/:arg', post_test_handler );
 server.post( '/test/:arg1/:arg2', post_test_handler );
 
 
-//globalThis.rpc_stub = function rpc_stub( input )	{
-globalThis.rpc_stub = function( input )	{
-//globalThis.rpc_stub = () {
-	return { stub: "OK" };
-}
+globalThis.rpc_stub = function() { return { stub: "OK" }; } // testing unshared lib function
 
 server.post(
 	'/RPC',
