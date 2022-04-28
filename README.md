@@ -2,6 +2,8 @@
 
  **Vanilla Node.js Client/Server with RPC**
 
+<img src="./images/express_client.png" width="500">
+
 * Comparing a bare-bones CJS server with full featured 'express' server module.
 
 * This utility template makes implementing a server API an easy task, and demonstrates versatile vanilla RPC (remote procedure) support.
@@ -166,7 +168,3 @@ server.post( '/RPC', ( request, response ) => {
     response.send( output );
 });
 ```
-
-<img src="./images/express_client.png" width="500">
-
-
