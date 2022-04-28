@@ -40,7 +40,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## Installation
 
-For Vanilla and Module, these will run right out of the box with node.js:
+For Vanilla, server.js will run right out of the box with node.js:
 
 ```
 > node server.js
@@ -53,6 +53,12 @@ Otherwise, you can initialize node with the following commands, directly above o
 ```
 > npm init
 > npm install express
+```
+
+Express requires the *.mjs* extension to enable ESM *import* features to load the shared file:
+
+```
+> node server.mjs
 ```
 
 ## Testing in the Browser
