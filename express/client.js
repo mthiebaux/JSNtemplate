@@ -4,7 +4,6 @@ let output_log_id = "";
 
 function client_app_init( input_id, log_id )	{
 
-	console.log( "client_app" );
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 

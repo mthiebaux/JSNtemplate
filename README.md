@@ -55,14 +55,14 @@ For Vanilla, server.js will run right out of the box with node.js:
 
 For Express, node.js will climb up your directory tree looking for your package.json file and node_modules/ folder, so put the directory somewhere under these.
 
-Otherwise, you can initialize node with the following commands, directly above or in the express/ folder if you like:
+Otherwise, you can initialize node with the following commands, above or in the express/ folder if you like:
 
 ```
 > npm init
 > npm install express
 ```
 
-Note that to enable ESM *import* features, the Express server script has been named with the *.mjs* extension:
+Note that to enable ESM *module import* features, the Express server script has been named with the *.mjs* extension:
 
 ```
 > node server.mjs
