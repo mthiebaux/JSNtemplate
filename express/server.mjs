@@ -4,12 +4,12 @@ import fs from "fs";
 
 import { /* globalThis.rpc_process_command */ } from './lib.js';
 
-let port = 8080;
-
 const server = express();
 server.use( express.static( '.' ) );
 server.use( express.json() ); // needed for request.body parser
 //server.use( express.urlencoded( { extended: true } ) ); // for ??
+
+let port = 8080;
 
 /////////////////////////////////////////////////////////
 

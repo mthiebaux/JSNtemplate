@@ -21,37 +21,33 @@
 
 		</div>
 
-		<div>
+		<div id="page_contents">
 
-			<div id="page_contents">
+			input:
+			<button onclick="clear_text_buffer( 'input_buffer' )"
+				>clear</button>
+			<br>
+			<input id="input_buffer"
+				type="text"
+				placeholder="enter args"
+				onkeydown="default_enter_input_event( this, event )"
+				size="80em"></input>
+			<br>
+			<button onclick="submit_api()" style="background-color:lightgrey"
+				>api</button>
+			<button onclick="submit_post()" style="background-color:lightgrey"
+				>post</button>
+			<button onclick="submit_command( 'add' )" style="background-color:lightgrey"
+				>add</button>
+			<button onclick="submit_command( 'mul' )" style="background-color:lightgrey"
+				>mul</button>
+			<p>
 
-				input:
-				<button onclick="clear_text_buffer( 'input_buffer' )"
-					>clear</button>
-				<br>
-				<input id="input_buffer"
-					type="text"
-					placeholder="enter args"
-					onkeydown="default_enter_input_event( this, event )"
-					size="80em"></input>
-				<br>
-				<button onclick="submit_api()" style="background-color:lightgrey"
-					>api</button>
-				<button onclick="submit_post()" style="background-color:lightgrey"
-					>post</button>
-				<button onclick="submit_command( 'add' )" style="background-color:lightgrey"
-					>add</button>
-				<button onclick="submit_command( 'mul' )" style="background-color:lightgrey"
-					>mul</button>
-				<p>
-
-				output:
-				<button onclick="clear_text_buffer( 'output_log' )"
-					>clear</button>
-				<br>
-				<textarea id="output_log" readonly=true rows="20" cols="40"></textarea>
-
-			</div>
+			output:
+			<button onclick="clear_text_buffer( 'output_log' )"
+				>clear</button>
+			<br>
+			<textarea id="output_log" readonly=true rows="20" cols="40"></textarea>
 
 		</div>
 

@@ -2,7 +2,7 @@
 let input_buffer_id = "";
 let output_log_id = "";
 
-function client_app( input_id, log_id )	{
+function client_app_init( input_id, log_id )	{
 
 	input_buffer_id = input_id;
 	output_log_id = log_id;
