@@ -4,9 +4,10 @@
 
 * Comparing a bare-bones CJS server with full featured 'express' server module.
 
-* This utility template makes implementing a server API very easy, and demonstrates versatile vanilla RPC (remote procedure) support.
+* This utility template makes implementing a server API an easy task, and demonstrates versatile vanilla RPC (remote procedure) support.
 
-* While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call. The function name is passed through a POST body.
+* While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
+
 
 | template      | dependencies      | size
 | ------------- |:-----------------:|:-------------:|
@@ -23,6 +24,7 @@ While there may not be a good reason to build with what are often deprecated uti
 More specifically, they illustrate what is really happening behind the scenes when using popular modules like 'express', which hide a lot of complexity while greatly simplifying specific tasks.
 
 There are no node_modules/ needed, and no packages required other than what Node.js includes by default. One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
+
 
 ## *Express*
 
@@ -66,6 +68,7 @@ Note that to enable ESM *module import* features, the Express server script has 
 ```
 > node server.mjs
 ```
+
 
 ## Testing in the Browser
 
@@ -112,6 +115,7 @@ response: {
 }
 ```
 
+
 ## Testing RPC
 
 The input text field is set up to add and multiply numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
@@ -150,20 +154,19 @@ import { /* globalThis.rpc_process_command */ } from './lib.js';
 server.post( '/RPC', ( request, response ) => {
 
     let output = {
-        report: get_query_report( request ),
-        input: request.body
+        report: get_query_report( request )
     };
     if( typeof globalThis[ request.body.rpc ] === "function" )	{
         output.result = globalThis[ request.body.rpc ]( request.body );
     }
     else	{
-        let msg = "RPC: " + request.body.rpc + " NOT FOUND";
+        let msg = "RPC: function \'" + request.body.rpc + "\' NOT FOUND";
         output.result = { error: msg };
     }
     response.send( output );
 });
 ```
 
-![This is an image](./images/express_client.png)
+![image of express client](./images/express_client.png)
 
 
