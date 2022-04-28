@@ -9,14 +9,13 @@ function client_app_init( input_id, log_id )	{
 	output_log_id = log_id;
 
 // Feature testing:
+
 	let result = {};
 	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "add", args: [ 2, 2 ] } );
 	console.log( result );
 	let v = result.value;
 	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "mul", args: [ v, v ] } );
 	console.log( result );
-
-//	fetch_get_request( "data.json", output_log_response ); // fetch count without increment
 
 	fetch_get_request( "api?a=b&c=d", output_log_response );
 	fetch_get_request( "api/A/B", output_log_response );

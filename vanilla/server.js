@@ -3,7 +3,7 @@ const http = require( "http" );
 const fs = require( "fs" );
 const path = require( "path" );
 
-const lib = require( "./lib.js" );
+const _ = require( "./lib.js" ); // globalThis.rpc_process_command
 
 const port = 8080;
 
@@ -71,7 +71,6 @@ const server = http.createServer(
 
 					let input_obj = {};
 					if( body_data.length > 0 ) {
-
 						input_obj = JSON.parse( body_data );
 					}
 					let output = {

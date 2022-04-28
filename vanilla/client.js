@@ -7,6 +7,7 @@ function client_app( input_id, log_id )	{
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
+// Feature testing:
 
 	fetch_get_request( "data.json", output_log_response );
 
@@ -16,7 +17,14 @@ function client_app( input_id, log_id )	{
 	test = globalThis.rpc_process_command( { contents: "RPC client globalThis" } );
 	console.log( test );
 
-	fetch_post_request( "test?a=b&c=d", {}, output_log_response );
+	let result = {};
+	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "add", args: [ 2, 2 ] } );
+	console.log( result );
+	let v = result.value;
+	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "mul", args: [ v, v ] } );
+	console.log( result );
+
+	fetch_post_request( "test", {}, output_log_response );
 }
 
 /////////////////////////////////////////////////////////
