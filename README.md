@@ -126,15 +126,15 @@ response: {
         "path": "/RPC",
         "params": {},
         "query": {},
-        "count": 338,
-		"body": {
-			"rpc": "rpc_process_command",
-			"cmd": "add",
-			"args": [
-				2,
-				2
-			]
-		}
+        "body": {
+            "rpc": "rpc_process_command",
+            "cmd": "add",
+            "args": [
+                2,
+                2
+            ]
+        },
+        "count": 338
     },
     "result": {
         "value": 4
