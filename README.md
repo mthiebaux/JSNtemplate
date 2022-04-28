@@ -55,7 +55,7 @@ Otherwise, you can initialize node with the following commands, directly above o
 > npm install express
 ```
 
-Note that to enable ESM *import* features, the server script has been named with the *.mjs* extension:
+Note that to enable ESM *import* features, the Express server script has been named with the *.mjs* extension:
 
 ```
 > node server.mjs
