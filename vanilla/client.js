@@ -8,13 +8,15 @@ function client_app( input_id, log_id )	{
 	output_log_id = log_id;
 
 
-	fetch_get_request( "data.json", client_log_response );
+	fetch_get_request( "data.json", output_log_response );
 
 	let test = {};
 	test = rpc_process_command( { contents: "RPC client" } );
 	console.log( test );
 	test = globalThis.rpc_process_command( { contents: "RPC client globalThis" } );
 	console.log( test );
+
+	fetch_post_request( "test?a=b&c=d", {}, output_log_response );
 }
 
 /////////////////////////////////////////////////////////
@@ -121,7 +123,7 @@ function fetch_post_request( url, cmd_obj, callback )	{
 
 /////////////////////////////////////////////////////////
 
-function client_log_response( response_obj )	{
+function output_log_response( response_obj )	{
 
 	let log_area = document.getElementById( output_log_id );
 
@@ -150,8 +152,8 @@ function submit_command( rpc_cmd )	{
 		args: arg_arr
 	}
 
-//	http_post_request( "RPC", input_req, client_log_response );
-	fetch_post_request( "RPC", input_req, client_log_response );
+//	http_post_request( "RPC", input_req, output_log_response );
+	fetch_post_request( "RPC", input_req, output_log_response );
 }
 
 function clear_text_buffer( id ) 	{

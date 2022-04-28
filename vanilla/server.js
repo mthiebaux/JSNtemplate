@@ -17,12 +17,11 @@ const server = http.createServer(
 
 		if( request.method === "GET" )	{
 
+			/// extract search key "/api" from head of url string prior to route, then parse query
+
 			if( request.url === "/api" )	{
 
-				response.write( JSON.stringify( { msg: "GET api request received" } ) );
-
-				// extract params from url ??
-
+				response.write( JSON.stringify( { msg: "GET /api request received" } ) );
 			}
 			else	{
 
@@ -35,7 +34,6 @@ const server = http.createServer(
 				}
 
 				const content_type = {
-
 					".html":	{ 'Content-Type': 'text/html' },
 					".json":	{ 'Content-Type': 'application/json' },
 					".js":		{ 'Content-Type': 'application/javascript' },
@@ -51,6 +49,7 @@ const server = http.createServer(
 				}
 				catch( err ) {
 					console.error( err );
+					response.write( JSON.stringify( { error: err, msg: "URL NOT RECOGNIZED" }, null, 2 ) );
 				}
 			}
 			response.end();
@@ -89,14 +88,11 @@ const server = http.createServer(
 							let msg = "RPC: function \'" + input_obj.rpc + "\' NOT FOUND";
 							output.result = { error: msg };
 						}
-
-						console.log( JSON.stringify( output, null, 2 ) );
-//						console.log( output );
+						console.log( output );
 					}
 
-					response.write(
-						JSON.stringify( output )
-					);
+					// NOTE: The "chunk" argument must be of type string...
+					response.write( JSON.stringify( output ) );
 					response.end();
 				}
 			)
