@@ -169,4 +169,6 @@ server.post( '/RPC', ( request, response ) => {
 
 ![image of express client](./images/express_client.png | width=100)
 
+<img src="./images/express_client.png" width="100">
+
 
