@@ -167,6 +167,6 @@ server.post( '/RPC', ( request, response ) => {
 });
 ```
 
-<img src="./images/express_client.png" width="400">
+<img src="./images/express_client.png" width="500">
 
 
