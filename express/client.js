@@ -21,6 +21,7 @@ function client_app_init( input_id, log_id )	{
 	fetch_get_request( "api/A/B?a=b&c=d", output_log_response );
 
 	fetch_post_request( "test?a=b&c=d", {}, output_log_response );
+	fetch_post_request( "RPC", { rpc: "rpc_stub" }, output_log_response );
 }
 
 /////////////////////////////////////////////////////////
