@@ -23,15 +23,7 @@ While there may not be a good reason to build with what are often deprecated uti
 
 More specifically, they illustrate what is really happening behind the scenes when using popular modules like 'express', which hide a lot of complexity while greatly simplifying specific tasks.
 
-Adhering to this tenet, the initial Common JS app does not use JS modules, and so the RPC callback can't be shared.
-
-One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
-
-## *Module*
-
-The Module app is essentially the same as Vanilla, but includes a regular package.json text file with a single entry added: { "type": "module", } to enable sharing the RPC library file.
-
-Despite the name, there are no node_modules/ needed, and no packages required other than what Node.js includes by default.
+There are no node_modules/ needed, and no packages required other than what Node.js includes by default. One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
 
 ## *Express*
 
