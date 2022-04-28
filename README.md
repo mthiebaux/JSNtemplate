@@ -4,17 +4,15 @@
 
 <img src="./images/express_client.png" width="500">
 
-* Comparing a bare-bones CJS server with full featured 'express' server module.
-
-* This utility template makes implementing a server API an easy task, and demonstrates versatile vanilla RPC (remote procedure) support.
+* Comparing a bare-bones CJS server with full featured 'express' server module. These utility templates make implementing a server API an easy task, and demonstrates versatile vanilla RPC (remote procedure) support.
 
 * While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
 
 | template      | dependencies      | size
 | ------------- |:-----------------:|:-------------:|
-| Vanilla       | node defaults     | 15 KB |
-| Express       | express install   | 1.8 MB |
+| *Vanilla*     | node defaults     | 15 KB |
+| *Express*     | express install   | 1.8 MB |
 
 
 ## *Vanilla*
@@ -30,7 +28,7 @@ There are no node_modules/ needed, and no packages required other than what Node
 
 ## *Express*
 
-As the name suggests, the Express app imports the 'express' module which brings with it a LOT of essential functionality, like 'fs' for reading and writing files.
+As the name suggests, the *Express* app imports the 'express' module which brings with it a LOT of essential functionality, like 'fs' for reading and writing files.
 
 The example GET handlers in server.js demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
@@ -50,14 +48,14 @@ Clone the repo:
 > git clone https://github.com/mthiebaux/JSNtemplate.git
 ```
 
-For Vanilla, server.js will run right out of the box with node.js:
+For *Vanilla*, server.js will run right out of the box with node.js:
 
 ```
 > cd JSNtemplate/vanilla
 > node server.js
 ```
 
-For Express, node will climb up your directory tree looking for package.json files and node_modules/ folders.
+For *Express*, node will climb up your directory tree looking for package.json files and node_modules/ folders.
 If they are not already in your directory path, you can initialize node with the following commands, above or in the express/ folder:
 
 ```
@@ -65,7 +63,7 @@ If they are not already in your directory path, you can initialize node with the
 > npm install express
 ```
 
-Note that to enable ESM *module import* features, the Express server script has been named with the *.mjs* extension:
+Note that to enable ESM *module import* features, the *Express* server script has been named with the *.mjs* extension:
 
 ```
 > node server.mjs
@@ -148,7 +146,7 @@ response: {
 }
 ```
 
-The RPC handler simply pulls the function name from the POST request body, checks that it exists as a function in the globalThis object, executes it, and adds the return value to the output object:
+The RPC handler simply pulls the function name from the POST request body, checks that it exists as a function in the globalThis object, executes it, and adds its return value to the output object:
 
 ```
 import {} from './lib.js'; // globalThis.rpc_cmd = function rpc_cmd(){}
