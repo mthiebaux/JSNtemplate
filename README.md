@@ -40,9 +40,16 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## Installation
 
+Clone the repo:
+
+```
+> git clone https://github.com/mthiebaux/JSNtemplate.git
+```
+
 For Vanilla, server.js will run right out of the box with node.js:
 
 ```
+> cd JSNtemplate/vanilla
 > node server.js
 ```
 
