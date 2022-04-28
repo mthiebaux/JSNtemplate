@@ -7,6 +7,9 @@ import { /* globalThis.rpc_process_command */ } from './lib.js';
 let port = 8080;
 
 const server = express();
+server.use( express.static( '.' ) );
+server.use( express.json() ); // needed for request.body parser
+//server.use( express.urlencoded( { extended: true } ) ); // for ??
 
 /////////////////////////////////////////////////////////
 
@@ -24,12 +27,6 @@ function get_and_increment_data_count( filename )	{
 	return( -1 );
 }
 
-/////////////////////////////////////////////////////////
-
-server.use( express.static( '.' ) );
-server.use( express.json() ); // needed for request.body parser
-//server.use( express.urlencoded( { extended: true } ) ); // for ??
-
 function get_query_report( request )	{
 
 	return( {
@@ -41,8 +38,6 @@ function get_query_report( request )	{
 		count: get_and_increment_data_count( "data.json" )
 	} );
 }
-
-///////////////////////////
 
 function get_api_response( request, response )	{
 
@@ -56,8 +51,6 @@ server.get( '/api/:arg', get_api_response );
 server.get( '/api/:arg1/:arg2', get_api_response );
 server.get( '/api/:a1/:a2/:a3', get_api_response );
 server.get( '/api/:a1/:a2/:a3/:a4', get_api_response );
-
-///////////////////////////
 
 function post_test_handler( request, response )	{
 
