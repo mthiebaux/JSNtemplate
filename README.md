@@ -55,7 +55,7 @@ Otherwise, you can initialize node with the following commands, directly above o
 > npm install express
 ```
 
-Express requires the *.mjs* extension to enable ESM *import* features to load the shared file:
+Note that to enable ESM *import* features, the server script has been named with the *.mjs* extension:
 
 ```
 > node server.mjs
@@ -63,10 +63,10 @@ Express requires the *.mjs* extension to enable ESM *import* features to load th
 
 ## Testing in the Browser
 
-By default, server.js opens on port 8080, which can be changed by passing an optional port number:
+By default, the server opens on port 8080, which can be changed by passing an optional port number:
 
 ```
-> node server.js 8001
+> node server.mjs 8001
 ```
 
 Then enter the localhost url in your browser, which will load index.html by default:
