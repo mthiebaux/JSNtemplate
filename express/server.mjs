@@ -35,6 +35,7 @@ function get_query_report( request )	{
 		path: request.path,
 		params: request.params,
 		query: request.query,
+		body: request.body,
 		count: get_and_increment_data_count( "data.json" )
 	} );
 }
@@ -56,7 +57,6 @@ function post_test_handler( request, response )	{
 
 	let output = {
 		report: get_query_report( request ),
-		input: request.body,
 		result: { test: "OK" }
 	};
 
@@ -69,7 +69,7 @@ server.post( '/test/:arg1/:arg2', post_test_handler );
 
 globalThis.rpc_stub =
 function rpc_stub( input )	{
-	return { stub: "OK", input: input };
+	return { stub: "OK" };
 }
 
 server.post(
@@ -77,8 +77,7 @@ server.post(
 	( request, response ) => {
 
 		let output = {
-			report: get_query_report( request ),
-			input: request.body
+			report: get_query_report( request )
 		};
 
 		if( typeof globalThis[ request.body.rpc ] === "function" )	{

@@ -68,22 +68,24 @@ const server = http.createServer(
 				"end",
 				() =>	{
 
-					let input_obj = {};
+					let body_obj = {};
 					if( body_data.length > 0 ) {
-						input_obj = JSON.parse( body_data );
+						body_obj = JSON.parse( body_data );
 					}
 					let output = {
-						url: request.url,
-						input: input_obj
+						report: {
+							url: request.url,
+							body: body_obj
+						}
 					};
 
 					if( request.url === "/RPC" )	{
 
-						if( typeof globalThis[ input_obj.rpc ] === "function" )	{
-							output.result = globalThis[ input_obj.rpc ]( input_obj ); // from lib.js
+						if( typeof globalThis[ body_obj.rpc ] === "function" )	{
+							output.result = globalThis[ body_obj.rpc ]( body_obj ); // from lib.js
 						}
 						else	{
-							let msg = "RPC: function \'" + input_obj.rpc + "\' NOT FOUND";
+							let msg = "RPC: function \'" + body_obj.rpc + "\' NOT FOUND";
 							output.result = { error: msg };
 						}
 						console.log( output );
