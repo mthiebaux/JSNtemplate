@@ -116,7 +116,7 @@ response: {
 
 The input text field is set up to add and multiply numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
-The RPC function response object is written to the output text field, revealing the internals of this client-server exchange. This includes the request report, the body input payload, and the result:
+The RPC function response object is written to the output text field, revealing the internals of this client-server exchange. This includes the request report with the body input payload, and the result:
 
 ```
 response: {
@@ -126,15 +126,15 @@ response: {
         "path": "/RPC",
         "params": {},
         "query": {},
-        "count": 338
-    },
-    "input": {
-        "rpc": "rpc_process_command",
-        "cmd": "add",
-        "args": [
-            2,
-            2
-        ]
+        "count": 338,
+		"body": {
+			"rpc": "rpc_process_command",
+			"cmd": "add",
+			"args": [
+				2,
+				2
+			]
+		}
     },
     "result": {
         "value": 4
