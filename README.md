@@ -149,7 +149,7 @@ response: {
 The RPC handler simply pulls the function name from the POST request body, checks that it exists as a function in the globalThis object, executes it, and adds the return value to the output object:
 
 ```
-import { /* globalThis.rpc_process_command */ } from './lib.js';
+import {} from './lib.js'; // globalThis.rpc_cmd = function rpc_cmd(){}
 
 server.post( '/RPC', ( request, response ) => {
 
