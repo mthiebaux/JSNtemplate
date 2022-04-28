@@ -1,49 +1,11 @@
 
-//import { /* globalThis.rpc_array_sum */ } from './client.js';
-
-//const client = require( "./client.js" );
-
-
 const http = require( "http" );
 const fs = require( "fs" );
 const path = require( "path" );
 
+const lib = require( "./lib.js" );
+
 const port = 8080;
-
-/////////////////////////////////////////////////////////
-
-// Can't import without modules
-
-globalThis.rpc_process_command =
-function rpc_process_command( input )	{
-
-	console.log( "Server RPC" );
-	console.log( input );
-
-	let output = {};
-	if( input.cmd === "add" )	{
-
-		let sum = 0;
-		for( let v of input.args )	{
-			sum += v;
-		}
-		output.value = sum;
-	}
-	else
-	if( input.cmd === "mul" )	{
-
-		let prod = 1;
-		for( let v of input.args )	{
-			prod *= v;
-		}
-		output.value = prod;
-	}
-	else	{
-		output.value = "cmd \'" + input.cmd + "\' not found"
-	}
-
-	return( output );
-}
 
 /////////////////////////////////////////////////////////
 
@@ -120,10 +82,16 @@ const server = http.createServer(
 
 					if( request.url === "/RPC" )	{
 
-//						output.result = rpc_process_command( input_obj );
-						output.result = globalThis[ input_obj.rpc ]( input_obj );
+						if( typeof globalThis[ input_obj.rpc ] === "function" )	{
+							output.result = globalThis[ input_obj.rpc ]( input_obj ); // from lib.js
+						}
+						else	{
+							let msg = "RPC: function \'" + input_obj.rpc + "\' NOT FOUND";
+							output.result = { error: msg };
+						}
 
 						console.log( JSON.stringify( output, null, 2 ) );
+//						console.log( output );
 					}
 
 					response.write(

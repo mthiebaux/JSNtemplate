@@ -2,7 +2,7 @@
 globalThis.rpc_process_command =
 function rpc_process_command( input )	{
 
-//	console.log( input );
+	console.log( input );
 
 	let output = {};
 	if( input.cmd === "add" )	{
@@ -23,7 +23,7 @@ function rpc_process_command( input )	{
 		output.value = prod;
 	}
 	else	{
-		output.value = "cmd \'" + input.cmd + "\' not found"
+		output.value = "rpc_process_command ERR: cmd \'" + input.cmd + "\' not found"
 	}
 
 	return( output );

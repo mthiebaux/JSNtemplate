@@ -4,7 +4,6 @@ let output_log_id = "";
 
 function client_app( input_id, log_id )	{
 
-//	console.log( "client_app" );
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
@@ -17,39 +16,6 @@ function client_app( input_id, log_id )	{
 	test = globalThis.rpc_process_command( { contents: "RPC client globalThis" } );
 	console.log( test );
 }
-
-globalThis.rpc_process_command =
-function rpc_process_command( input )	{
-
-	console.log( "Client RPC" );
-	console.log( input );
-
-	let output = {};
-	if( input.cmd === "add" )	{
-
-		let sum = 0;
-		for( let v of input.args )	{
-			sum += v;
-		}
-		output.value = sum;
-	}
-	else
-	if( input.cmd === "mul" )	{
-
-		let prod = 1;
-		for( let v of input.args )	{
-			prod *= v;
-		}
-		output.value = prod;
-	}
-	else	{
-		output.value = "cmd \'" + input.cmd + "\' not found"
-	}
-
-	return( output );
-}
-
-// module.exports = { rpc_process_command };
 
 /////////////////////////////////////////////////////////
 
@@ -162,6 +128,7 @@ function client_log_response( response_obj )	{
 	log_area.value += "response: ";
 	log_area.value += JSON.stringify( response_obj, null, 2 );
 	log_area.value += '\n';
+
 	log_area.scrollTop = log_area.scrollHeight;
 }
 
@@ -178,11 +145,8 @@ function submit_command( rpc_cmd )	{
 
 	let input_req = {
 
-//		rpc: globalThis.rpc_process_command.name
-		rpc: rpc_process_command.name,
-
+		rpc: globalThis.rpc_process_command.name,
 		cmd: rpc_cmd,
-
 		args: arg_arr
 	}
 

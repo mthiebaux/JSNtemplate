@@ -1,12 +1,12 @@
 
-import { /* globalThis.rpc_process_command */ } from './lib.js';
-
 import express from 'express';
 import fs from "fs";
 
-const server = express();
+import { /* globalThis.rpc_process_command */ } from './lib.js';
 
 let port = 8080;
+
+const server = express();
 
 /////////////////////////////////////////////////////////
 
@@ -87,7 +87,7 @@ server.post(
 			output.result = globalThis[ request.body.rpc ]( request.body ); // from lib.js
 		}
 		else	{
-			let msg = "RPC: " + request.body.rpc + " NOT FOUND";
+			let msg = "RPC: function \'" + request.body.rpc + "\' NOT FOUND";
 			output.result = { error: msg };
 		}
 
