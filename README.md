@@ -154,7 +154,7 @@ import { /* globalThis.rpc_process_command */ } from './lib.js';
 server.post( '/RPC', ( request, response ) => {
 
     let output = {
-        report: get_query_report( request )
+        report: get_request_report( request )
     };
     if( typeof globalThis[ request.body.rpc ] === "function" )	{
         output.result = globalThis[ request.body.rpc ]( request.body );
