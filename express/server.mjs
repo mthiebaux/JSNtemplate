@@ -2,7 +2,7 @@
 import express from 'express';
 import fs from "fs";
 
-import { /* globalThis.rpc_process_command */ } from './lib.js';
+import {} from './lib.js';  // globalThis.rpc_cmd = function rpc_cmd(){}
 
 const server = express();
 server.use( express.static( '.' ) );

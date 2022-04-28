@@ -3,7 +3,7 @@ const http = require( "http" );
 const fs = require( "fs" );
 const path = require( "path" );
 
-const _ = require( "./lib.js" ); // globalThis.rpc_process_command
+require( "./lib.js" ); // globalThis.rpc_cmd = function rpc_cmd(){}
 
 const port = 8080;
 
@@ -36,8 +36,7 @@ const server = http.createServer(
 				const content_type = {
 					".html":	{ 'Content-Type': 'text/html' },
 					".json":	{ 'Content-Type': 'application/json' },
-					".js":		{ 'Content-Type': 'application/javascript' },
-					".cjs":		{ 'Content-Type': 'application/javascript' }
+					".js":		{ 'Content-Type': 'application/javascript' }
 				};
 
 				try {
