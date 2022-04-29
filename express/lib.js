@@ -1,4 +1,6 @@
 
+// lib.js
+
 globalThis.rpc_process_command =
 function rpc_process_command( input )	{
 
@@ -23,7 +25,7 @@ function rpc_process_command( input )	{
 		output.value = prod;
 	}
 	else	{
-		output.value = "rpc_process_command ERR: cmd \'" + input.cmd + "\' not found"
+		output.value = "rpc_process_command ERR: cmd \'" + input.cmd + "\' not rcognized"
 	}
 
 	return( output );

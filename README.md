@@ -30,7 +30,7 @@ There are no packages required other than what Node.js includes by default. One 
 
 As the name suggests, the *Express* app imports the 'express' module which brings with it a LOT of essential functionality, like 'fs' for reading and writing files.
 
-The example GET handlers in server.js demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
+The example GET handlers in server.mjs demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
 | param type    | example query      | parsed request inputs
 | ------------- |:------------------:|:----------------------------:|
