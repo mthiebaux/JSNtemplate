@@ -84,7 +84,7 @@ Then enter the localhost url in your browser, which will load index.html by defa
 localhost:8080
 ```
 
-The testing page runs several test requests on initialization specified in client.js:client_app_init(), and the results from the server are written to the output text field. Some results also appear in your browser's JavaScript Console.
+The testing page runs several test requests on initialization specified in client.js/.mjs:client_app_init(), and the results from the server are written to the output text field. Some results also appear in your browser's JavaScript Console.
 
 You can run similar tests directly by adding URL parameters, and see how the server reports parsed arguments in the command terminal:
 
