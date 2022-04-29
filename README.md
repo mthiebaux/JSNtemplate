@@ -48,7 +48,7 @@ Clone the repo:
 > git clone https://github.com/mthiebaux/JSNtemplate.git
 ```
 
-For *Vanilla*, server.js runs right out of the box with node.js:
+For *Vanilla*, server.js runs right out of the box with Node.js:
 
 ```
 > cd JSNtemplate/vanilla
