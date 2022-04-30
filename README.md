@@ -42,7 +42,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## *Process*
 
-Experimental app. Implementing an interactive server console, push notifications, and client to client exchange.
+Experimental app. Using node process object to implement an interactive server console, push notifications, and client to client exchange.
 
 
 ## Installation
