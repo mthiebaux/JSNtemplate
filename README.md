@@ -40,9 +40,9 @@ The example GET handlers in server.mjs demonstrate parameter passing via traditi
 A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
 
 
-## *Process*
+## *Console*
 
-Experimental app. Using node process object to implement an interactive server console, push notifications, and client to client exchange.
+Experimental app. supporting an interactive server console, push notifications, and client to client exchange.
 
 
 ## Installation
