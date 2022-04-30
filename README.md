@@ -99,7 +99,7 @@ localhost:8080/api?a=b&c=d
 localhost:8080/api/A/B
 ```
 
-The 'api' button will append contents from the input text field to a GET request. Each call to the /api handler (and each press of the 'api' button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
+The *api* button will append contents from the input text field to a GET request. Each call to the /api handler (and each press of the 'api' button) reads a count value out of ./data.json, increments it, updates the file, and returns that value.
 
 The output response object will report something like the following, mirroring the parsed inputs:
 
@@ -169,3 +169,7 @@ server.post( '/RPC', ( request, response ) => {
     response.send( output );
 });
 ```
+
+
+## Testing the Server Console
+
