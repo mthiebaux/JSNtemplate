@@ -1,9 +1,13 @@
 
 import express from 'express';
 
-import * as readline from "readline";
-//import {SIGINT} from "constants";
+import requestID from 'express-request-id'; // NOTE: npm install express-request-id
 
+import * as readline from "readline";
+
+
+const server = express();
+server.use( requestID() );
 
 const reader = readline.createInterface(
 	{
@@ -11,8 +15,6 @@ const reader = readline.createInterface(
 		output: process.stdout
 	}
 );
-
-const server = express();
 
 /////////////////////////////////////////////////////////
 
@@ -101,7 +103,7 @@ function get_request_report( request )	{
 		path: request.path,
 		params: request.params,
 		query: request.query,
-		body: request.body,
+		body: request.body ? request.body : null,
 		count: 0
 	} );
 }
@@ -114,6 +116,19 @@ server.get(
 			report: get_request_report( request )
 		};
 
+		console.log( output );
+		response.send( output );
+	}
+);
+
+server.get(
+	'/uuid',
+	( request, response ) => {
+
+		let output = {
+			report: get_request_report( request ),
+			uuid: request.id  // from: express-request-id
+		};
 
 		console.log( output );
 		response.send( output );
