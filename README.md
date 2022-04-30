@@ -42,7 +42,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## *Console*
 
-Experimental app. supporting an interactive server console, push notifications, and client to client exchange.
+Experimental app supporting an interactive server console, push notifications, and client to client exchange.
 
 
 ## Installation

@@ -1,0 +1,21 @@
+
+body {
+
+	font-family:	helvetica;
+	background: 	linear-gradient( 15deg, #ffffff, #c4dfee ); /* sand */
+}
+
+h1, h2, h3, h4, h5, h6 {
+
+	font-weight: 	normal;
+}
+
+.page_footer {
+
+	border:				solid;
+	border-color: 		white;
+
+	border-width:				3px 0px 0px 0px;
+	border-top-left-radius:		36px;
+	border-top-right-radius: 	70% 8px;
+}

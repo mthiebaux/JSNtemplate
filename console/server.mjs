@@ -8,6 +8,8 @@ import * as readline from "readline";
 
 const server = express();
 server.use( requestID() );
+server.use( express.static( '.' ) );
+server.use( express.json() ); // needed for request.body parser
 
 const reader = readline.createInterface(
 	{
@@ -16,11 +18,66 @@ const reader = readline.createInterface(
 	}
 );
 
+var poll_queue = [];
+
 /////////////////////////////////////////////////////////
+
+function push_poll_request( poll_req )	{
+
+	poll_queue.push( poll_req );
+}
+
+function pop_poll_request()	{
+
+	return( poll_queue.shift() );
+}
+
+function exit_poll_requests()	{
+
+	console.log( "poll: close" );
+
+	let req = null;
+	while( req = pop_poll_request() )	{
+
+		let output = {
+
+			report: req.report,
+			msg: "exit"
+		};
+
+		console.log( output );
+		req.response.send( output );
+	}
+}
 
 function process_line_input( input )	{
 
-	console.log( "input: " + input );
+	if( input == "poll" )	{
+
+		for( let req of poll_queue )	{
+
+			console.log( req.report );
+		}
+	}
+	else
+	if( input == "push" )	{
+
+		let req = null;
+		while( req = pop_poll_request() )	{
+
+			let output = {
+
+				report: req.report,
+				msg: "push OK"
+			};
+
+			console.log( output );
+			req.response.send( output );
+		}
+	}
+	else	{
+
+	}
 }
 
 /*
@@ -109,19 +166,6 @@ function get_request_report( request )	{
 }
 
 server.get(
-	'/',
-	( request, response ) => {
-
-		let output = {
-			report: get_request_report( request )
-		};
-
-		console.log( output );
-		response.send( output );
-	}
-);
-
-server.get(
 	'/uuid',
 	( request, response ) => {
 
@@ -132,6 +176,34 @@ server.get(
 
 		console.log( output );
 		response.send( output );
+	}
+);
+
+server.post(
+	'/poll',
+	( request, response ) => {
+
+		if( request.body.uuid )	{
+
+			let report = get_request_report( request );
+			console.log( report );
+
+			let poll_req = {
+				report: report,
+				response: response
+			}
+			push_poll_request( poll_req );
+		}
+		else	{
+
+			let output = {
+				report: get_request_report( request ),
+				error: "poll: client UUID NOT FOUND"
+			};
+
+			console.log( output );
+			response.send( output );
+		}
 	}
 );
 
@@ -181,6 +253,8 @@ process.on(
 	"SIGTERM",
 	() => {
 		console.log( "process: SIGTERM" );
+
+		exit_poll_requests();
 
 		reader.close();
 		listener.close();
