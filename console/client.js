@@ -10,27 +10,6 @@ function client_app_init( input_id, log_id )	{
 	output_log_id = log_id;
 
 	fetch_get_request( "uuid", receive_uuid_request );
-
-// Feature testing:
-if( 0 )	{
-	let result = {};
-	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "add", args: [ 2, 2 ] } );
-	console.log( result );
-	let v = result.value;
-	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "mul", args: [ v, v ] } );
-	console.log( result );
-}
-if( 0 )	{
-	fetch_get_request( "api?a=b&c=d", output_log_response );
-	fetch_get_request( "api/A/B", output_log_response );
-	fetch_get_request( "api/A/B?a=b&c=d", output_log_response );
-}
-if( 0 )	{
-	fetch_post_request( "test/A/B?a=b&c=d", {}, output_log_response );
-	fetch_post_request( "RPC", { rpc: "rpc_stub", cmd: null, args: [] }, output_log_response );
-	fetch_post_request( "RPC", { rpc: "no_rpc" }, output_log_response );
-	submit_command( "add" );
-}
 }
 
 /////////////////////////////////////////////////////////
@@ -192,8 +171,8 @@ function clear_text_buffer( id ) 	{
 function default_enter_input_event( text_input, text_event ) { // text utility: on enter
 
 	if( text_event.code == "Enter" ) 	{
-		console.log( "Enter, add, clear" );
-		submit_command( "add" );
+		console.log( "Enter, post, clear" );
+//		submit_command( "add" );
 		text_input.value = '';
 	}
 }

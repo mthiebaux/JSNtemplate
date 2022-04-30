@@ -18,6 +18,7 @@ const reader = readline.createInterface(
 	}
 );
 
+var client_queue = [];
 var poll_queue = [];
 
 /////////////////////////////////////////////////////////
@@ -55,9 +56,9 @@ function process_line_input( input )	{
 
 	if( input == "poll" )	{
 
-		for( let req of poll_queue )	{
+		for( let i=0; i< poll_queue.length; i++ )	{
 
-			console.log( req.report );
+			console.log( i + ": " + poll_queue[ i ].report.body.uuid );
 		}
 	}
 	else
