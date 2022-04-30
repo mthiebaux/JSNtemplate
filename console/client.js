@@ -118,13 +118,24 @@ function receive_poll_request( response_obj )	{
 	console.log( response_obj );
 	output_log_response( response_obj );
 
-	if( response_obj.msg == "exit" )	{
+	if( response_obj.status === true )	{
 
-		console.log( "server exit" );
-		return;
+		// handle push from server here
+
+
+
+		submit_poll(); // resubmit long poll
 	}
+	else
+	if( response_obj.status === undefined )	{
 
-	submit_poll();
+		console.log( "server HARD exit." );
+		output_log_response( { msg: "server HARD exit." } );
+	}
+	else	{
+		console.log( "server exit." );
+		output_log_response( { msg: "server exit." } );
+	}
 }
 
 function submit_poll()	{

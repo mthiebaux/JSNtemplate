@@ -41,6 +41,7 @@ function exit_poll_requests()	{
 
 		let output = {
 
+			status: false,
 			report: req.report,
 			msg: "exit"
 		};
@@ -67,6 +68,7 @@ function process_line_input( input )	{
 
 			let output = {
 
+				status: true,
 				report: req.report,
 				msg: "push OK"
 			};
