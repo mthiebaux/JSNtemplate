@@ -1,7 +1,7 @@
 
 import express from 'express';
 
-import requestID from 'express-request-id'; // NOTE: npm install express-request-id
+import requestID from 'express-request-id';
 
 import * as readline from "readline";
 

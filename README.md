@@ -1,6 +1,6 @@
 # JSNtemplate
 
- **Vanilla Node.js Client/Server with RPC, Push**
+ **Vanilla Node.js Client/Server with RPC and Push**
 
 <img src="./images/express_client.png" width="500">
 
@@ -171,7 +171,7 @@ server.post( '/RPC', ( request, response ) => {
 ```
 
 
-## Testing the Server Console
+## Testing the Console Server
 
 ```
 > npm init
