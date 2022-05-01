@@ -171,9 +171,9 @@ server.post( '/RPC', ( request, response ) => {
 ```
 
 
-## Testing the Console Server
+## Testing the Console
 
-The *Console* app requires an extra module to uniquely identify each client:
+The *Console* app requires an extra module to uniquely identify each client with UUID:
 
 ```
 > npm install express-request-id
