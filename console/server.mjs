@@ -25,7 +25,7 @@ var poll_queue = [];
 
 function exit_poll_requests()	{
 
-	console.log( "poll: close" );
+	console.log( "exit_poll_requests" );
 
 	let req = null;
 	while( req = poll_queue.shift() )	{ // pop from front
@@ -38,6 +38,29 @@ function exit_poll_requests()	{
 		};
 
 		console.log( output );
+		req.response.send( output );
+	}
+}
+
+function forward_send_to_all_request( content )	{
+
+	console.log( "forward_send_to_all_request" );
+
+	// parse content
+	// to array
+	// text string
+
+	let req = null;
+	while( req = poll_queue.shift() )	{ // pop from front
+
+		let output = {
+
+			status: true,
+			report: req.report,
+			content: content
+		};
+
+//		console.log( output );
 		req.response.send( output );
 	}
 }
@@ -73,7 +96,7 @@ function process_line_input( input )	{
 		}
 	}
 	else	{
-
+		console.log( "ERR process_line_input: uncaught input key: " + input );
 	}
 }
 
@@ -157,8 +180,7 @@ function get_request_report( request )	{
 		path: request.path,
 		params: request.params,
 		query: request.query,
-		body: request.body ? request.body : null,
-		count: 0
+		body: request.body ? request.body : null
 	} );
 }
 
@@ -173,7 +195,6 @@ server.get(
 				uuid: request.id  // from: express-request-id
 			}
 		};
-
 		client_list.push( { id: output.client.id, uuid: output.client.uuid } );
 
 //		console.log( output );
@@ -202,7 +223,6 @@ server.post(
 				report: get_request_report( request ),
 				error: "poll: client UUID NOT FOUND"
 			};
-
 			console.log( output );
 			response.send( output );
 		}
@@ -213,20 +233,42 @@ server.get(
 	'/who',
 	( request, response ) => {
 
-// console.log( request.body ); // NOT null !!
+		// console.log( request.body ); // GET body NOT null !!
+//		request.body.huh = "GET request.body NOT null !!";
 
 		let client_ids = [];
 		for( let c of client_list )	{
 			client_ids.push( c.id );
 		}
-
 		let output = {
 			report: get_request_report( request ),
 			clients: client_ids
 		};
-
 //		console.log( output );
 		response.send( output );
+	}
+);
+
+server.post(
+	'/send',
+	( request, response ) => {
+
+		let output = {
+			status: true,
+			report: get_request_report( request )
+		};
+		if( request.body )	{
+
+			output.payload = JSON.stringify( request.body );
+
+			forward_send_to_all_request( output.payload );
+		}
+		else	{
+
+			output.error = "send: request.body NOT FOUND";
+		}
+//		console.log( output );
+//		response.send( output ); // duplicate send to self with all
 	}
 );
 

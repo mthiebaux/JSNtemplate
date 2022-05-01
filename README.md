@@ -189,8 +189,7 @@ response: {
         "path": "/who",
         "params": {},
         "query": {},
-        "body": {},
-        "count": 0
+        "body": {}
     },
     "clients": [ 0, 1, 2 ]
 }

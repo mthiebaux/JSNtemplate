@@ -89,8 +89,6 @@ function receive_uuid_request( response_obj )	{
 //	console.log( response_obj );
 	output_log_response( response_obj );
 
-//	client_id = response_obj.id;
-//	client_uuid = response_obj.uuid;
 	client_id = response_obj.client.id;
 	client_uuid = response_obj.client.uuid;
 	submit_poll();
@@ -134,6 +132,29 @@ function submit_who()	{
 
 	fetch_get_request( "who", output_log_response );
 }
+
+function receive_send_request( response_obj )	{
+
+//	console.log( response_obj );
+	output_log_response( response_obj );
+
+	submit_poll(); // CAREFUL: sometimes does not flush server queue
+}
+
+
+function submit_send()	{
+
+	let input_el = document.getElementById( input_buffer_id );
+	fetch_post_request(
+		"send",
+		{
+			to: [ client_id ], // self
+			text: input_el.value
+		},
+		receive_send_request
+	);
+}
+
 
 /*
 function submit_api()	{
@@ -182,7 +203,7 @@ function default_enter_input_event( text_input, text_event ) { // text utility: 
 
 	if( text_event.code == "Enter" ) 	{
 		console.log( "Enter, post, clear" );
-//		submit_command( "add" );
+		submit_send();
 		text_input.value = '';
 	}
 }
