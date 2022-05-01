@@ -8,13 +8,14 @@
 
 * While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
-* An interactive server console, using 'readline', facilitates development and diagnostics of more complex communication patterns. Push notifications are implemented with long polling, and clients are identified publicly by an integer and a UUID, using 'express-request-id'.
+* An interactive server console facilitates development and diagnostics of more complex communication. Push notifications are implemented with long polling, and clients are identified by simple id and UUID, using 'express-request-id'.
 
 
-| template      | dependencies      | size
-| ------------- |:-----------------:|:-------------:|
-| *Vanilla*     | node defaults     | 15 KB |
-| *Express*     | express install   | 1.8 MB |
+| template      | dependencies       | size
+| ------------- |:------------------:|:-------------:|
+| *Vanilla*     | node defaults      | 15 KB |
+| *Express*     | express install    | 1.8 MB |
+| *Console*     | request-id install | 2.1 MB |
 
 
 ## *Vanilla*
