@@ -68,9 +68,8 @@ function process_line_input( input )	{
 				msg: "push OK"
 			};
 
-			console.log( output );
+//			console.log( output );
 			req.response.send( output ); // detect error, remove from client list?
-
 		}
 	}
 	else	{

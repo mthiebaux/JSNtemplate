@@ -44,7 +44,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## *Console*
 
-Experimental app supporting an interactive server console, push notifications, and client to client exchange.
+An experimental app supporting an interactive server console, push notifications, and client to client exchange.
 
 
 ## Installation
@@ -140,10 +140,7 @@ response: {
         "body": {
             "rpc": "rpc_process_command",
             "cmd": "add",
-            "args": [
-                2,
-                2
-            ]
+            "args": [ 2, 2 ]
         },
         "count": 338
     },
@@ -178,8 +175,6 @@ server.post( '/RPC', ( request, response ) => {
 The *Console* app requires an extra module to uniquely identify each client:
 
 ```
-> npm init
-> npm install express
 > npm install express-request-id
 ```
 
@@ -199,3 +194,23 @@ response: {
     "clients": [ 0, 1, 2 ]
 }
 ```
+
+The server console has several default commands to monitor tracked clients and their long poll status, and a dummy push message which clients will report:
+
+```
+> who
+{ id: 0, uuid: 'e39e3735-5827-492d-915b-f39ddeebccc5' }
+{ id: 1, uuid: '3e0630ff-16e1-4db9-a0c6-942e06909046' }
+{ id: 2, uuid: '6ffe4628-252c-4b42-b5ae-2ea7700f72b3' }
+
+> poll
+{ id: 0, uuid: 'e39e3735-5827-492d-915b-f39ddeebccc5' }
+{ id: 2, uuid: '6ffe4628-252c-4b42-b5ae-2ea7700f72b3' }
+
+> push
+>
+```
+
+
+
+
