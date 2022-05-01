@@ -2,6 +2,7 @@
 let input_buffer_id = "";
 let output_log_id = "";
 
+let client_id = -1;
 let client_uuid = null;
 
 function client_app_init( input_id, log_id )	{
@@ -85,10 +86,13 @@ function output_log_response( response_obj )	{
 
 function receive_uuid_request( response_obj )	{
 
-	console.log( response_obj );
+//	console.log( response_obj );
 	output_log_response( response_obj );
 
-	client_uuid = response_obj.uuid;
+//	client_id = response_obj.id;
+//	client_uuid = response_obj.uuid;
+	client_id = response_obj.client.id;
+	client_uuid = response_obj.client.uuid;
 	submit_poll();
 }
 
@@ -120,9 +124,15 @@ function receive_poll_request( response_obj )	{
 function submit_poll()	{
 
 	let poll_request = {
+		id: client_id,
 		uuid: client_uuid
 	};
 	fetch_post_request( "poll", poll_request, receive_poll_request );
+}
+
+function submit_who()	{
+
+	fetch_get_request( "who", output_log_response );
 }
 
 /*

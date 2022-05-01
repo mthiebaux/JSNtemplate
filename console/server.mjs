@@ -18,27 +18,17 @@ const reader = readline.createInterface(
 	}
 );
 
-var client_queue = [];
+var client_list = [];
 var poll_queue = [];
 
 /////////////////////////////////////////////////////////
-
-function push_poll_request( poll_req )	{
-
-	poll_queue.push( poll_req );
-}
-
-function pop_poll_request()	{
-
-	return( poll_queue.shift() );
-}
 
 function exit_poll_requests()	{
 
 	console.log( "poll: close" );
 
 	let req = null;
-	while( req = pop_poll_request() )	{
+	while( req = poll_queue.shift() )	{ // pop from front
 
 		let output = {
 
@@ -54,18 +44,22 @@ function exit_poll_requests()	{
 
 function process_line_input( input )	{
 
+	if( input == "who" )	{
+		for( let c of client_list )	{
+			console.log( c );
+		}
+	}
+	else
 	if( input == "poll" )	{
-
-		for( let i=0; i< poll_queue.length; i++ )	{
-
-			console.log( i + ": " + poll_queue[ i ].report.body.uuid );
+		for( let p of poll_queue )	{
+			console.log( p.report.body );
 		}
 	}
 	else
 	if( input == "push" )	{
 
 		let req = null;
-		while( req = pop_poll_request() )	{
+		while( req = poll_queue.shift() )	{ // pop from front
 
 			let output = {
 
@@ -75,7 +69,8 @@ function process_line_input( input )	{
 			};
 
 			console.log( output );
-			req.response.send( output );
+			req.response.send( output ); // detect error, remove from client list?
+
 		}
 	}
 	else	{
@@ -174,10 +169,15 @@ server.get(
 
 		let output = {
 			report: get_request_report( request ),
-			uuid: request.id  // from: express-request-id
+			client: {
+				id: client_list.length,
+				uuid: request.id  // from: express-request-id
+			}
 		};
 
-		console.log( output );
+		client_list.push( { id: output.client.id, uuid: output.client.uuid } );
+
+//		console.log( output );
 		response.send( output );
 	}
 );
@@ -189,13 +189,13 @@ server.post(
 		if( request.body.uuid )	{
 
 			let report = get_request_report( request );
-			console.log( report );
+//			console.log( report );
 
 			let poll_req = {
 				report: report,
 				response: response
 			}
-			push_poll_request( poll_req );
+			poll_queue.push( poll_req ); // push to back
 		}
 		else	{
 
@@ -209,6 +209,28 @@ server.post(
 		}
 	}
 );
+
+server.get(
+	'/who',
+	( request, response ) => {
+
+// console.log( request.body ); // NOT null !!
+
+		let client_ids = [];
+		for( let c of client_list )	{
+			client_ids.push( c.id );
+		}
+
+		let output = {
+			report: get_request_report( request ),
+			ids: client_ids
+		};
+
+//		console.log( output );
+		response.send( output );
+	}
+);
+
 
 /////////////////////////////////////////////////////////
 

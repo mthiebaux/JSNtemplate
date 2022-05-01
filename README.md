@@ -8,6 +8,8 @@
 
 * While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
+* An interactive server console, using 'readline', facilitates development and diagnostics of more complex communication patterns. Push notifications are implemented with long polling, and clients are identified publicly by an integer and a UUID, using 'express-request-id'.
+
 
 | template      | dependencies      | size
 | ------------- |:-----------------:|:-------------:|
@@ -173,8 +175,27 @@ server.post( '/RPC', ( request, response ) => {
 
 ## Testing the Console Server
 
+The *Console* app requires an extra module to uniquely identify each client:
+
 ```
 > npm init
 > npm install express
 > npm install express-request-id
+```
+
+Multiple client instances can now see other public client names (a small integer id), using the *who* button:
+
+```
+response: {
+    "report": {
+        "method": "GET",
+        "url": "/who",
+        "path": "/who",
+        "params": {},
+        "query": {},
+        "body": {},
+        "count": 0
+    },
+    "ids": [ 0, 1, 2 ]
+}
 ```
