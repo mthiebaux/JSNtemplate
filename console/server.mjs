@@ -42,7 +42,7 @@ function exit_poll_requests()	{
 	}
 }
 
-function forward_send_to_all_request( content )	{
+function forward_send_to_all_request( payload )	{
 
 	console.log( "forward_send_to_all_request" );
 
@@ -57,7 +57,7 @@ function forward_send_to_all_request( content )	{
 
 			status: true,
 			report: req.report,
-			content: content
+			payload: payload
 		};
 
 //		console.log( output );
@@ -259,7 +259,7 @@ server.post(
 		};
 		if( request.body )	{
 
-			output.payload = JSON.stringify( request.body );
+			output.payload = request.body;
 
 			forward_send_to_all_request( output.payload );
 		}

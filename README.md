@@ -195,6 +195,20 @@ response: {
 }
 ```
 
+The *send* button will forward the input buffer contents to ALL:
+
+```
+response: {
+    "status": true,
+    "report": { ... },
+    "payload": {
+        "to": [ 0, 1, 2 ],
+        "text": " -stuff- "
+    }
+}
+
+```
+
 The server console has several commands to track clients and their long poll status, and a dummy push message which clients will report:
 
 ```
