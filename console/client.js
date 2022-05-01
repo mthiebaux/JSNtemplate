@@ -148,7 +148,8 @@ function submit_send()	{
 	fetch_post_request(
 		"send",
 		{
-			to: [ client_id ], // self
+			from: [ client_id ], // self
+//			to: [ client_id ], // "all", "x, y, z"
 			text: input_el.value
 		},
 		receive_send_request
