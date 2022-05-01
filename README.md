@@ -45,7 +45,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## *Console*
 
-An experimental app supporting an interactive server console, push notifications, and client to client exchange.
+An experimental app featuring an interactive server console, push notifications, and client to client exchange.
 
 
 ## Installation
@@ -196,7 +196,7 @@ response: {
 }
 ```
 
-The server console has several commands to monitor tracked clients and their long poll status, and a dummy push message which clients will report:
+The server console has several commands to track clients and their long poll status, and a dummy push message which clients will report:
 
 ```
 > who
