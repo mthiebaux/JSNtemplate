@@ -183,7 +183,7 @@ The *Console* app requires an extra module to uniquely identify each client:
 > npm install express-request-id
 ```
 
-Multiple client instances can now see other public client names (a small integer id), using the *who* button:
+Multiple client instances can now see other public client names (simple integer id), using the *who* button:
 
 ```
 response: {
@@ -196,6 +196,6 @@ response: {
         "body": {},
         "count": 0
     },
-    "ids": [ 0, 1, 2 ]
+    "clients": [ 0, 1, 2 ]
 }
 ```

@@ -223,7 +223,7 @@ server.get(
 
 		let output = {
 			report: get_request_report( request ),
-			ids: client_ids
+			clients: client_ids
 		};
 
 //		console.log( output );
