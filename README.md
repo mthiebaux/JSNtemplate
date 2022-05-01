@@ -195,7 +195,7 @@ response: {
 }
 ```
 
-The server console has several default commands to monitor tracked clients and their long poll status, and a dummy push message which clients will report:
+The server console has several commands to monitor tracked clients and their long poll status, and a dummy push message which clients will report:
 
 ```
 > who
