@@ -146,8 +146,6 @@ function parse_input_payload( gsi )	{ // garbage string input to number array + 
 		).map(
 			s => Number( s )
 		).filter(
-//			n => typeof n === 'number'
-//			n => !isNaN( n )
 			n => isNumeric( n )
 		);
 

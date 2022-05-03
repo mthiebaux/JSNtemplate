@@ -265,9 +265,14 @@ server.get(
 		for( let c of client_list )	{
 			client_ids.push( c.id );
 		}
+		let polling_ids = [];
+		for( let p of poll_queue )	{
+			polling_ids.push( p.report.body.id );
+		}
 		let output = {
 			report: build_request_report( request ),
-			clients: client_ids
+			clients: client_ids,
+			current: polling_ids
 		};
 //		console.log( output );
 		response.send( output );
@@ -297,58 +302,66 @@ server.post(
 
 
 /////////////////////////////////////////////////////////
-/*
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
 
-function garbage_string_to_num_arr( S )	{
+let client_id = -1;
 
-	let to_arr = [];
-	let brk = S.indexOf( ":" );
+function parse_input_payload( gsi )	{ // garbage string input to number array + text
 
-	console.log( "--" );
+	function isNumeric(n) {
+		return( !isNaN(parseFloat(n)) && isFinite(n) );
+	}
+
+	let payload = {
+		from: client_id
+	};
+	let brk = gsi.indexOf( ":" );
+
 	if( brk !== -1 )	{
 
-		let prefix = S.slice( 0, brk );
-
-		to_arr = prefix.split( ',' ).join( ' ' ).split( ' ' ).filter(
+		let to_arr = gsi.slice( 0, brk ).split( ',' ).join( ' ' ).split( ' ' ).filter(
 			s => { let t = s.trim(); return( t.length ); }	// strip out any ''
 		).map(
 			s => Number( s )
 		).filter(
 			n => isNumeric( n )
 		);
-		console.log( to_arr );
 
-		const unique = [ ...new Set( to_arr ) ];
-		console.log( unique );
+		let text = gsi.slice( brk + 1 );
 
-		console.log( S.slice( brk + 1 ) );
+		if( to_arr.length !== 0 )	{
+			payload.to = [ ...new Set( to_arr ) ]; // force unique set
+			payload.text = text;
+		}
+		else	{
+			payload.to = [ client_id ]; // default self bounce
+			payload.text = "bounce: " + text;
+		}
+
 	}
 	else	{
-		console.log( "bounce:" + S );
+		payload.to = [ client_id ]; // default self bounce
+		payload.text = "bounce = " + gsi;
 	}
-	console.log( "-" );
-	return( to_arr );
+
+	console.log( payload );
+	return( payload );
 }
 
 function test_code()	{
 
-	garbage_string_to_num_arr( "" );
-	garbage_string_to_num_arr( "0" );
-	garbage_string_to_num_arr( ":" );
-	garbage_string_to_num_arr( "0:" );
-	garbage_string_to_num_arr( ":0" );
+	parse_input_payload( "" );
+	parse_input_payload( "0" );
+	parse_input_payload( ":" );
+	parse_input_payload( "0:" );
+	parse_input_payload( ":0" );
 
 
-	garbage_string_to_num_arr( " 1 2 3 : " );
-	garbage_string_to_num_arr( " a b c : " );
+	parse_input_payload( " 1 2 3 : " );
+	parse_input_payload( " a b c : " );
 
-	garbage_string_to_num_arr( " 0 a 1 b 2 c : - 34" );
-	garbage_string_to_num_arr( " 2 a 1 b 2 c 3 : - 35 ^" );
+	parse_input_payload( " 0 a 1 b 2 c : - 34" );
+	parse_input_payload( " 2 a 1 b 2 c 3 : - 35 ^" );
 }
-*/
 
 /////////////////////////////////////////////////////////
 
