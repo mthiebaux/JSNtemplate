@@ -196,13 +196,13 @@ response: {
 ```
 
 
-A message can be sent to an array of clients using the ':' to parse the input buffer:
+A message can be sent to an array of clients using ':' to parse the input buffer:
 
 ```
 0 1 2 : - stuff-
 ```
 
-The *send* button will forward the input buffer contents to the selected array of clients:
+The *send* button will forward the input buffer contents to the specified array of clients:
 
 ```
 response: {
