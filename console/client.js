@@ -180,6 +180,11 @@ function submit_send()	{
 
 }
 
+function submit_reconnect()	{
+
+	fetch_get_request( "uuid", receive_uuid_request );
+}
+
 /////////////////////////////////////////////////////////
 
 function default_enter_input_event( text_input, text_event ) {

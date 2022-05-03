@@ -179,6 +179,22 @@ The *Console* app requires an extra module to uniquely identify each client with
 > npm install express-request-id
 ```
 
+The server console has several commands to track clients and their long poll status, and a dummy push message which clients will report:
+
+```
+> who
+{ id: 0, uuid: 'e39e3735-5827-492d-915b-f39ddeebccc5' }
+{ id: 1, uuid: '3e0630ff-16e1-4db9-a0c6-942e06909046' }
+{ id: 2, uuid: '6ffe4628-252c-4b42-b5ae-2ea7700f72b3' }
+
+> poll
+{ id: 0, uuid: 'e39e3735-5827-492d-915b-f39ddeebccc5' }
+{ id: 2, uuid: '6ffe4628-252c-4b42-b5ae-2ea7700f72b3' }
+
+> push
+>
+```
+
 Multiple clients can now see other public client names (simple integer id), using the *who* button:
 
 ```
@@ -196,13 +212,13 @@ response: {
 ```
 
 
-A message can be sent to an array of clients using ':' to parse the input buffer:
+A message can be sent to an array of clients using ':' to parse the input buffer, using the *send* button:
 
 ```
 0 1 2 : - stuff-
 ```
 
-The *send* button will push the input buffer contents to the specified array of clients over the long polling channel, which uses 'status' to detect graceful or hard exits:
+The *send* button will push the input buffer contents to the specified array of clients over the long polling channel, which uses 'status' to detect graceful or hard server termination:
 
 ```
 response: {
@@ -216,22 +232,7 @@ response: {
 }
 ```
 
-The server console has several commands to track clients and their long poll status, and a dummy push message which clients will report:
-
-```
-> who
-{ id: 0, uuid: 'e39e3735-5827-492d-915b-f39ddeebccc5' }
-{ id: 1, uuid: '3e0630ff-16e1-4db9-a0c6-942e06909046' }
-{ id: 2, uuid: '6ffe4628-252c-4b42-b5ae-2ea7700f72b3' }
-
-> poll
-{ id: 0, uuid: 'e39e3735-5827-492d-915b-f39ddeebccc5' }
-{ id: 2, uuid: '6ffe4628-252c-4b42-b5ae-2ea7700f72b3' }
-
-> push
->
-```
-
+If the server is restarted, a client can reconnect using the *conn* button and will receive a new id.
 
 
 
