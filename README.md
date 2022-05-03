@@ -179,7 +179,7 @@ The *Console* app requires an extra module to uniquely identify each client with
 > npm install express-request-id
 ```
 
-Multiple client instances can now see other public client names (simple integer id), using the *who* button:
+Multiple clients can now see other public client names (simple integer id), using the *who* button:
 
 ```
 response: {
@@ -195,7 +195,14 @@ response: {
 }
 ```
 
-The *send* button will forward the input buffer contents to ALL:
+
+A message can be sent to an array of clients using the ':' to parse the input buffer:
+
+```
+0 1 2 : - stuff-
+```
+
+The *send* button will forward the input buffer contents to the selected array of clients:
 
 ```
 response: {
@@ -203,7 +210,7 @@ response: {
     "report": { ... },
     "payload": {
         "from": 1,
-//      "to: [ 0, 1, 2 ],
+		"to: [ 0, 1, 2 ],
         "text": " -stuff- "
     }
 }
