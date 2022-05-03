@@ -42,26 +42,49 @@ function exit_poll_requests()	{
 	}
 }
 
-function forward_send_to_all_request( payload )	{
+function forward_payload( payload )	{
 
-	console.log( "forward_send_to_all_request" );
+	// parse content to array + text string: done by client
+	console.log( "forward_payload" );
 
-	// parse content
-	// to array
-	// text string
+	let poll_req = null;
+	while( poll_req = poll_queue.shift() )	{ // pop all polls from front
 
-	let req = null;
-	while( req = poll_queue.shift() )	{ // pop from front
+/*
+// if in 'to:' list...
+		console.log( "HERE:" );
+//		console.log( poll_req.report );
+		console.log( poll_req.report.body );
+		console.log( poll_req.report.body.id );
 
+		console.log( payload );
+		console.log( payload.to );
+*/
+
+/*
 		let output = {
-
 			status: true,
-			report: req.report,
+			report: poll_req.report,
 			payload: payload
 		};
+*/
+		let output = {
+			status: true,
+			report: "forward <x>"
+		};
+		if( payload.to.includes( poll_req.report.body.id ) )	{
+
+			output.payload = payload;
+		}
+		else	{
+			output.payload = "<stub>";
+
+			// or re-push to poll_queue ?? No, must reshuffle
+		}
 
 //		console.log( output );
-		req.response.send( output );
+		poll_req.response.send( output );
+
 	}
 }
 
@@ -85,10 +108,9 @@ function process_line_input( input )	{
 		while( req = poll_queue.shift() )	{ // pop from front
 
 			let output = {
-
 				status: true,
 				report: req.report,
-				msg: "push OK"
+				payload: "push token"
 			};
 
 //			console.log( output );
@@ -99,6 +121,8 @@ function process_line_input( input )	{
 		console.log( "ERR process_line_input: uncaught input key: " + input );
 	}
 }
+
+/////////////////////////////////////////////////////////
 
 /*
 function console_loop()	{
@@ -171,8 +195,9 @@ function console_loop()	{
 }
 
 /////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 
-function get_request_report( request )	{
+function build_request_report( request )	{
 
 	return( {
 		method: request.method,
@@ -188,16 +213,19 @@ server.get(
 	'/uuid',
 	( request, response ) => {
 
-		let output = {
-			report: get_request_report( request ),
-			client: {
-				id: client_list.length,
-				uuid: request.id  // from: express-request-id
-			}
+		let client = {
+			id: client_list.length,
+			uuid: request.id  // from: express-request-id
 		};
-		client_list.push( { id: output.client.id, uuid: output.client.uuid } );
+		client_list.push( client );
 
-//		console.log( output );
+		let output = {
+			report: build_request_report( request ),
+			client: client
+		};
+		console.log( "REGISTER:" );
+		console.log( output );
+
 		response.send( output );
 	}
 );
@@ -206,21 +234,18 @@ server.post(
 	'/poll',
 	( request, response ) => {
 
-		if( request.body.uuid )	{
+		let report = build_request_report( request );
+		if( request.body.uuid )	{ // check against known uuid list??
 
-			let report = get_request_report( request );
-//			console.log( report );
-
-			let poll_req = {
+			let long_poll_req = {
 				report: report,
 				response: response
 			}
-			poll_queue.push( poll_req ); // push to back
+			poll_queue.push( long_poll_req ); // push to back, send later
 		}
 		else	{
-
 			let output = {
-				report: get_request_report( request ),
+				report: report,
 				error: "poll: client UUID NOT FOUND"
 			};
 			console.log( output );
@@ -241,7 +266,7 @@ server.get(
 			client_ids.push( c.id );
 		}
 		let output = {
-			report: get_request_report( request ),
+			report: build_request_report( request ),
 			clients: client_ids
 		};
 //		console.log( output );
@@ -250,34 +275,86 @@ server.get(
 );
 
 server.post(
-	'/send',
+	'/send', // send to all pollers
 	( request, response ) => {
 
 		let output = {
-			status: true,
-			report: get_request_report( request )
+			report: build_request_report( request )
 		};
 		if( request.body )	{
 
-			output.payload = request.body;
+			forward_payload( request.body );
 
-			forward_send_to_all_request( output.payload );
+			output.msg = "forwarded";
 		}
 		else	{
-
 			output.error = "send: request.body NOT FOUND";
 		}
 //		console.log( output );
-//		response.send( output ); // duplicate send to self with all
+		response.send( output );
 	}
 );
 
 
 /////////////////////////////////////////////////////////
+/*
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
+function garbage_string_to_num_arr( S )	{
+
+	let to_arr = [];
+	let brk = S.indexOf( ":" );
+
+	console.log( "--" );
+	if( brk !== -1 )	{
+
+		let prefix = S.slice( 0, brk );
+
+		to_arr = prefix.split( ',' ).join( ' ' ).split( ' ' ).filter(
+			s => { let t = s.trim(); return( t.length ); }	// strip out any ''
+		).map(
+			s => Number( s )
+		).filter(
+			n => isNumeric( n )
+		);
+		console.log( to_arr );
+
+		const unique = [ ...new Set( to_arr ) ];
+		console.log( unique );
+
+		console.log( S.slice( brk + 1 ) );
+	}
+	else	{
+		console.log( "bounce:" + S );
+	}
+	console.log( "-" );
+	return( to_arr );
+}
+
+function test_code()	{
+
+	garbage_string_to_num_arr( "" );
+	garbage_string_to_num_arr( "0" );
+	garbage_string_to_num_arr( ":" );
+	garbage_string_to_num_arr( "0:" );
+	garbage_string_to_num_arr( ":0" );
+
+
+	garbage_string_to_num_arr( " 1 2 3 : " );
+	garbage_string_to_num_arr( " a b c : " );
+
+	garbage_string_to_num_arr( " 0 a 1 b 2 c : - 34" );
+	garbage_string_to_num_arr( " 2 a 1 b 2 c 3 : - 35 ^" );
+}
+*/
+
+/////////////////////////////////////////////////////////
 
 let port = 8080;
 
-function get_port_input_value()	{
+function get_port_arg_value()	{
 
 	if( process.argv.length > 2 )	{
 		port = process.argv[ 2 ];
@@ -286,7 +363,7 @@ function get_port_input_value()	{
 }
 
 let listener = server.listen(
-	get_port_input_value(),
+	get_port_arg_value(),
 	() => {
 
 		console.log( " ┌───────────────────────────────────┐" );
@@ -296,6 +373,8 @@ let listener = server.listen(
 		console.log( " │       http://localhost:" + port + "       │" );
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
+
+//		test_code();
 
 		console_loop();
 	}

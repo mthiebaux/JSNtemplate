@@ -77,7 +77,6 @@ function fetch_post_request( url, cmd_obj, callback )	{
 function output_log_response( response_obj )	{
 
 	let log_area = document.getElementById( output_log_id );
-
 	log_area.value += "response: ";
 	log_area.value += JSON.stringify( response_obj, null, 4 );
 	log_area.value += '\n';
@@ -91,41 +90,37 @@ function receive_uuid_request( response_obj )	{
 
 	client_id = response_obj.client.id;
 	client_uuid = response_obj.client.uuid;
-	submit_poll();
+
+	submit_long_poll(); // start/initiate long polling loop
 }
 
-function receive_poll_request( response_obj )	{
-
-	console.log( response_obj );
-	output_log_response( response_obj );
-
-	if( response_obj.status === true )	{
-
-		// handle push from server here
-
-
-
-		submit_poll(); // resubmit long poll
-	}
-	else
-	if( response_obj.status === undefined )	{
-
-		console.log( "server HARD exit." );
-		output_log_response( { msg: "server HARD exit." } );
-	}
-	else	{
-		console.log( "server exit." );
-		output_log_response( { msg: "server exit." } );
-	}
-}
-
-function submit_poll()	{
+function submit_long_poll()	{
 
 	let poll_request = {
 		id: client_id,
 		uuid: client_uuid
 	};
-	fetch_post_request( "poll", poll_request, receive_poll_request );
+	fetch_post_request( "poll", poll_request, receive_poll_response );
+}
+
+function receive_poll_response( response_obj )	{
+
+	// general request handler: push, forward, exit
+
+	if( response_obj.status === true )	{
+
+//		output_log_response( response_obj );
+		output_log_response( response_obj.payload );
+
+		submit_long_poll(); // resubmit long poll only on status true
+	}
+	else	{
+		output_log_response( response_obj );
+		if( response_obj.status === undefined )	{
+			console.log( "server HARD exit - no status" );
+			output_log_response( { msg: "server HARD exit - no status" } );
+		}
+	}
 }
 
 function submit_who()	{
@@ -133,80 +128,76 @@ function submit_who()	{
 	fetch_get_request( "who", output_log_response );
 }
 
-function receive_send_request( response_obj )	{
+function parse_input_payload( gsi )	{ // garbage string input to number array + text
 
-//	console.log( response_obj );
-	output_log_response( response_obj );
+	function isNumeric(n) {
+		return( !isNaN(parseFloat(n)) && isFinite(n) );
+	}
 
-	submit_poll(); // CAREFUL: sometimes does not flush server queue
+	let payload = {
+		from: client_id
+	};
+	let brk = gsi.indexOf( ":" );
+
+	if( brk !== -1 )	{
+
+		let to_arr = gsi.slice( 0, brk ).split( ',' ).join( ' ' ).split( ' ' ).filter(
+			s => { let t = s.trim(); return( t.length ); }	// strip out any ''
+		).map(
+			s => Number( s )
+		).filter(
+//			n => typeof n === 'number'
+//			n => !isNaN( n )
+			n => isNumeric( n )
+		);
+
+		let text = gsi.slice( brk + 1 );
+
+		if( to_arr.length !== 0 )	{
+			payload.to = [ ...new Set( to_arr ) ]; // force unique set
+			payload.text = text;
+		}
+		else	{
+			payload.to = [ client_id ]; // default self bounce
+			payload.text = "bounce: " + text;
+		}
+
+	}
+	else	{
+		payload.to = [ client_id ]; // default self bounce
+		payload.text = "bounce = " + gsi;
+	}
+	return( payload );
 }
-
 
 function submit_send()	{
 
-	let input_el = document.getElementById( input_buffer_id );
+	let input_elem = document.getElementById( input_buffer_id );
+
 	fetch_post_request(
 		"send",
-		{
-			from: client_id, // self
-//			to: [ id, ... ], // "all", "x, y, z"
-			text: input_el.value
-		},
-		receive_send_request
+		parse_input_payload( input_elem.value ), // { from, to, text }
+		output_log_response
 	);
+
 }
 
+/////////////////////////////////////////////////////////
 
-/*
-function submit_api()	{
+function default_enter_input_event( text_input, text_event ) {
 
-	let input_el = document.getElementById( input_buffer_id );
-	fetch_get_request( "api" + input_el.value, output_log_response );
-}
-
-function submit_post()	{
-
-	let input_el = document.getElementById( input_buffer_id );
-	fetch_post_request( "test" + input_el.value, {}, output_log_response );
-}
-
-function submit_command( rpc_cmd )	{
-
-	let input_el = document.getElementById( input_buffer_id );
-
-	let arg_arr = input_el.value.split( ',' ).join( ' ' ).split( ' ' ).map(
-		s => Number( s )
-	).filter(
-		s => s	// strip out any null, NaN, etc.
-	);
-	input_el.value = arg_arr.join( ', ' );	// clean up input box for numbers
-
-	let input_obj = {
-
-		rpc: globalThis.rpc_process_command.name,	// from lib.js
-		cmd: rpc_cmd,
-		args: arg_arr
+	// text utility: on enter
+	if( text_event.code == "Enter" ) 	{
+		console.log( "default_enter_input_event" );
+		submit_send();
+//		text_input.value = '';
 	}
-
-	fetch_post_request( "RPC", input_obj, output_log_response );
 }
-*/
 
 function clear_text_buffer( id ) 	{
 
 	let text_el = document.getElementById( id );
 	text_el.value = '';
-}
-
-/////////////////////////////////////////////////////////
-
-function default_enter_input_event( text_input, text_event ) { // text utility: on enter
-
-	if( text_event.code == "Enter" ) 	{
-		console.log( "Enter, post, clear" );
-		submit_send();
-		text_input.value = '';
-	}
 }
 
 
