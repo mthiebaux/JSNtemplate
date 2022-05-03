@@ -202,7 +202,7 @@ A message can be sent to an array of clients using ':' to parse the input buffer
 0 1 2 : - stuff-
 ```
 
-The *send* button will forward the input buffer contents to the specified array of clients:
+The *send* button will push the input buffer contents to the specified array of clients over the long polling channel, which uses 'status' to detect graceful and hard exits:
 
 ```
 response: {
