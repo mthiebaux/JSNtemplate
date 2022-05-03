@@ -207,7 +207,8 @@ response: {
         "query": {},
         "body": {}
     },
-    "clients": [ 0, 1, 2 ]
+    "clients": [ 0, 1, 2 ],
+    "current": [ 0, 2 ]
 }
 ```
 
