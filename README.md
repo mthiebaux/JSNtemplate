@@ -210,7 +210,7 @@ response: {
     "report": { ... },
     "payload": {
         "from": 1,
-		"to: [ 0, 1, 2 ],
+        "to: [ 0, 1, 2 ],
         "text": " -stuff- "
     }
 }
