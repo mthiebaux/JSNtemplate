@@ -16,7 +16,7 @@
 | *Vanilla*     | node defaults       | 15 KB |
 | *Express*     | express install     | 1.8 MB |
 | *Console*     | request-id install  | 2.1 MB |
-| *Tunnel*      | localtunnel install | 3.2 MB |
+| *-tunnel*     | localtunnel install | 3.2 MB |
 
 
 ## *Vanilla*
@@ -48,7 +48,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 An experimental app featuring an interactive server console, push notifications, and client to client exchange.
 
-Adding the 'localtunnel' module should provide a working external URL for remote testing.
+Integrating the 'localtunnel' module should provide a working external URL for remote testing.
 
 ## Installation
 
