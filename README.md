@@ -238,5 +238,17 @@ response: {
 
 If the server is restarted, a client can reconnect using the *conn* button and will receive a new id.
 
+The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080 and a default subdomain set to 'mthiebaux'. When the server is running, the client can be accessed at:
+
+```
+https://mthiebaux.loca.lt
+```
+
+The port and tunnel URL can be changed using commandline arguments as follows:
+
+```
+> node server.mjs 8001 myuniquesubdomain
+```
+
 
 
