@@ -11,11 +11,12 @@
 * An interactive server console facilitates development and diagnostics of more complex communication. Push notifications are implemented with long polling, and clients are identified by simple id and UUID, using 'express-request-id'.
 
 
-| template      | dependencies       | size
-| ------------- |:------------------:|:-------------:|
-| *Vanilla*     | node defaults      | 15 KB |
-| *Express*     | express install    | 1.8 MB |
-| *Console*     | request-id install | 2.1 MB |
+| template      | dependencies        | size
+| ------------- |:-------------------:|:-------------:|
+| *Vanilla*     | node defaults       | 15 KB |
+| *Express*     | express install     | 1.8 MB |
+| *Console*     | request-id install  | 2.1 MB |
+| *Tunnel*      | localtunnel install | 3.2 MB |
 
 
 ## *Vanilla*

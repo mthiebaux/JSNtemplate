@@ -5,6 +5,8 @@ import requestID from 'express-request-id';
 
 import * as readline from "readline";
 
+import localtunnel from 'localtunnel';
+
 
 const server = express();
 server.use( requestID() );
@@ -301,81 +303,19 @@ server.post(
 );
 
 /////////////////////////////////////////////////////////
-/*
-let client_id = -1;
-
-function parse_input_payload( gsi )	{ // garbage string input to number array + text
-
-	function isNumeric(n) {
-		return( !isNaN(parseFloat(n)) && isFinite(n) );
-	}
-
-	let payload = {
-		from: client_id
-	};
-	let brk = gsi.indexOf( ":" );
-
-	if( brk !== -1 )	{
-
-		let to_arr = gsi.slice( 0, brk ).split( ',' ).join( ' ' ).split( ' ' ).filter(
-			s => { let t = s.trim(); return( t.length ); }	// strip out any ''
-		).map(
-			s => Number( s )
-		).filter(
-			n => isNumeric( n )
-		);
-
-		let text = gsi.slice( brk + 1 );
-
-		if( to_arr.length !== 0 )	{
-			payload.to = [ ...new Set( to_arr ) ]; // force unique set
-			payload.text = text;
-		}
-		else	{
-			payload.to = [ client_id ]; // default self bounce
-			payload.text = "bounce: " + text;
-		}
-
-	}
-	else	{
-		payload.to = [ client_id ]; // default self bounce
-		payload.text = "bounce = " + gsi;
-	}
-
-	console.log( payload );
-	return( payload );
-}
-
-function test_code()	{
-
-	parse_input_payload( "" );
-	parse_input_payload( "0" );
-	parse_input_payload( ":" );
-	parse_input_payload( "0:" );
-	parse_input_payload( ":0" );
-
-
-	parse_input_payload( " 1 2 3 : " );
-	parse_input_payload( " a b c : " );
-
-	parse_input_payload( " 0 a 1 b 2 c : - 34" );
-	parse_input_payload( " 2 a 1 b 2 c 3 : - 35 ^" );
-}
-*/
-/////////////////////////////////////////////////////////
 
 let port = 8080;
+if( process.argv.length > 2 )	{
+	port = process.argv[ 2 ];
+}
 
-function get_port_arg_value()	{
-
-	if( process.argv.length > 2 )	{
-		port = process.argv[ 2 ];
-	}
-	return( port );
+let subd = "mthiebaux";
+if( process.argv.length > 3 )	{
+	subd = process.argv[ 3 ];
 }
 
 let listener = server.listen(
-	get_port_arg_value(),
+	port,
 	() => {
 
 		console.log( " ┌───────────────────────────────────┐" );
@@ -386,9 +326,35 @@ let listener = server.listen(
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 
-//		test_code();
-
 		console_loop();
+	}
+);
+
+let tunneller = localtunnel(
+	{
+		port: port,
+		subdomain: subd
+	},
+	( err, tunnel ) => {
+
+		console.log( "port: " + port );
+		console.log( "subd: " + subd );
+
+//		console.log( "" );
+		console.log( " ┌───────────────────────────────────┐" );
+		console.log( " │                                   │" );
+		console.log( " │   Tunnnel Server:                 │" );
+		console.log( " │                                   │" );
+		console.log( " │       " + tunnel.url + "   │" );
+		console.log( " │                                   │" );
+		console.log( " └───────────────────────────────────┘" );
+
+		tunnel.on(
+			'close',
+			() => {
+				console.log( "localtunnel: close" );
+			}
+		);
 	}
 );
 
@@ -413,8 +379,11 @@ process.on(
 
 		exit_poll_requests();
 
-		reader.close();
+		tunneller.close();
+
 		listener.close();
+
+		reader.close();
 	}
 );
 
