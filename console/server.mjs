@@ -46,24 +46,6 @@ function forward_payload( payload )	{
 	let poll_req = null;
 	while( poll_req = poll_queue.shift() )	{ // pop all polls from front
 
-/*
-// if in 'to:' list...
-		console.log( "HERE:" );
-//		console.log( poll_req.report );
-		console.log( poll_req.report.body );
-		console.log( poll_req.report.body.id );
-
-		console.log( payload );
-		console.log( payload.to );
-*/
-
-/*
-		let output = {
-			status: true,
-			report: poll_req.report,
-			payload: payload
-		};
-*/
 		let output = {
 			status: true,
 			report: "forward <x>"
@@ -379,11 +361,12 @@ process.on(
 
 		exit_poll_requests();
 
-		tunneller.close();
-
 		listener.close();
 
+		tunneller.close();
+
 		reader.close();
+
 	}
 );
 

@@ -48,7 +48,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 An experimental app featuring an interactive server console, push notifications, and client to client exchange.
 
-Integrating the 'localtunnel' module should provide a working external URL for remote testing.
+Integrating the 'localtunnel' module provides a working external URL for remote testing.
 
 ## Installation
 
@@ -175,7 +175,7 @@ server.post( '/RPC', ( request, response ) => {
 
 ## Testing the Console
 
-The *Console* app requires extra modules to uniquely identify each client with UUID, and to generate a public URL using localtunnel:
+The *Console* app requires some extra modules, to uniquely identify each client with UUID, and to generate a public URL using localtunnel:
 
 ```
 > npm install express-request-id
