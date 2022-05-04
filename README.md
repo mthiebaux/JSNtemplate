@@ -175,10 +175,11 @@ server.post( '/RPC', ( request, response ) => {
 
 ## Testing the Console
 
-The *Console* app requires an extra module to uniquely identify each client with UUID:
+The *Console* app requires extra modules to uniquely identify each client with UUID, and to generate a public URL using localtunnel:
 
 ```
 > npm install express-request-id
+> npm install localtunnel
 ```
 
 The server console has several commands to track clients and their long poll status, and a dummy push message which clients will report:
