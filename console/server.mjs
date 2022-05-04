@@ -7,18 +7,12 @@ import * as readline from "readline";
 
 import localtunnel from 'localtunnel';
 
+/////////////////////////////////////////////////////////
 
 const server = express();
 server.use( requestID() );
 server.use( express.static( '.' ) );
 server.use( express.json() ); // needed for request.body parser
-
-const reader = readline.createInterface(
-	{
-		input: process.stdin,
-		output: process.stdout
-	}
-);
 
 var client_list = [];
 var poll_queue = [];
@@ -304,6 +298,13 @@ server.post(
 
 /////////////////////////////////////////////////////////
 
+const reader = readline.createInterface(
+	{
+		input: process.stdin,
+		output: process.stdout
+	}
+);
+
 let port = 8080;
 if( process.argv.length > 2 )	{
 	port = process.argv[ 2 ];
@@ -337,10 +338,9 @@ let tunneller = localtunnel(
 	},
 	( err, tunnel ) => {
 
+		console.log( "" );
 		console.log( "port: " + port );
 		console.log( "subd: " + subd );
-
-//		console.log( "" );
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
 		console.log( " │   Tunnnel Server:                 │" );
@@ -358,17 +358,17 @@ let tunneller = localtunnel(
 	}
 );
 
-reader.on(
-	"close",
-	() => {
-		console.log( "interface: close" );
-	}
-);
-
 listener.on(
 	"close",
 	() => {
 		console.log( "listener: close" );
+	}
+);
+
+reader.on(
+	"close",
+	() => {
+		console.log( "reader: close" );
 	}
 );
 

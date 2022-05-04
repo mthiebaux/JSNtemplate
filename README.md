@@ -48,6 +48,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 An experimental app featuring an interactive server console, push notifications, and client to client exchange.
 
+Adding the 'localtunnel' module should provide a working external URL for remote testing.
 
 ## Installation
 
