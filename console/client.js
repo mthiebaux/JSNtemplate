@@ -10,7 +10,7 @@ function client_app_init( input_id, log_id )	{
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
-	fetch_get_request( "uuid", receive_uuid_request );
+	submit_reconnect();
 }
 
 /////////////////////////////////////////////////////////
@@ -94,6 +94,11 @@ function receive_uuid_request( response_obj )	{
 	submit_long_poll(); // start/initiate long polling loop
 }
 
+function submit_reconnect()	{
+
+	fetch_get_request( "uuid", receive_uuid_request );
+}
+
 function submit_long_poll()	{
 
 	let poll_request = {
@@ -105,7 +110,7 @@ function submit_long_poll()	{
 
 function receive_poll_response( response_obj )	{
 
-	// general request handler: push, forward, exit
+// general request handler: push, forward, exit
 
 	if( response_obj.status === true )	{
 
@@ -124,11 +129,10 @@ function receive_poll_response( response_obj )	{
 }
 
 function submit_who()	{
-
 	fetch_get_request( "who", output_log_response );
 }
 
-function parse_input_payload( gsi )	{ // garbage string input to number array + text
+function parse_text_input_payload( gsi )	{ // garbage string input to number array + text
 
 	function isNumeric(n) {
 		return( !isNaN(parseFloat(n)) && isFinite(n) );
@@ -174,15 +178,9 @@ function submit_send()	{
 
 	fetch_post_request(
 		"send",
-		parse_input_payload( input_elem.value ), // { from, to, text }
+		parse_text_input_payload( input_elem.value ), // { from, to, text }
 		output_log_response
 	);
-
-}
-
-function submit_reconnect()	{
-
-	fetch_get_request( "uuid", receive_uuid_request );
 }
 
 /////////////////////////////////////////////////////////

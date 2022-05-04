@@ -77,7 +77,7 @@ function forward_payload( payload )	{
 			output.payload = payload;
 		}
 		else	{
-			output.payload = "<stub>";
+			output.payload = "forward token";
 
 			// or re-push to poll_queue ?? No, must reshuffle
 		}
@@ -300,9 +300,8 @@ server.post(
 	}
 );
 
-
 /////////////////////////////////////////////////////////
-
+/*
 let client_id = -1;
 
 function parse_input_payload( gsi )	{ // garbage string input to number array + text
@@ -362,7 +361,7 @@ function test_code()	{
 	parse_input_payload( " 0 a 1 b 2 c : - 34" );
 	parse_input_payload( " 2 a 1 b 2 c 3 : - 35 ^" );
 }
-
+*/
 /////////////////////////////////////////////////////////
 
 let port = 8080;
