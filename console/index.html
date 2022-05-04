@@ -8,9 +8,22 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 		<script src="./client.js"></script>
-<!--		<script src="./lib.js"></script> -->
-
 		<link rel="stylesheet" href="./style.css">
+
+		<script type="text/javascript">
+
+			window.addEventListener(
+				'load',
+				function() {
+
+					console.log('All assets are loaded');
+
+					client_app_init( "input_buffer", "output_log" );
+
+				}
+			);
+
+		</script>
 
 	</head>
 	<body>
@@ -55,13 +68,5 @@
 			<p>
 			<em> © thiebaux 2022 </em>
 		</div>
-
 	</body>
-
-	<script type="text/javascript">
-
-		client_app_init( "input_buffer", "output_log" );
-
-	</script>
-
 </html>

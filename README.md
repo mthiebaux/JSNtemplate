@@ -213,13 +213,13 @@ response: {
 ```
 
 
-A message can be sent to an array of clients using ':' to parse the input buffer, using the *send* button:
+A message can be sent to an array of clients using ':' to parse the input buffer, and pressing the *send* button:
 
 ```
 0 1 2 : - stuff-
 ```
 
-The *send* button will push the input buffer contents to the specified array of clients over the long polling channel, which uses 'status' to detect graceful or hard server termination:
+The *send* button will push the input buffer contents to the specified array of clients over their long polling channel, which uses 'status' to detect graceful or hard server termination:
 
 ```
 response: {
