@@ -238,6 +238,9 @@ response: {
 
 If the server is restarted, a client can reconnect using the *conn* button and will receive a new id.
 
+
+## *Localtunnel*
+
 The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080 and a default subdomain set to 'mthiebaux'. When the server is running, the client can be accessed at:
 
 ```
