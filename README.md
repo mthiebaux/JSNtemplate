@@ -241,7 +241,7 @@ If the server is restarted, a client can reconnect using the *conn* button and w
 
 ## *Localtunnel*
 
-The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080. When the server is running, the client can access at an auto-generated URL resembling the following:
+The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080. When the server is running, the client can access it directly via a sharable, auto-generated URL resembling the following:
 
 ```
 https://silent-banks-train-209-6-243-197.loca.lt
