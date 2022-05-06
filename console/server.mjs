@@ -60,7 +60,7 @@ function forward_payload( payload )	{
 			// or re-push to poll_queue ?? No, must reshuffle
 		}
 
-//		console.log( output );
+		console.log( output );
 		poll_req.response.send( output );
 
 	}
@@ -315,14 +315,14 @@ let listener = server.listen(
 
 let tunneller = localtunnel(
 	{
-		port: port,
-		subdomain: subd
+		port: port
+//		, subdomain: subd
 	},
 	( err, tunnel ) => {
 
 		console.log( "" );
 		console.log( "port: " + port );
-		console.log( "subd: " + subd );
+//		console.log( "subd: " + subd );
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
 		console.log( " │   Tunnnel Server:                 │" );
@@ -361,9 +361,9 @@ process.on(
 
 		exit_poll_requests();
 
-		listener.close();
-
 		tunneller.close();
+
+		listener.close();
 
 		reader.close();
 

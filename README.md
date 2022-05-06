@@ -241,10 +241,10 @@ If the server is restarted, a client can reconnect using the *conn* button and w
 
 ## *Localtunnel*
 
-The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080 and a default subdomain set to 'mthiebaux'. When the server is running, the client can be accessed at:
+The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080. When the server is running, the client can access at an auto-generated URL resembling the following:
 
 ```
-https://mthiebaux.loca.lt
+https://silent-banks-train-209-6-243-197.loca.lt
 ```
 
 The port and tunnel URL can be changed using commandline arguments as follows:
@@ -252,6 +252,11 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 ```
 > node server.mjs 8001 myuniquesubdomain
 ```
+
+<img src="./images/console_server.png" width="500">
+
+
+
 
 
 
