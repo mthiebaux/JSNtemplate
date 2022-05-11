@@ -27,20 +27,19 @@ function fetch_get_request( url, callback )	{
 			},
 		}
 	).then(
-		function( response ) {
-    		return response.text().then(
-    			function( text ) {
-
-    				callback( JSON.parse( text ) );
-				}
-			)
+		function( result ) {
+			return( result.json() ); // return promise passes to next handler
+  		}
+  	).then(
+  		function( result_obj ) {
+			callback( result_obj );
 		}
-	).catch(
-		err => {
-        	console.error( err );
-        	callback( { error: "fetch_get_request FAILED", url: url } );
-        }
-    );
+  	).catch(
+  		function( error ) {
+  			output_log_error( "can't load json from: " + url );
+        	console.error( error );
+		}
+	);
 }
 
 function fetch_post_request( url, cmd_obj, callback )	{
@@ -56,23 +55,29 @@ function fetch_post_request( url, cmd_obj, callback )	{
 			body: JSON.stringify( cmd_obj ),
 		}
 	).then(
-		function( response ) {
-    		return response.text().then(
-    			function( text ) {
-
-    				callback( JSON.parse( text ) );
-				}
-			)
+		function( result ) {
+			return( result.json() ); // return promise passes to next handler
+  		}
+  	).then(
+  		function( result_obj ) {
+			callback( result_obj );
 		}
-	).catch(
-		err => {
-        	console.error( err );
-        	callback( { error: "fetch_post_request FAILED", url: url } );
-        }
-    );
+  	).catch(
+  		function( error ) {
+  			output_log_error( "can't load json from: " + url );
+        	console.error( error );
+		}
+	);
 }
 
 /////////////////////////////////////////////////////////
+
+function output_log_error( err_str )	{
+
+	let log_area = document.getElementById( output_log_id );
+	log_area.value += "ERROR: " + err_str + '\n';
+	log_area.scrollTop = log_area.scrollHeight;
+}
 
 function output_log_response( response_obj )	{
 
