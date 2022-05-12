@@ -48,16 +48,17 @@ function forward_payload( payload )	{
 
 		let output = {
 			status: true,
-			report: "forward <x>"
+			report: "forward payload"
 		};
 		if( payload.to.includes( poll_req.report.body.id ) )	{
 
 			output.payload = payload;
 		}
 		else	{
-			output.payload = "forward token";
+			output.payload = "forward token"; // non-receivers
 
-			// or re-push to poll_queue ?? No, must reshuffle
+			// or re-push to poll_queue after loop ??
+			// will eliminate forward token stub
 		}
 
 		console.log( output );
@@ -292,9 +293,11 @@ if( process.argv.length > 2 )	{
 	port = process.argv[ 2 ];
 }
 
-let subd = "mthiebaux";
+let tunnel_config = {
+	port: port
+};
 if( process.argv.length > 3 )	{
-	subd = process.argv[ 3 ];
+	tunnel_config.subdomain = process.argv[ 3 ];
 }
 
 let listener = server.listen(
@@ -314,18 +317,19 @@ let listener = server.listen(
 );
 
 let tunneller = localtunnel(
-	{
-		port: port
-//		, subdomain: subd
-	},
+	tunnel_config,
 	( err, tunnel ) => {
 
 		console.log( "" );
-		console.log( "port: " + port );
-//		console.log( "subd: " + subd );
+/*
+		console.log( "port: " + tunnel_config.port );
+		if( tunnel_config.subdomain )	{
+			console.log( "subdomain: " + tunnel_config.subdomain );
+		}
+*/
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
-		console.log( " │   Tunnnel Server:                 │" );
+		console.log( " │   Tunnel Server:                  │" );
 		console.log( " │                                   │" );
 		console.log( " │       " + tunnel.url + "   │" );
 		console.log( " │                                   │" );

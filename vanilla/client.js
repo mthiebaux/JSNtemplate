@@ -96,7 +96,7 @@ function fetch_get_request( url, callback )	{
 		}
   	).catch(
   		function( error ) {
-  			output_log_error( "can't load json from: " + url );
+  			output_log_error( "can't GET payload from: " + url );
         	console.error( error );
 		}
 	);
@@ -124,7 +124,7 @@ function fetch_post_request( url, cmd_obj, callback )	{
 		}
   	).catch(
   		function( error ) {
-  			output_log_error( "can't load json from: " + url );
+  			output_log_error( "can't receive POST payload from: " + url );
         	console.error( error );
 		}
 	);
