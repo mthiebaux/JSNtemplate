@@ -41,38 +41,45 @@ function exit_poll_requests()	{
 function forward_payload( payload )	{
 
 	// parse content to array + text string: done by client
-	console.log( "forward_payload" );
+
+	let skip_queue = [];
 
 	let poll_req = null;
-	while( poll_req = poll_queue.shift() )	{ // pop all polls from front
+	while( poll_req = poll_queue.shift() )	{ // pop all polls from front... Necessary?
 
-		let output = {
-			status: true,
-			report: "forward payload"
-		};
 		if( payload.to.includes( poll_req.report.body.id ) )	{
 
-			output.payload = payload;
+			let output = {
+				status: true,
+				report: "forward payload",
+				payload: payload
+			};
+
+			console.log( output );
+			poll_req.response.send( output );
 		}
 		else	{
-			output.payload = "forward token"; // non-receivers
 
-			// or re-push to poll_queue after loop ??
-			// will eliminate forward token stub
+			skip_queue.push( poll_req );
 		}
-
-		console.log( output );
-		poll_req.response.send( output );
-
 	}
+	poll_queue = skip_queue;
 }
 
 function process_line_input( input )	{
 
 	if( input == "who" )	{
+
+//		console.log( "clients:" );
 		for( let c of client_list )	{
 			console.log( c );
 		}
+/*
+		console.log( "current:" );
+		for( let p of poll_queue )	{
+			console.log( p.report.body );
+		}
+*/
 	}
 	else
 	if( input == "poll" )	{

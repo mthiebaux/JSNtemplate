@@ -1,16 +1,20 @@
 
+let client_index_id = "";
 let input_buffer_id = "";
 let output_log_id = "";
 
 let client_id = -1;
 let client_uuid = null;
 
-function client_app_init( input_id, log_id )	{
+function client_app_init( client_id, input_id, log_id )	{
 
+	client_index_id = client_id;
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
 	submit_reconnect();
+
+//	set_client_index( 100 );
 }
 
 /////////////////////////////////////////////////////////
@@ -72,6 +76,12 @@ function fetch_post_request( url, cmd_obj, callback )	{
 
 /////////////////////////////////////////////////////////
 
+function set_client_index( id )	{
+
+	var id_div = document.getElementById( client_index_id );
+	id_div.innerHTML = id;
+}
+
 function output_log_error( err_str )	{
 
 	let log_area = document.getElementById( output_log_id );
@@ -95,6 +105,8 @@ function receive_uuid_request( response_obj )	{
 
 	client_id = response_obj.client.id;
 	client_uuid = response_obj.client.uuid;
+
+	set_client_index( client_id );
 
 	submit_long_poll(); // start/initiate long polling loop
 }
