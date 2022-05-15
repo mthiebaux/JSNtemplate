@@ -137,7 +137,9 @@ function receive_poll_response( response_obj )	{
 		submit_long_poll(); // resubmit long poll only on status true
 	}
 	else	{
+
 		output_log_response( response_obj );
+
 		if( response_obj.status === undefined )	{
 			console.log( "server HARD exit - no status" );
 			output_log_response( { msg: "server HARD exit - no status" } );

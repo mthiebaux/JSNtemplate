@@ -24,7 +24,7 @@ function exit_poll_requests()	{
 	console.log( "exit_poll_requests" );
 
 	let req = null;
-	while( req = poll_queue.shift() )	{ // pop from front
+	while( req = poll_queue.shift() )	{
 
 		let output = {
 
@@ -45,7 +45,7 @@ function forward_payload( payload )	{
 	let skip_queue = [];
 
 	let poll_req = null;
-	while( poll_req = poll_queue.shift() )	{ // pop all polls from front... Necessary?
+	while( poll_req = poll_queue.shift() )	{
 
 		if( payload.to.includes( poll_req.report.body.id ) )	{
 
@@ -372,11 +372,15 @@ process.on(
 
 		exit_poll_requests();
 
-		tunneller.close();
+		setTimeout( () => {
 
-		listener.close();
+			listener.close();
 
-		reader.close();
+			tunneller.close();
+
+			reader.close();
+
+		}, 2000 );
 
 	}
 );
