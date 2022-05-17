@@ -11,8 +11,8 @@ server.use( requestID() );
 server.use( express.static( '.' ) );
 server.use( express.json() ); // needed for request.body parser
 
-var client_list = [];
-var poll_queue = [];
+let client_list = [];
+let poll_queue = [];
 
 /////////////////////////////////////////////////////////
 

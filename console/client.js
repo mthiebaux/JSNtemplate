@@ -6,6 +6,13 @@ let output_log_id = "";
 let client_id = -1;
 let client_uuid = null;
 
+
+let ping_count = 0;
+let pong_count = 0;
+let ping_mode = true; // start/stop
+
+/////////////////////////////////////////////////////////
+
 function client_app_init( client_id, input_id, log_id )	{
 
 	client_index_id = client_id;
@@ -164,6 +171,117 @@ function submit_long_poll()	{
 	fetch_post_request( "poll", poll_request, receive_poll_response );
 }
 
+/////////////////////////////////////////////////////////
+
+function respond_p2p_message( to, text )	{
+
+	let payload = {
+		id: client_id,
+		uuid: client_uuid,
+		to: [ to ],
+		text: text
+	};
+
+	fetch_post_request(
+		"send",
+		payload, // { id, uuid, to[id], text }
+		output_log_response
+	);
+}
+
+function ping_pong( from, gsi )	{
+
+	if( gsi === "ping" )	{
+
+		ping_count++;
+		console.log( "ping PONG! " + ping_count );
+
+		if( ping_mode )	{
+			setTimeout( () => {
+				respond_p2p_message( from, "pong" );
+			}, 1000 );
+		}
+
+		return( true );
+	}
+	if( gsi === "pong" )	{
+
+		pong_count++;
+		console.log( "pong PING " + pong_count );
+
+		if( ping_mode )	{
+
+			setTimeout( () => {
+				respond_p2p_message( from, "ping" );
+			}, 1000 );
+		}
+
+		return( true );
+	}
+	if( gsi === "stop" )	{
+
+		console.log( "STOP" );
+		ping_mode = false;
+
+		return( true );
+	}
+	if( gsi === "start" )	{
+
+		console.log( "START" );
+		ping_mode = true;
+
+		return( true );
+	}
+
+	return( false );
+}
+
+function process_incoming_poll_response( response )	{
+
+	if( response.report )	{
+
+//	console.log( 1 );
+
+		if( response.payload )	{
+
+//	console.log( 2 );
+
+			if( response.payload.text )	{
+
+//	console.log( 6 );
+
+
+				if( ping_pong( response.payload.from, response.payload.text ) )	{
+
+				}
+				else	{
+					// other message
+
+				}
+
+			}
+			else	{
+
+//	console.log( 20 );
+//				console.log( "PAYLOAD ERR no text from:" + response.payload.from );
+			}
+
+		}
+		else	{
+
+	console.log( 100 );
+
+			console.log( "process_incoming_poll_response ERR no payload:" + response );
+		}
+	}
+	else	{
+
+	console.log( 1000 );
+
+		console.log( "process_incoming_poll_response ERR no report:" + response );
+	}
+}
+
 function receive_poll_response( response_obj )	{
 
 // general request handler: push, forward, exit
@@ -172,6 +290,8 @@ function receive_poll_response( response_obj )	{
 
 		output_log_response( response_obj );
 //		output_log_response( response_obj.payload );
+
+		process_incoming_poll_response( response_obj );
 
 		submit_long_poll(); // resubmit long poll only on status true
 	}
