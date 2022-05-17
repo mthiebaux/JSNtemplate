@@ -239,6 +239,27 @@ response: {
 If the server is restarted, a client can reconnect using the *conn* button and will receive a new id.
 
 
+## *Ping Pong*
+
+A client can initiate a ping pong session with any other clients by issuing a 'ping' message. For example, client 0 issues the following to client 1:
+
+```
+1: ping
+```
+
+Client 1 then responds with a 'pong' message with a 1 second delay, entering into a loop with client 0, until either client tells the other to stop:
+
+```
+1: stop
+```
+
+Once stopped, the client will not join a loop again until it receives a 'start' message:
+
+```
+1: start
+```
+
+
 ## *Localtunnel*
 
 The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080. When the server is running, the client can access it directly via a sharable, auto-generated URL resembling the following:

@@ -191,7 +191,9 @@ function respond_p2p_message( to, text )	{
 
 function ping_pong( from, gsi )	{
 
-	if( gsi === "ping" )	{
+	let token = gsi.trim();
+
+	if( token === "ping" )	{
 
 		ping_count++;
 		console.log( "ping PONG! " + ping_count );
@@ -204,7 +206,7 @@ function ping_pong( from, gsi )	{
 
 		return( true );
 	}
-	if( gsi === "pong" )	{
+	if( token === "pong" )	{
 
 		pong_count++;
 		console.log( "pong PING " + pong_count );
@@ -218,14 +220,14 @@ function ping_pong( from, gsi )	{
 
 		return( true );
 	}
-	if( gsi === "stop" )	{
+	if( token === "stop" )	{
 
 		console.log( "STOP" );
 		ping_mode = false;
 
 		return( true );
 	}
-	if( gsi === "start" )	{
+	if( token === "start" )	{
 
 		console.log( "START" );
 		ping_mode = true;
