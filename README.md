@@ -46,7 +46,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## *Console*
 
-An experimental app featuring an interactive server console, push notifications, and client to client exchange.
+An experimental app featuring an interactive server console, push notifications, and client to client exchange, including ping pong.
 
 Integrating the 'localtunnel' module provides a working external URL for remote testing.
 
@@ -82,7 +82,7 @@ Note that to enable ESM *module import* features, the *Express* server script ha
 
 ## Testing in the Browser
 
-By default, the server opens on port 8080, which can be changed by passing an optional port number:
+By default, the *Express* server opens on port 8080, which can be changed by passing an optional port number:
 
 ```
 > node server.mjs 8001
@@ -128,7 +128,7 @@ response: {
 
 ## Testing RPC
 
-The input text field is set up to add and multiply numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
+The *Express* input text field is set up to add and multiply numbers that you enter. The command and its arguments are sent to the server and executed as an RPC call.
 
 The RPC function response object is written to the output text field, revealing the internals of this client-server exchange. This includes the request report with the body input payload, and the result:
 
