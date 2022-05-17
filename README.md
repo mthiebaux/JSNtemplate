@@ -216,7 +216,7 @@ response: {
 ```
 
 
-A message can be sent to an array of clients using ':' to parse the input buffer, and pressing the *send* button:
+A message can be sent to an array of clients using ':' to parse the input buffer into a list of ids and a text payload, and pressing the *send* button (or Enter key):
 
 ```
 0 1 2 : - stuff-
