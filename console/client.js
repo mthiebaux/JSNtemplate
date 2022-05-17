@@ -12,27 +12,63 @@ function client_app_init( client_id, input_id, log_id )	{
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
-	submit_reconnect();
-
-//	set_client_index( 100 );
+	submit_connect_request();
 }
 
 /////////////////////////////////////////////////////////
 
-function fetch_get_request( url, callback )	{
+function fetch_request( url, fetch_config, callback )	{
 
 	fetch(
 		url,
-		{
-			method: 'GET',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-		}
+		fetch_config
 	).then(
 		function( result ) {
-			return( result.json() ); // return promise passes to next handler
+
+			if( result.status === 200 )	{
+
+				return( result.json() ); // return promise passes to next handler
+			}
+
+			console.log( "RESULT status: " + result.status );
+
+			if( result.status === 404 )	{
+				return(
+					{
+						status: false,
+						payload: "fetch_request: 404 error"
+					}
+				);
+			}
+			if( result.status === 500 )	{
+				return(
+					{
+						status: false,
+						payload: "fetch_request: 500 Internal Server Error"
+					}
+				);
+			}
+			if( result.status === 502 )	{
+				return(
+					{
+						status: false,
+						payload: "fetch_request: 502 Bad Gateway"
+					}
+				);
+			}
+
+			// RESUBMIT
+			if( result.status === 504 )	{
+
+				return( // trigger resubmit
+					{
+						status: true,
+						payload: "fetch_request: 504 timeout resubmit poll"
+					}
+				);
+			}
+
+			console.log( "UNHANDLED status: " + result.status );
   		}
   	).then(
   		function( result_obj ) {
@@ -40,15 +76,30 @@ function fetch_get_request( url, callback )	{
 		}
   	).catch(
   		function( error ) {
-  			output_log_error( "can't GET payload from: " + url );
+  			output_log_error( "fetch_request FAILED: " + url );
         	console.error( error );
 		}
 	);
 }
 
+function fetch_get_request( url, callback )	{
+
+	fetch_request(
+		url,
+		{
+			method: 'GET',
+			headers: {
+				'Accept': 'application/json',
+				'Content-Type': 'application/json'
+			}
+		},
+		callback
+	);
+}
+
 function fetch_post_request( url, cmd_obj, callback )	{
 
-	fetch(
+	fetch_request(
 		url,
 		{
 			method: 'POST',
@@ -57,26 +108,14 @@ function fetch_post_request( url, cmd_obj, callback )	{
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify( cmd_obj ),
-		}
-	).then(
-		function( result ) {
-			return( result.json() ); // return promise passes to next handler
-  		}
-  	).then(
-  		function( result_obj ) {
-			callback( result_obj );
-		}
-  	).catch(
-  		function( error ) {
-  			output_log_error( "can't receive POST payload from: " + url );
-        	console.error( error );
-		}
+		},
+		callback
 	);
 }
 
 /////////////////////////////////////////////////////////
 
-function set_client_index( id )	{
+function display_client_index( id )	{
 
 	var id_div = document.getElementById( client_index_id );
 	id_div.innerHTML = id;
@@ -98,20 +137,20 @@ function output_log_response( response_obj )	{
 	log_area.scrollTop = log_area.scrollHeight;
 }
 
-function receive_uuid_request( response_obj )	{
+function submit_connect_request()	{ // called by 'conn' button
 
-//	console.log( response_obj );
-	output_log_response( response_obj );
+	function receive_uuid_request( response_obj )	{
 
-	client_id = response_obj.client.id;
-	client_uuid = response_obj.client.uuid;
+	//	console.log( response_obj );
+		output_log_response( response_obj );
 
-	set_client_index( client_id );
+		client_id = response_obj.client.id;
+		client_uuid = response_obj.client.uuid;
 
-	submit_long_poll(); // start/initiate long polling loop
-}
+		display_client_index( client_id );
 
-function submit_reconnect()	{
+		submit_long_poll(); // start/initiate long polling loop
+	}
 
 	fetch_get_request( "uuid", receive_uuid_request );
 }
@@ -131,8 +170,8 @@ function receive_poll_response( response_obj )	{
 
 	if( response_obj.status === true )	{
 
-//		output_log_response( response_obj );
-		output_log_response( response_obj.payload );
+		output_log_response( response_obj );
+//		output_log_response( response_obj.payload );
 
 		submit_long_poll(); // resubmit long poll only on status true
 	}
@@ -141,8 +180,9 @@ function receive_poll_response( response_obj )	{
 		output_log_response( response_obj );
 
 		if( response_obj.status === undefined )	{
-			console.log( "server HARD exit - no status" );
-			output_log_response( { msg: "server HARD exit - no status" } );
+			let e = "server HARD error - no status";
+			console.log( e );
+			output_log_response( { msg: e } );
 		}
 	}
 }
@@ -158,7 +198,8 @@ function parse_text_input_payload( gsi )	{ // garbage string input to number arr
 	}
 
 	let payload = {
-		from: client_id
+		id: client_id,
+		uuid: client_uuid
 	};
 	let brk = gsi.indexOf( ":" );
 
@@ -197,7 +238,7 @@ function submit_send()	{
 
 	fetch_post_request(
 		"send",
-		parse_text_input_payload( input_elem.value ), // { from, to, text }
+		parse_text_input_payload( input_elem.value ), // { id, uuid, to[id], text }
 		output_log_response
 	);
 }

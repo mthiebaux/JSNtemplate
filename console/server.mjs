@@ -1,10 +1,7 @@
 
 import express from 'express';
-
 import requestID from 'express-request-id';
-
 import * as readline from "readline";
-
 import localtunnel from 'localtunnel';
 
 /////////////////////////////////////////////////////////
@@ -24,13 +21,13 @@ function exit_poll_requests()	{
 	console.log( "exit_poll_requests" );
 
 	let req = null;
-	while( req = poll_queue.shift() )	{
+	while( req = poll_queue.pop() )	{
 
 		let output = {
 
 			status: false,
 			report: req.report,
-			msg: "exit"
+			msg: "EXIT"
 		};
 
 		console.log( output );
@@ -68,7 +65,7 @@ function forward_payload( payload )	{
 
 function process_line_input( input )	{
 
-	if( input == "who" )	{
+	if( input == "who" || input == "clients" )	{
 
 //		console.log( "clients:" );
 		for( let c of client_list )	{
@@ -82,7 +79,7 @@ function process_line_input( input )	{
 */
 	}
 	else
-	if( input == "poll" )	{
+	if( input == "poll" || input == "current" )	{
 		for( let p of poll_queue )	{
 			console.log( p.report.body );
 		}
@@ -100,11 +97,11 @@ function process_line_input( input )	{
 			};
 
 //			console.log( output );
-			req.response.send( output ); // detect error, remove from client list?
+			req.response.send( output );
 		}
 	}
 	else	{
-		console.log( "ERR process_line_input: uncaught input key: " + input );
+		console.log( "process_line_input ERR: uncaught input key: " + input );
 	}
 }
 
@@ -195,6 +192,81 @@ function build_request_report( request )	{
 	} );
 }
 
+function check_existing_id( Q, id, uuid )	{
+
+	// alert mismatched id/uuid IMPOSTOR! in client_list, poll_queue
+	for( let c of Q )	{
+
+		if( id === c.id )	{
+			if( uuid === c.uuid )	{
+				return( true );
+			}
+			console.log( "check_existing_id UUID IMPOSTOR: " + id );
+			console.log( " current: " + c.uuid );
+			console.log( " request: " + uuid );
+			return( false );
+		}
+		else
+		if( uuid === c.uuid )	{
+			console.log( "check_existing_id ID IMPOSTOR: " + uuid );
+			console.log( " current: " + c.id );
+			console.log( " request: " + id );
+			return( false );
+		}
+	}
+	console.log( "check_existing_id ERR: NOT FOUND" );
+	console.log( " request: " + id + " : " + uuid );
+	return( false );
+}
+
+function check_and_store_poll_request( long_poll_req )	{
+
+	let id = long_poll_req.report.body.id;
+	let uuid = long_poll_req.report.body.uuid;
+
+	if( check_existing_id( client_list, id, uuid ) )	{
+
+		for( let i=0; i< poll_queue.length; i++ )	{
+
+			if( poll_queue[ i ].report.body.id === id )	{
+
+				console.log( "poll REPLACE: " + id + " : " + uuid );
+
+				poll_queue[ i ] = long_poll_req; // replace existing long poll entry
+				return;
+			}
+		}
+		poll_queue.push( long_poll_req ); // push to back
+	}
+	else	{
+
+		console.log( "check_and_store_poll_request ID ERR" );
+	}
+}
+
+function check_and_send_body_payload( body )	{
+
+	console.log( body );
+
+	if( check_existing_id( client_list, body.id, body.uuid ) )	{
+
+		let sanitary_payload = {
+
+			from: body.id,
+			to: body.to,
+			text: body.text
+		}
+
+		forward_payload( sanitary_payload );
+	}
+	else	{
+
+		console.log( "check_and_send_body_payload ID ERR" );
+	}
+}
+
+/////////////////////////////////////////////////////////
+
 server.get(
 	'/uuid',
 	( request, response ) => {
@@ -209,7 +281,7 @@ server.get(
 			report: build_request_report( request ),
 			client: client
 		};
-		console.log( "REGISTER:" );
+		console.log( "REGISTER CLIENT:" );
 		console.log( output );
 
 		response.send( output );
@@ -221,13 +293,18 @@ server.post(
 	( request, response ) => {
 
 		let report = build_request_report( request );
-		if( request.body.uuid )	{ // check against known uuid list??
+
+		if( request.body.uuid )	{
 
 			let long_poll_req = {
 				report: report,
 				response: response
 			}
-			poll_queue.push( long_poll_req ); // push to back, send later
+
+		// check for pre-existing id/uuid and replace
+			check_and_store_poll_request( long_poll_req );
+
+//			poll_queue.push( long_poll_req ); // push to back, send later
 		}
 		else	{
 			let output = {
@@ -243,9 +320,6 @@ server.post(
 server.get(
 	'/who',
 	( request, response ) => {
-
-		// console.log( request.body ); // GET body NOT null !!
-//		request.body.huh = "GET request.body NOT null !!";
 
 		let client_ids = [];
 		for( let c of client_list )	{
@@ -274,7 +348,9 @@ server.post(
 		};
 		if( request.body )	{
 
-			forward_payload( request.body );
+			// forward_payload( request.body );
+
+			check_and_send_body_payload( request.body );
 
 			output.msg = "forwarded";
 		}
@@ -328,17 +404,11 @@ let tunneller = localtunnel(
 	( err, tunnel ) => {
 
 		console.log( "" );
-/*
-		console.log( "port: " + tunnel_config.port );
-		if( tunnel_config.subdomain )	{
-			console.log( "subdomain: " + tunnel_config.subdomain );
-		}
-*/
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
 		console.log( " │   Tunnel Server:                  │" );
 		console.log( " │                                   │" );
-		console.log( " │       " + tunnel.url + "   │" );
+		console.log( " │       " + tunnel.url + "    │" );
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 
@@ -380,7 +450,7 @@ process.on(
 
 			reader.close();
 
-		}, 2000 );
+		}, 1000 );
 
 	}
 );
