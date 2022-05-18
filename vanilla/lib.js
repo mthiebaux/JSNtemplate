@@ -28,5 +28,3 @@ function rpc_process_command( input )	{
 
 	return( output );
 }
-
-// module.exports = { rpc_process_command };

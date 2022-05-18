@@ -191,6 +191,9 @@ function respond_p2p_message( to, text )	{
 
 function ping_pong( from, gsi )	{
 
+  const timeout_ms = 1000;
+//  const timeout_ms = 0;
+
 	let token = gsi.trim();
 
 	if( token === "ping" )	{
@@ -201,7 +204,7 @@ function ping_pong( from, gsi )	{
 		if( ping_mode )	{
 			setTimeout( () => {
 				respond_p2p_message( from, "pong" );
-			}, 1000 );
+			}, timeout_ms );
 		}
 
 		return( true );
@@ -215,7 +218,7 @@ function ping_pong( from, gsi )	{
 
 			setTimeout( () => {
 				respond_p2p_message( from, "ping" );
-			}, 1000 );
+			}, timeout_ms );
 		}
 
 		return( true );

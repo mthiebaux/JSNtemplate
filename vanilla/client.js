@@ -1,4 +1,6 @@
 
+//require( "./lib.js" ); // globalThis.rpc_cmd = function rpc_cmd(){}
+
 let input_buffer_id = "";
 let output_log_id = "";
 
