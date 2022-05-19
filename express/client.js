@@ -1,32 +1,37 @@
 
+import { rpc_process_command } from './lib.mjs';
+
+export {
+	app_init,
+	clear_text_buffer,
+	default_enter_input_event,
+	submit_api,
+	submit_post,
+	submit_command
+};
+
+/////////////////////////////////////////////////////////
+
 let input_buffer_id = "";
 let output_log_id = "";
 
-function client_app_init( input_id, log_id )	{
+function app_init( input_id, log_id )	{
 
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
 // Feature testing:
-if( 0 )	{
-	let result = {};
-	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "add", args: [ 2, 2 ] } );
-	console.log( result );
-	let v = result.value;
-	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "mul", args: [ v, v ] } );
-	console.log( result );
-}
-if( 1 )	{
-	fetch_get_request( "api?a=b&c=d", output_log_response );
-	fetch_get_request( "api/A/B", output_log_response );
-	fetch_get_request( "api/A/B?a=b&c=d", output_log_response );
-}
-if( 0 )	{
-	fetch_post_request( "test/A/B?a=b&c=d", {}, output_log_response );
-	fetch_post_request( "RPC", { rpc: "rpc_stub", cmd: null, args: [] }, output_log_response );
-	fetch_post_request( "RPC", { rpc: "no_rpc" }, output_log_response );
-	submit_command( "add" );
-}
+	if( 1 )	{
+		fetch_get_request( "api?a=b&c=d", output_log_response );
+		fetch_get_request( "api/A/B", output_log_response );
+		fetch_get_request( "api/A/B?a=b&c=d", output_log_response );
+	}
+	if( 0 )	{
+		fetch_post_request( "test/A/B?a=b&c=d", {}, output_log_response );
+		fetch_post_request( "RPC", { rpc: "rpc_stub", cmd: null, args: [] }, output_log_response );
+		fetch_post_request( "RPC", { rpc: "no_rpc" }, output_log_response );
+		submit_command( "add" );
+	}
 }
 
 /////////////////////////////////////////////////////////
@@ -130,7 +135,7 @@ function submit_command( rpc_cmd )	{
 
 	let input_obj = {
 
-		rpc: globalThis.rpc_process_command.name,	// from lib.js
+		rpc:  rpc_process_command.name,	// from lib.js
 		cmd: rpc_cmd,
 		args: arg_arr
 	}
@@ -146,12 +151,10 @@ function clear_text_buffer( id ) 	{
 
 /////////////////////////////////////////////////////////
 
-function default_enter_input_event( text_input, text_event ) { // text utility: on enter
+function default_enter_input_event( text_event ) { // text utility: on enter
 
 	if( text_event.code == "Enter" ) 	{
-		console.log( "Enter, add, clear" );
 		submit_command( "add" );
-		text_input.value = '';
 	}
 }
 

@@ -1,7 +1,6 @@
 
-// lib.js
+export { rpc_process_command };
 
-globalThis.rpc_process_command =
 function rpc_process_command( input )	{
 
 	console.log( input );
@@ -25,10 +24,8 @@ function rpc_process_command( input )	{
 		output.value = prod;
 	}
 	else	{
-		output.value = "rpc_process_command ERR: cmd \'" + input.cmd + "\' not rcognized"
+		output.value = "rpc_process_command ERR: cmd \'" + input.cmd + "\' not found"
 	}
 
 	return( output );
 }
-
-// module.exports = { rpc_process_command };

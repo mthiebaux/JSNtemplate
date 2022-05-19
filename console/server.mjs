@@ -67,16 +67,19 @@ function process_line_input( input )	{
 
 	if( input == "who" || input == "clients" )	{
 
-//		console.log( "clients:" );
-		for( let c of client_list )	{
-			console.log( c );
+		if( 1 )	{
+			for( let c of client_list ) console.log( c );
 		}
-/*
-		console.log( "current:" );
-		for( let p of poll_queue )	{
-			console.log( p.report.body );
+		else	{ // full query
+			console.log( "clients:" );
+			for( let c of client_list )	{
+				console.log( c );
+			}
+			console.log( "current:" );
+			for( let p of poll_queue )	{
+				console.log( p.report.body );
+			}
 		}
-*/
 	}
 	else
 	if( input == "poll" || input == "current" )	{
@@ -108,6 +111,8 @@ function process_line_input( input )	{
 /////////////////////////////////////////////////////////
 
 /*
+// alternative loop without reader.question
+
 function console_loop()	{
 
 	let count = 0;
@@ -301,10 +306,7 @@ server.post(
 				response: response
 			}
 
-		// check for pre-existing id/uuid and replace
 			check_and_store_poll_request( long_poll_req );
-
-//			poll_queue.push( long_poll_req ); // push to back, send later
 		}
 		else	{
 			let output = {
@@ -348,14 +350,33 @@ server.post(
 		};
 		if( request.body )	{
 
-			// forward_payload( request.body );
-
 			check_and_send_body_payload( request.body );
 
 			output.msg = "forwarded";
 		}
 		else	{
 			output.error = "send: request.body NOT FOUND";
+		}
+//		console.log( output );
+		response.send( output );
+	}
+);
+
+server.get(
+	'/push', // push token to all pollers
+	( request, response ) => {
+
+		let output = {
+			report: build_request_report( request )
+		};
+		if( request.body )	{
+
+			process_line_input( "push" );
+
+			output.msg = "pushed";
+		}
+		else	{
+			output.error = "push: request.body NOT FOUND";
 		}
 //		console.log( output );
 		response.send( output );
@@ -389,7 +410,7 @@ let listener = server.listen(
 
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
-		console.log( " │   Express Server:                 │" );
+		console.log( " │   Express Console Server:         │" );
 		console.log( " │                                   │" );
 		console.log( " │       http://localhost:" + port + "       │" );
 		console.log( " │                                   │" );

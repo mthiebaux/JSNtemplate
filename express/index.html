@@ -7,10 +7,36 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<script src="./client.js"></script>
-		<script src="./lib.js"></script>
-
 		<link rel="stylesheet" href="./style.css">
+
+		<script type="module">
+
+			import * as client from './client.js';
+
+			document.getElementById( "input_buffer" ).addEventListener(
+				'keydown', client.default_enter_input_event );
+
+			document.getElementById( "clear_input" ).addEventListener(
+				'click', () => client.clear_text_buffer( "input_buffer" ) );
+
+			document.getElementById( "clear_output" ).addEventListener(
+				'click', () => client.clear_text_buffer( "output_log" ) );
+
+			document.getElementById( "api_button" ).addEventListener(
+				'click', () => client.submit_api( "add" ) );
+
+			document.getElementById( "post_button" ).addEventListener(
+				'click', () => client.submit_post( "mul" ) );
+
+			document.getElementById( "add_button" ).addEventListener(
+				'click', () => client.submit_command( "add" ) );
+
+			document.getElementById( "mul_button" ).addEventListener(
+				'click', () => client.submit_command( "mul" ) );
+
+			client.app_init( "input_buffer", "output_log" );
+
+		</script>
 
 	</head>
 	<body>
@@ -24,29 +50,22 @@
 		<div id="page_contents">
 
 			input:
-			<button onclick="clear_text_buffer( 'input_buffer' )"
-				>clear</button>
+			<button id="clear_input">clear</button>
 			<br>
 			<input id="input_buffer"
 				type="text"
 				placeholder="enter args"
-				onkeydown="default_enter_input_event( this, event )"
 				size="80em"></input>
 			<br>
-			<button onclick="submit_api()" style="background-color:lightgrey"
-				>api</button>
-			<button onclick="submit_post()" style="background-color:lightgrey"
-				>post</button>
+			<button id="api_button" style="background-color:lightgrey">api</button>
+			<button id="post_button" style="background-color:lightgrey">post</button>
 			:
-			<button onclick="submit_command( 'add' )" style="background-color:lightblue"
-				>add</button>
-			<button onclick="submit_command( 'mul' )" style="background-color:lightgrey"
-				>mul</button>
+			<button id="add_button" style="background-color:lightblue">add</button>
+			<button id="mul_button" style="background-color:lightgrey">mul</button>
 			<p>
 
 			output:
-			<button onclick="clear_text_buffer( 'output_log' )"
-				>clear</button>
+			<button id="clear_output">clear</button>
 			<br>
 			<textarea id="output_log" readonly=true rows="20" cols="40"></textarea>
 
@@ -58,11 +77,5 @@
 		</div>
 
 	</body>
-
-	<script type="text/javascript">
-
-		client_app_init( "input_buffer", "output_log" );
-
-	</script>
 
 </html>

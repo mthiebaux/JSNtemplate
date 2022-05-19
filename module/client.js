@@ -136,7 +136,6 @@ function clear_text_buffer( id ) 	{
 function default_enter_input_event( text_event ) { // text utility: on enter
 
 	if( text_event.code == "Enter" ) 	{
-		console.log( "Enter, clear" );
 		submit_command( "add" );
 	}
 }

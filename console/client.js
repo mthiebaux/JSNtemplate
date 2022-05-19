@@ -1,6 +1,19 @@
 
+export {
+	app_init,
+	clear_text_buffer,
+	default_enter_input_event,
+	submit_connect_request,
+	submit_push,
+	submit_who,
+	submit_send
+};
+
+/////////////////////////////////////////////////////////
+
 let client_index_id = "";
 let input_buffer_id = "";
+let output_buffer_id = "";
 let output_log_id = "";
 
 let client_id = -1;
@@ -13,13 +26,14 @@ let ping_mode = true; // start/stop
 
 /////////////////////////////////////////////////////////
 
-function client_app_init( client_id, input_id, log_id )	{
+function app_init( client_id, input_id, output_id, log_id )	{
 
 	client_index_id = client_id;
 	input_buffer_id = input_id;
+	output_buffer_id = output_id;
 	output_log_id = log_id;
 
-	submit_connect_request();
+	submit_connect_request(); // refreshes id and uuid
 }
 
 /////////////////////////////////////////////////////////
@@ -128,6 +142,12 @@ function display_client_index( id )	{
 	id_div.innerHTML = id;
 }
 
+function output_text_message( msg_str )	{
+
+	let msg_area = document.getElementById( output_buffer_id );
+	msg_area.value = msg_str;
+}
+
 function output_log_error( err_str )	{
 
 	let log_area = document.getElementById( output_log_id );
@@ -191,20 +211,20 @@ function respond_p2p_message( to, text )	{
 
 function ping_pong( from, gsi )	{
 
-  const timeout_ms = 1000;
-//  const timeout_ms = 0;
+	const pong_ping_timeout_ms = 1000;
+//	const pong_ping_timeout_ms = 1;
 
 	let token = gsi.trim();
 
 	if( token === "ping" )	{
 
 		ping_count++;
-		console.log( "ping PONG! " + ping_count );
+		output_text_message( "pingpong[ " + ping_count + ", " + pong_count + " ]" );
 
 		if( ping_mode )	{
 			setTimeout( () => {
 				respond_p2p_message( from, "pong" );
-			}, timeout_ms );
+			}, 1 );
 		}
 
 		return( true );
@@ -212,13 +232,13 @@ function ping_pong( from, gsi )	{
 	if( token === "pong" )	{
 
 		pong_count++;
-		console.log( "pong PING " + pong_count );
+		output_text_message( "pingpong[ " + ping_count + ", " + pong_count + " ]" );
 
 		if( ping_mode )	{
 
 			setTimeout( () => {
 				respond_p2p_message( from, "ping" );
-			}, timeout_ms );
+			}, pong_ping_timeout_ms );
 		}
 
 		return( true );
@@ -262,6 +282,8 @@ function process_incoming_poll_response( response )	{
 				else	{
 					// other message
 
+					console.log( "text:" + response.payload.text );
+					output_text_message( response.payload.text );
 				}
 
 			}
@@ -313,7 +335,13 @@ function receive_poll_response( response_obj )	{
 }
 
 function submit_who()	{
+
 	fetch_get_request( "who", output_log_response );
+}
+
+function submit_push()	{
+
+	fetch_get_request( "push", output_log_response );
 }
 
 function parse_text_input_payload( gsi )	{ // garbage string input to number array + text
@@ -370,13 +398,12 @@ function submit_send()	{
 
 /////////////////////////////////////////////////////////
 
-function default_enter_input_event( text_input, text_event ) {
+function default_enter_input_event( text_event ) {
 
 	// text utility: on enter
 	if( text_event.code == "Enter" ) 	{
-		console.log( "default_enter_input_event" );
+		console.log( "default_enter_input_event: send" );
 		submit_send();
-//		text_input.value = '';
 	}
 }
 

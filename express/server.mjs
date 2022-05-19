@@ -2,12 +2,16 @@
 import express from 'express';
 import fs from "fs";
 
-import {} from './lib.js';  // globalThis.rpc_cmd = function rpc_cmd(){}
+import { rpc_process_command } from './lib.mjs';
+
+
+let rpc_cmd_map = {};
+rpc_cmd_map.rpc_process_command = rpc_process_command;
+
 
 const server = express();
 server.use( express.static( '.' ) );
 server.use( express.json() ); // needed for request.body parser
-//server.use( express.urlencoded( { extended: true } ) ); // for ??
 
 let port = 8080;
 
@@ -78,8 +82,8 @@ server.post(
 			report: get_request_report( request )
 		};
 
-		if( typeof globalThis[ request.body.rpc ] === "function" )	{
-			output.result = globalThis[ request.body.rpc ]( request.body ); // from lib.js
+		if( typeof rpc_cmd_map[ request.body.rpc ] === "function" )	{
+			output.result = rpc_cmd_map[ request.body.rpc ]( request.body ); // from lib.js
 		}
 		else	{
 			let msg = "RPC: function \'" + request.body.rpc + "\' NOT FOUND";

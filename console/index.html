@@ -7,18 +7,39 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-		<script src="./client.js"></script>
 		<link rel="stylesheet" href="./style.css">
 
-		<script type="text/javascript">
+		<script type="module">
+
+			import * as client from './client.js';
 
 			window.addEventListener(
 				'load',
 				function() {
 
-					console.log('All assets are loaded');
+					document.getElementById( "input_buffer" ).addEventListener(
+						'keydown', client.default_enter_input_event );
 
-					client_app_init( "client_index", "input_buffer", "output_log" );
+					document.getElementById( "clear_input" ).addEventListener(
+						'click', () => client.clear_text_buffer( "input_buffer" ) );
+
+					document.getElementById( "clear_output" ).addEventListener(
+						'click', () => client.clear_text_buffer( "output_log" ) );
+
+					document.getElementById( "conn_button" ).addEventListener(
+						'click', client.submit_connect_request );
+
+					document.getElementById( "who_button" ).addEventListener(
+						'click', client.submit_who );
+
+					document.getElementById( "send_button" ).addEventListener(
+						'click', client.submit_send );
+
+					document.getElementById( "push_button" ).addEventListener(
+						'click', client.submit_push );
+
+					client.app_init( "client_index", "input_buffer", "output_buffer", "output_log" );
+
 				}
 			);
 
@@ -34,30 +55,29 @@
 		<div id="page_contents">
 
 			input:
-			<button onclick="clear_text_buffer( 'input_buffer' )"
-				>clear</button>
+			<button id="clear_input">clear</button>
 			<br>
 			<input id="input_buffer"
 				type="text"
 				placeholder="enter args"
-				onkeydown="default_enter_input_event( this, event )"
 				size="80em"></input>
-
 			<br>
-			<button onclick="submit_connect_request()"
-				>conn</button>
-			<button onclick="submit_who()" style="background-color:lightgrey"
-				>who</button>
+			<button id="conn_button">conn</button>
+			<button id="who_button" style="background-color:lightgrey">who</button>
 			:
-			<button onclick="submit_send()" style="background-color:lightblue"
-				>send</button>
+			<button id="send_button" style="background-color:lightblue">send</button>
+			<button id="push_button">push</button>
 			<p>
 
 			output:
-			<button onclick="clear_text_buffer( 'output_log' )"
-				>clear</button>
 			<br>
-			<textarea id="output_log" readonly=true rows="20" cols="40"></textarea>
+			<textarea id="output_buffer" readonly=true rows="3" cols="40"></textarea>
+			<br>
+
+			log:
+			<button id="clear_output">clear</button>
+			<br>
+			<textarea id="output_log" readonly=true rows="12" cols="40"></textarea>
 
 		</div>
 

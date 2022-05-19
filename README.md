@@ -45,7 +45,7 @@ The example GET/POST handlers in server.mjs demonstrate parameter passing via tr
 | Query string  | /api?arg1=1&arg2=2 | query: { arg1: 1, arg1: 2 }  |
 | URL params    | /api/v1/v2         | params: { arg1: 'v1', arg2: 'v2' }  |
 
-A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL. This is the method used to implement the RPC call.
+A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL.
 
 
 ## *Console*
@@ -153,16 +153,18 @@ response: {
 }
 ```
 
-The RPC handler simply pulls the function name from the POST request body, checks that it exists as a function in the globalThis object, executes it, and adds its return value to the output object:
+The RPC handler simply pulls the function name from the POST request body, checks that it exists as a function, executes it, and adds its return value to the output object:
 
 ```
-import {} from './lib.js'; // globalThis.rpc_cmd = function rpc_cmd(){}
+import { rpc_process_command } from './lib.mjs';
+let rpc_cmd_map = {};
+rpc_cmd_map.rpc_process_command = rpc_process_command;
 
 server.post( '/RPC', ( request, response ) => {
 
     let output = { report: get_request_report( request ) };
-    if( typeof globalThis[ request.body.rpc ] === "function" )	{
-        output.result = globalThis[ request.body.rpc ]( request.body );
+    if( typeof rpc_cmd_map[ request.body.rpc ] === "function" )	{
+        output.result = rpc_cmd_map[ request.body.rpc ]( request.body );
     }
     else	{
         let msg = "RPC: function \'" + request.body.rpc + "\' NOT FOUND";
@@ -247,7 +249,7 @@ A client can initiate a ping pong session with any other clients by issuing a 'p
 1: ping
 ```
 
-Client 1 then responds with a 'pong' message with a 1 second delay, entering into a loop with client 0, until either client tells the other to stop:
+Client 1 automatically responds with a 'pong' message, entering into a loop with client 0 (with a 1 second delay), until either client tells the other to stop:
 
 ```
 1: stop

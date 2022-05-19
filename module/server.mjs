@@ -11,7 +11,7 @@ let rpc_cmd_map = {};
 //rpc_cmd_map[ rpc_process_command.name ] = rpc_process_command;
 rpc_cmd_map.rpc_process_command = rpc_process_command;
 
-test = rpc_cmd_map[ rpc_process_command.name ]( { contents: "RPC server", cmd: "add", args: [ 6, 7 ] } );
+let test = rpc_cmd_map[ rpc_process_command.name ]( { contents: "RPC server", cmd: "add", args: [ 6, 7 ] } );
 console.log( test );
 
 const port = 8080;
@@ -120,7 +120,7 @@ server.listen(
 	() => {
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
-		console.log( " │   Vanilla Server:                 │" );
+		console.log( " │   Module Server:                  │" );
 		console.log( " │                                   │" );
 		console.log( " │       http://localhost:" + port + "       │" );
 		console.log( " │                                   │" );
