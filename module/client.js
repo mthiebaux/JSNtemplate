@@ -1,79 +1,33 @@
 
+import { rpc_process_command } from './lib.mjs';
+
+export { app_init, clear_text_buffer, default_enter_input_event, submit_command };
+
+/////////////////////////////////////////////////////////
+
 let input_buffer_id = "";
 let output_log_id = "";
 
-function client_app_init( input_id, log_id )	{
+function app_init( input_id, log_id )	{
 
 	input_buffer_id = input_id;
 	output_log_id = log_id;
 
 // Feature testing:
 
+	let test = {};
+	test = rpc_process_command( { contents: "RPC client", cmd: "add", args: [ 4, 5 ] } );
+	console.log( test );
+
 	fetch_get_request( "data.json", output_log_response );
 
-	let test = {};
-	test = rpc_process_command( { contents: "RPC client" } );
-	console.log( test );
-	test = globalThis.rpc_process_command( { contents: "RPC client globalThis" } );
-	console.log( test );
-
-	let result = {};
-	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "add", args: [ 2, 2 ] } );
-	console.log( result );
-	let v = result.value;
-	result = globalThis[ globalThis.rpc_process_command.name ]( { cmd: "mul", args: [ v, v ] } );
-	console.log( result );
-
 	fetch_post_request( "test", {}, output_log_response );
+
+	fetch_post_request( "RPC", { rpc: rpc_process_command.name, cmd: "mul", args: [ 4, 5 ] }, output_log_response );
 
 }
 
 /////////////////////////////////////////////////////////
-
-/*
-// Old School: jQuery.ajax, XMLHttpRequest
-
-function ajax_post_request( url, cmd_obj, callback )	{
-
-	var ajax_config = {
-		url: url,
-		type: 'POST',
-		datatype: 'JSON',
-		data: JSON.stringify( cmd_obj ),
-		contentType: "application/json",
-		success: function ( result ) {
-
-			console.log( result );
-		},
-		error: function( jqXHR, textStatus, errorThrown )	{
-			console.log( "ERR ajax_rpc: " + url + " FAILED" );
-		}
-	};
-
-	$.ajax( ajax_config );
-}
-
-function http_post_request( url, cmd_obj, callback )	{
-
-	let xhr = new XMLHttpRequest(); // deprecated
-	let async = true;
-	xhr.open( 'POST', url, async );
-
-	xhr.onload = function () {
-
-		if( this.status === 200 ) {
-
-			callback( JSON.parse( xhr.responseText ) );
-		}
-		else {
-
-			console.log( "http_post_request ERR: " + this.status );
-		}
-	}
-
-	xhr.send( JSON.stringify( cmd_obj ) );
-}
-*/
 
 function fetch_get_request( url, callback )	{
 
@@ -163,12 +117,11 @@ function submit_command( rpc_cmd )	{
 
 	let input_req = {
 
-		rpc: globalThis.rpc_process_command.name,
+		rpc: rpc_process_command.name,
 		cmd: rpc_cmd,
 		args: arg_arr
 	}
 
-//	http_post_request( "RPC", input_req, output_log_response );
 	fetch_post_request( "RPC", input_req, output_log_response );
 }
 
@@ -180,13 +133,10 @@ function clear_text_buffer( id ) 	{
 
 /////////////////////////////////////////////////////////
 
-function default_enter_input_event( text_input, text_event ) { // text utility: on enter
+function default_enter_input_event( text_event ) { // text utility: on enter
 
 	if( text_event.code == "Enter" ) 	{
 		console.log( "Enter, clear" );
 		submit_command( "add" );
-		text_input.value = '';
 	}
 }
-
-

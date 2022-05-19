@@ -1,10 +1,18 @@
 
-const http = require( "http" );
-const fs = require( "fs" );
-const path = require( "path" );
+import http from 'http';
+import fs from "fs";
+import path from "path";
 
-require( "./lib.js" ); // globalThis.rpc_cmd = function rpc_cmd(){}
+//import { rpc_process_command } from './lib.js';
+import { rpc_process_command } from './lib.mjs';
 
+let rpc_cmd_map = {};
+
+//rpc_cmd_map[ rpc_process_command.name ] = rpc_process_command;
+rpc_cmd_map.rpc_process_command = rpc_process_command;
+
+test = rpc_cmd_map[ rpc_process_command.name ]( { contents: "RPC server", cmd: "add", args: [ 6, 7 ] } );
+console.log( test );
 
 const port = 8080;
 
@@ -37,7 +45,8 @@ const server = http.createServer(
 				const content_type = {
 					".html":	{ 'Content-Type': 'text/html' },
 					".json":	{ 'Content-Type': 'application/json' },
-					".js":		{ 'Content-Type': 'application/javascript' }
+					".js":		{ 'Content-Type': 'application/javascript' },
+					".mjs":		{ 'Content-Type': 'application/javascript' }
 				};
 
 				try {
@@ -84,8 +93,8 @@ const server = http.createServer(
 
 					if( request.url === "/RPC" )	{
 
-						if( typeof globalThis[ body_obj.rpc ] === "function" )	{
-							output.result = globalThis[ body_obj.rpc ]( body_obj ); // from lib.js
+						if( typeof rpc_cmd_map[ body_obj.rpc ] === "function" )	{
+							output.result = rpc_cmd_map[ body_obj.rpc ]( body_obj ); // from lib.js/mjs
 						}
 						else	{
 							let msg = "RPC: function \'" + body_obj.rpc + "\' NOT FOUND";

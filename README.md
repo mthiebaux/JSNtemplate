@@ -13,7 +13,8 @@
 
 | template      | dependencies        | size
 | ------------- |:-------------------:|:-------------:|
-| *Vanilla*     | node defaults       | 15 KB |
+| *Vanilla*     | node defaults       | 9 KB |
+| *Module*      | node defaults       | 15 KB |
 | *Express*     | express install     | 1.8 MB |
 | *Console*     | request-id install  | 2.1 MB |
 | *-tunnel*     | localtunnel install | 3.2 MB |
@@ -29,6 +30,9 @@ More specifically, they illustrate what is really happening behind the scenes wh
 
 There are no packages required other than what Node.js includes by default. One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
 
+## *Module*
+
+Converting to strict ESM module specification for import/export, scripts have been named with the *.mjs* extension.
 
 ## *Express*
 
@@ -49,6 +53,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 An experimental app featuring an interactive server console, push notifications, and client to client exchange, including ping pong.
 
 Integrating the 'localtunnel' module provides a working external URL for remote testing.
+
 
 ## Installation
 
@@ -71,11 +76,6 @@ If they are not already in your directory path, you can initialize node with the
 ```
 > npm init
 > npm install express
-```
-
-Note that to enable ESM *module import* features, the *Express* server script has been named with the *.mjs* extension:
-
-```
 > node server.mjs
 ```
 
