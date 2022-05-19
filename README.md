@@ -238,7 +238,7 @@ response: {
 }
 ```
 
-If the server is restarted, a client can reconnect using the *conn* button and will receive a new id.
+If the server is restarted, a client can reconnect using the *conn* button and will receive a new id. The client's *push* button will submit a request to the server to push a token to all current clients, updating the long poll queue.
 
 
 ## *Ping Pong*
