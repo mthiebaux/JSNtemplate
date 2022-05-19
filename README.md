@@ -14,8 +14,8 @@
 | template      | dependencies        | size
 | ------------- |:-------------------:|:-------------:|
 | *Vanilla*     | node defaults       | 9 KB |
-| *Module*      | node defaults       | 15 KB |
-| *Express*     | express install     | 1.8 MB |
+| *Module*      | node defaults       | 9 KB |
+| *Express*     | express install     | 1.9 MB |
 | *Console*     | request-id install  | 2.1 MB |
 | *-tunnel*     | localtunnel install | 3.2 MB |
 

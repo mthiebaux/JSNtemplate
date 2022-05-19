@@ -246,6 +246,8 @@ function ping_pong( from, gsi )	{
 	if( token === "stop" )	{
 
 		console.log( "STOP" );
+		output_text_message( "pingpong STOP" );
+
 		ping_mode = false;
 
 		return( true );
@@ -253,6 +255,7 @@ function ping_pong( from, gsi )	{
 	if( token === "start" )	{
 
 		console.log( "START" );
+		output_text_message( "pingpong START" );
 		ping_mode = true;
 
 		return( true );
@@ -283,7 +286,7 @@ function process_incoming_poll_response( response )	{
 					// other message
 
 					console.log( "text:" + response.payload.text );
-					output_text_message( response.payload.text );
+					output_text_message( "[ " + response.payload.from + " ]" + response.payload.text );
 				}
 
 			}
