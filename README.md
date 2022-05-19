@@ -36,9 +36,9 @@ Converting to strict ESM module specification for import/export, scripts have be
 
 ## *Express*
 
-As the name suggests, the *Express* app imports the 'express' module which brings with it a LOT of essential functionality, like 'fs' for reading and writing files.
+As the name suggests, the *Express* app imports the 'express' module which brings with it a LOT of essential functionality, like automatic URL query parsing.
 
-The example GET handlers in server.mjs demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
+The example GET/POST handlers in server.mjs demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
 | param type    | example query      | parsed request inputs
 | ------------- |:------------------:|:----------------------------:|
