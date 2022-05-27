@@ -83,7 +83,7 @@ server.get(
 		let output = {
 			report: report,
 			portal: {
-				wsurl: "ws://localhost:" + port,
+				wslocal: "ws://localhost:" + port,
 				wstunnel: ws_tunnel,
 				wss: wss_tunnel
 			},

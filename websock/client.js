@@ -74,7 +74,7 @@ function output_log_response( response_obj )	{
 
 function create_socket( portal, uuid )	{
 
-//	const wsclient = new WebSocket( portal.wsurl );
+//	const wsclient = new WebSocket( portal.wslocal );
 	const wsclient = new WebSocket( portal.wstunnel );
 //	const wsclient = new WebSocket( portal.wss );
 

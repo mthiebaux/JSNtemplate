@@ -289,7 +289,11 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 <img src="./images/console_server.png" width="500">
 
 
+## Testing WebSock
 
+* The *WebSock* channel is kept open against timeouts with hidden POKE and ALIVE tokens.
+
+* The *who* button logs the client list, and the *poke* button logs client 'alive' tokens.
 
 
 
