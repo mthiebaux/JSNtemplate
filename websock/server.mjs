@@ -150,6 +150,10 @@ wsserver.on(
 						console.log( data_obj );
 					}
 					else
+					if( tok === "POKED" )	{
+						// sustain connection
+					}
+					else
 					if( tok === "alive" )	{
 
 						console.log( "alive: " + data_obj.client.id );
@@ -205,10 +209,6 @@ wsserver.on(
 
 						socket.send( payload_str );
 
-					}
-					else
-					if( tok === "POKED" )	{
-						// sustain connection
 					}
 					else	{
 
@@ -294,19 +294,19 @@ let tunneller = localtunnel(
 		console.log( " │   Tunnel Server:                  │" );
 		console.log( " │                                   │" );
 		console.log( " │       " + tunnel.url.replace( "https", "http" ) );
-		console.log( " │                                   │" );
-		console.log( " │       " + tunnel.url );
+//		console.log( " │                                   │" );
+//		console.log( " │       " + tunnel.url );
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 
-/*
+///*
 		tunnel.on(
 			'request',
 			( info ) => {
 				console.log( "localtunnel request: " + JSON.stringify( info, null, 2 ) );
 			}
 		);
-*/
+//*/
 		tunnel.on(
 			'error',
 			( err ) => {

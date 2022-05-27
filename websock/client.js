@@ -14,16 +14,18 @@ let client_info = {
 let client_page_index_id = "";
 let client_poke_button_id = "";
 let client_who_button_id = "";
+let client_output_log_id = "";
 
 let client_socket = null;
 
 /////////////////////////////////////////////////////////
 
-function app_init( page_client_id, poke_button_id, who_button_id )	{
+function app_init( page_client_id, poke_button_id, who_button_id, output_log_id )	{
 
 	client_page_index_id = page_client_id;
 	client_poke_button_id = poke_button_id;
 	client_who_button_id = who_button_id;
+	client_output_log_id = output_log_id;
 
 	fetch_get_request( "connect", connect_request_handler );
 }
@@ -42,8 +44,6 @@ function who_server()	{
 
 function poke_server()	{
 
-//	console.log( "poke button." );
-
 	if( client_socket )	{
 
 		let poke = {
@@ -61,6 +61,15 @@ function display_client_index( id )	{
 
 	var id_div = document.getElementById( client_page_index_id );
 	id_div.innerHTML = id;
+}
+
+function output_log_response( response_obj )	{
+
+	let log_area = document.getElementById( client_output_log_id );
+	log_area.value += "response: ";
+	log_area.value += JSON.stringify( response_obj, null, 4 );
+	log_area.value += '\n';
+	log_area.scrollTop = log_area.scrollHeight;
 }
 
 function create_socket( portal, uuid )	{
@@ -103,7 +112,7 @@ function create_socket( portal, uuid )	{
 
 					wsclient.send( payload_str );
 
-					if( 1 )	{
+					if( 0 )	{
 //						let HEARTBEAT = 10000;  // 10 seconds
 						let HEARTBEAT = 120000; // outside of 60 sec timeout
 						setInterval( () =>	{
@@ -112,16 +121,6 @@ function create_socket( portal, uuid )	{
 
 						}, HEARTBEAT );
 					}
-
-				}
-				else
-				if( tok === "poke" )	{
-
-					let poked = {
-						token: "alive",
-						client: client_info
-					};
-					wsclient.send( JSON.stringify( poked ) );
 
 				}
 				else
@@ -137,15 +136,29 @@ function create_socket( portal, uuid )	{
 
 				}
 				else
+				if( tok === "poke" )	{
+
+					let poked = {
+						token: "alive",
+						client: client_info
+					};
+					wsclient.send( JSON.stringify( poked ) );
+
+				}
+				else
 				if( tok === "clients" )	{
 
 					console.log( "clients: " + data_obj.clients );
+
+					output_log_response( data_obj );
 
 				}
 				else
 				if( tok === "alive" )	{
 
 					console.log( "alive: " + data_obj.client );
+
+					output_log_response( data_obj );
 
 				}
 				else	{
@@ -238,7 +251,7 @@ function fetch_request( url, fetch_config, callback )	{
 		}
   	).catch(
   		function( error ) {
-  			output_log_error( "fetch_request FAILED: " + url );
+//  			output_log_error( "fetch_request FAILED: " + url );
         	console.error( error );
 		}
 	);

@@ -22,7 +22,7 @@
 					document.getElementById( "poke_button" ).addEventListener(
 						'click', () => client.poke_server() );
 
-					client.app_init( "client_index", "poke_button", "who_button" );
+					client.app_init( "client_index", "poke_button", "who_button", "output_log" );
 				}
 			);
 
@@ -41,6 +41,11 @@
 			input:
 			<button id="who_button">who</button>
 			<button id="poke_button">poke</button>
+			<p>
+
+			log:
+			<br>
+			<textarea id="output_log" readonly=true rows="12" cols="40"></textarea>
 
 		</div>
 
