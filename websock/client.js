@@ -54,7 +54,6 @@ function poke_server()	{
 	}
 }
 
-
 /////////////////////////////////////////////////////////
 
 function display_client_index( id )	{
@@ -71,6 +70,8 @@ function output_log_response( response_obj )	{
 	log_area.value += '\n';
 	log_area.scrollTop = log_area.scrollHeight;
 }
+
+/////////////////////////////////////////////////////////
 
 function create_socket( portal, uuid )	{
 
@@ -156,7 +157,8 @@ function create_socket( portal, uuid )	{
 				else
 				if( tok === "alive" )	{
 
-					console.log( "alive: " + data_obj.client );
+//					console.log( "alive: " + data_obj.client );
+					console.log( "alive: " + data_obj.id );
 
 					output_log_response( data_obj );
 

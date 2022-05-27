@@ -27,23 +27,12 @@ import { WebSocket, WebSocketServer } from 'ws';
 
 //////////////////////////////////////////////////////
 
+
 const ssl_options = {
 	key: fs.readFileSync( './ssl/key.pem', 'utf8' ),
 	cert: fs.readFileSync( './ssl/cert.pem', 'utf8' )
 };
 
-/*
-const options = {
-   key: fs.readFileSync( __dirname + '/ssl/key.pem', 'utf8' ),
-  cert: fs.readFileSync( __dirname + '/ssl/cert.pem', 'utf8' )
-};
-
-const server = https.createServer({
-  cert: fs.readFileSync('/path/to/cert.pem'),
-  key: fs.readFileSync('/path/to/key.pem')
-});
-const wss = new WebSocket.Server({ server });
-*/
 
 const server = express();
 server.use( express.static( '.' ) );
@@ -53,10 +42,16 @@ server.use( express.json() ); // needed for request.body parser
 server.get( '/favicon.ico', ( req, res ) => res.status( 204 ).end() );
 
 
+const httpserver = http.createServer( server );
+const httpsserver = https.createServer( ssl_options, server );
+
+
 // Set up a headless websocket server
 const wsserver = new WebSocketServer(
 	{ noServer: true }
+//	{ server: httpserver }
 );
+
 
 let port = 8080;
 
@@ -75,7 +70,7 @@ wsserver.on(
 
 				let msg = data.toString(); // convert to String
 
-				console.log( msg );
+				console.log( "message: " + msg );
 
 				socket.send( "Server received from Client: " + msg );
 			}
@@ -93,6 +88,21 @@ wsserver.on(
 );
 
 //////////////////////////////////////////////////////
+
+let httplistener = httpserver.listen(
+	8082,
+	() => {
+    	console.log('HTTP Server running on port 8082');
+	}
+);
+
+let httpslistener = httpsserver.listen(
+	8084,
+	() => {
+    	console.log('HTTPS Server running on port 8084' );
+	}
+);
+
 
 let listener = server.listen(
 	port,
@@ -127,6 +137,41 @@ listener.on(
 		);
 	}
 );
+/*
+*/
 
+httplistener.on(
+	'upgrade',
+	async function upgrade( request, socket, head ) {
+
+		wsserver.handleUpgrade(
+			request,
+			socket,
+			head,
+			function forward( socket ) {
+
+				wsserver.emit( 'connection', socket, request );
+			}
+		);
+	}
+);
+
+httpslistener.on(
+	'upgrade',
+	async function upgrade( request, socket, head ) {
+
+		wsserver.handleUpgrade(
+			request,
+			socket,
+			head,
+			function forward( socket ) {
+
+				wsserver.emit( 'connection', socket, request );
+			}
+		);
+	}
+);
+/*
+*/
 
 

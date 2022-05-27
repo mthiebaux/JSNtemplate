@@ -57,7 +57,7 @@ Integrating the 'localtunnel' module provides a working external URL for remote 
 
 ## *Upgrade*
 
-Integrating express WebSocketServer using shared port, SSL...
+Integrating express WebSocketServer using shared port, SSL... generates cert errors in Safari.
 
 
 ## *Websock*
@@ -291,7 +291,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 ## Testing WebSock
 
-* The *WebSock* channel is kept open against timeouts with hidden POKE and ALIVE tokens.
+* The *WebSock* channel is kept open against timeouts using hidden POKE and ALIVE tokens.
 
 * The *who* button logs the client list, and the *poke* button logs client 'alive' tokens.
 

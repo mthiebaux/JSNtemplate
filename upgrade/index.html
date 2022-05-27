@@ -20,7 +20,7 @@
 
 						console.log( "Client open event:" );
 //						console.log( " origin: " + event.origin );
-						console.log( " target url: " + event.target.url );
+						console.log( " target.url: " + event.target.url );
 //						console.log( " ports: " + event.ports );
 //						console.log( " data: " + event.data );
 
@@ -45,12 +45,38 @@
 				'load',
 				function() {
 
-					console.log( window.location.protocol );
-					console.log( window.location.origin );
-					console.log( window.location.pathname );
+// 					console.log( "href:			" + window.location.href );
+// 					console.log( "origin:		" + window.location.origin );
+// 					console.log( "protocol:		" + window.location.protocol );
+// 					console.log( "host:			" + window.location.host );
+// 					console.log( "hostname:		" + window.location.hostname );
+// 					console.log( "pathname:		" + window.location.pathname );
+// 					console.log( "port:			" + window.location.port );
 
-					create_socket( "ws://localhost:8080" );
+//					create_socket( "ws://localhost:8080" );
+//					create_socket( "ws://localhost:8080/ws" );
+//					create_socket( "ws://localhost:8080/websocket" );
 
+					if( window.location.protocol === "http:" )	{
+
+						let wsurl = "ws://" + window.location.host;
+
+						console.log( "Open WebSocket: " + wsurl );
+
+						create_socket( wsurl );
+					}
+					else
+					if( window.location.protocol === "https:" )	{
+
+						let wsurl = "wss://" + window.location.host;
+
+						console.log( "Open WebSocket: " + wsurl );
+
+						create_socket( wsurl );
+					}
+					else	{
+						console.log( "Unknown protocol: " + window.location.host );
+					}
 				}
 			);
 

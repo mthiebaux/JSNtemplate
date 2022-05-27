@@ -1,0 +1,60 @@
+
+OpenSSL:
+
+https://medium.com/himinds/create-a-self-signed-certificate-for-ios-or-nodejs-for-testing-secure-websockets-3df4bc722a3f
+
+/	sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout server.key -out server.cert
+
+	// in order to handle self-signed certificates we need to turn off the validation in client:
+	
+		process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+	-  the most important question is the 
+		“Common Name (eg, your name or your server’s hostname) []”. 
+	It needs to be either the IP of your server, 
+	example -subj /CN=192.168.1.1 if you are running your local server on IP 192.168.1.1 
+	or a domain name that you control.
+
+
+
+
+https://stackoverflow.com/questions/5312311/secure-websockets-with-self-signed-certificate
+
+	openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 100 -nodes
+
+
+
+https://medium.com/developer-rants/implementing-https-and-wss-support-in-express-with-typescript-of-course-f36006c77bab
+
+	openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 365
+  followed by
+	openssl rsa -in key.pem -out key-rsa.pem
+
+
+https://community.letsencrypt.org/t/how-to-create-fullchain-pem-from-cert-pem/117191/7
+
+	openssl pkcs12 -chain -in cert.pfx -out fullchain.pem -nokeys
+
+	openssl pkcs12 -chain -in cert.pfx -out chain.pem -cacerts -nokeys
+
+	openssl pkcs12 -in bundle.pfx -nokeys
+
+
+	cat cert.pem ca.pem > fullchain.pem
+
+
+
+https://stackoverflow.com/questions/66604487/how-do-i-generate-fullchain-pem-and-privkey-pem
+
+	openssl genrsa > privkey.pem
+	openssl req -new -x509 -key privkey.pem > fullchain.pem
+
+
+
+https://community.letsencrypt.org/t/issues-on-mac-with-wss-osstatus-error-9807-invalid-certificate-chain/160930
+
+	key:       "/etc/letsencrypt/live/mysite.com/privkey.pem"
+	cert:     "/etc/letsencrypt/live/mysite.com/cert.pem"
+
+	- Use fullchain.pem, not cert.pem.
+

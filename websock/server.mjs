@@ -156,14 +156,16 @@ wsserver.on(
 					else
 					if( tok === "alive" )	{
 
-						console.log( "alive: " + data_obj.client.id );
+//						console.log( "alive: " + data_obj.client.id );
 						wsserver.clients.forEach(
 							function( client ) {
+
 								if( client.readyState === WebSocket.OPEN ) {
 
 									let push = {
 										token: "alive",
-										client: data_obj.client.id
+//										client: data_obj.client.id
+										id: data_obj.client.id
 									}
 									let payload_str = JSON.stringify( push );
 
@@ -179,6 +181,7 @@ wsserver.on(
 						// broadcast to client Set:
 						wsserver.clients.forEach(
 							function( client ) {
+
 				//		  		if (client !== socket && client.readyState === WebSocket.OPEN) {
 								if( client.readyState === WebSocket.OPEN ) {
 
