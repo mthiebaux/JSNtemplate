@@ -16,11 +16,11 @@
 				'load',
 				function() {
 
-					document.getElementById( "poke_button" ).addEventListener(
-						'click', () => client.poke_server() );
-
 					document.getElementById( "who_button" ).addEventListener(
 						'click', () => client.who_server() );
+
+					document.getElementById( "poke_button" ).addEventListener(
+						'click', () => client.poke_server() );
 
 					client.app_init( "client_index", "poke_button", "who_button" );
 				}
@@ -39,8 +39,8 @@
 		<div id="page_contents">
 
 			input:
-			<button id="poke_button">poke</button>
 			<button id="who_button">who</button>
+			<button id="poke_button">poke</button>
 
 		</div>
 

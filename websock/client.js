@@ -28,6 +28,18 @@ function app_init( page_client_id, poke_button_id, who_button_id )	{
 	fetch_get_request( "connect", connect_request_handler );
 }
 
+function who_server()	{
+
+	if( client_socket )	{
+
+		let who = {
+			token: "who",
+			client: client_info
+		};
+		client_socket.send( JSON.stringify( who ) );
+	}
+}
+
 function poke_server()	{
 
 //	console.log( "poke button." );
@@ -39,18 +51,6 @@ function poke_server()	{
 			client: client_info
 		};
 		client_socket.send( JSON.stringify( poke ) );
-	}
-}
-
-function who_server()	{
-
-	if( client_socket )	{
-
-		let who = {
-			token: "who",
-			client: client_info
-		};
-		client_socket.send( JSON.stringify( who ) );
 	}
 }
 
@@ -80,8 +80,6 @@ function create_socket( portal, uuid )	{
 	wsclient.addEventListener(
 		'message',
 		function( event ) {
-
-//			console.log( "Client message event:" );
 
 			let data_obj = JSON.parse( event.data );
 //			console.log( JSON.stringify( data_obj, null, 2 ) );
@@ -117,7 +115,7 @@ function create_socket( portal, uuid )	{
 
 				}
 				else
-				if( tok === "push" )	{
+				if( tok === "poke" )	{
 
 					let poked = {
 						token: "alive",
@@ -142,6 +140,12 @@ function create_socket( portal, uuid )	{
 				if( tok === "clients" )	{
 
 					console.log( "clients: " + data_obj.clients );
+
+				}
+				else
+				if( tok === "alive" )	{
+
+					console.log( "alive: " + data_obj.client );
 
 				}
 				else	{

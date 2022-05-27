@@ -57,7 +57,7 @@ Integrating the 'localtunnel' module provides a working external URL for remote 
 
 ## *Upgrade*
 
-Testing express WebSocketServer with shared port, SSL...
+Integrating express WebSocketServer using shared port, SSL...
 
 
 ## *Websock*

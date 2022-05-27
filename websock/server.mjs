@@ -146,13 +146,28 @@ wsserver.on(
 					let tok = data_obj.token;
 
 					if( tok === "ALIVE" )	{
-
+						// sustain connection
 						console.log( data_obj );
 					}
 					else
 					if( tok === "alive" )	{
 
 						console.log( "alive: " + data_obj.client.id );
+						wsserver.clients.forEach(
+							function( client ) {
+								if( client.readyState === WebSocket.OPEN ) {
+
+									let push = {
+										token: "alive",
+										client: data_obj.client.id
+									}
+									let payload_str = JSON.stringify( push );
+
+									client.send( payload_str );
+								}
+							}
+						);
+
 					}
 					else
 					if( tok === "poke" )	{
@@ -164,7 +179,7 @@ wsserver.on(
 								if( client.readyState === WebSocket.OPEN ) {
 
 									let push = {
-										token: "push"
+										token: "poke"
 									}
 									let payload_str = JSON.stringify( push );
 
@@ -193,7 +208,7 @@ wsserver.on(
 					}
 					else
 					if( tok === "POKED" )	{
-
+						// sustain connection
 					}
 					else	{
 
