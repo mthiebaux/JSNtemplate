@@ -211,8 +211,8 @@ function respond_p2p_message( to, text )	{
 
 function ping_pong( from, gsi )	{
 
-	const pong_ping_timeout_ms = 1000;
-//	const pong_ping_timeout_ms = 1;
+	const ping_pong_timeout_ms = 500;
+	const pong_ping_timeout_ms = 500;
 
 	let token = gsi.trim();
 
@@ -224,7 +224,7 @@ function ping_pong( from, gsi )	{
 		if( ping_mode )	{
 			setTimeout( () => {
 				respond_p2p_message( from, "pong" );
-			}, 1 );
+			}, ping_pong_timeout_ms );
 		}
 
 		return( true );
@@ -286,7 +286,7 @@ function process_incoming_poll_response( response )	{
 					// other message
 
 					console.log( "text:" + response.payload.text );
-					output_text_message( "[ " + response.payload.from + " ]" + response.payload.text );
+					output_text_message( "< " + response.payload.from + " >" + response.payload.text );
 				}
 
 			}
@@ -306,9 +306,9 @@ function process_incoming_poll_response( response )	{
 	}
 	else	{
 
-	console.log( 1000 );
+//	console.log( 1000 );
 
-		console.log( "process_incoming_poll_response ERR no report:" + response );
+//		console.log( "process_incoming_poll_response ERR no report:" + response );
 	}
 }
 
@@ -339,7 +339,12 @@ function receive_poll_response( response_obj )	{
 
 function submit_who()	{
 
-	fetch_get_request( "who", output_log_response );
+	fetch_get_request( "who", ( response_obj ) => {
+
+			output_text_message( "current[ " + response_obj.current.join( ', ' ) + " ]" );
+			output_log_response( response_obj );
+		}
+	);
 }
 
 function submit_push()	{

@@ -7,9 +7,11 @@ import localtunnel from 'localtunnel';
 /////////////////////////////////////////////////////////
 
 const server = express();
-server.use( requestID() );
 server.use( express.static( '.' ) );
 server.use( express.json() ); // needed for request.body parser
+server.use( requestID() );
+
+let port = 8080;
 
 let client_list = [];
 let poll_queue = [];
@@ -392,7 +394,6 @@ const reader = readline.createInterface(
 	}
 );
 
-let port = 8080;
 if( process.argv.length > 2 )	{
 	port = process.argv[ 2 ];
 }
@@ -433,6 +434,20 @@ let tunneller = localtunnel(
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 
+/*
+		tunnel.on(
+			'request',
+			( info ) => {
+				console.log( "localtunnel request: " + JSON.stringify( info, null, 2 ) );
+			}
+		);
+*/
+		tunnel.on(
+			'error',
+			( err ) => {
+				console.log( "localtunnel error: " + JSON.stringify( err, null, 2 ) );
+			}
+		);
 		tunnel.on(
 			'close',
 			() => {

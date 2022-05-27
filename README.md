@@ -32,7 +32,7 @@ There are no packages required other than what Node.js includes by default. One 
 
 ## *Module*
 
-Converting to strict ESM module specification for import/export, scripts have been named with the *.mjs* extension.
+Converting to strict ESM module specification for import/export, server scripts have been named with the *.mjs* extension. This is deemed preferable to setting a global flag in *package.json*, for backward compatibility with CJS libraries.
 
 ## *Express*
 
@@ -53,6 +53,16 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 An experimental app featuring an interactive server console, push notifications, and client to client exchange, including ping pong.
 
 Integrating the 'localtunnel' module provides a working external URL for remote testing.
+
+
+## *Upgrade*
+
+Testing express WebSocketServer with shared port, SSL...
+
+
+## *Websock*
+
+Building a clean, exemplary websocket client to replace fragile long polling and enable faster ping pong.
 
 
 ## Installation

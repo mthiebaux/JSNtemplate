@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>websock client</title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<script type="module">
+
+			import * as client from './client.js';
+
+			window.addEventListener(
+				'load',
+				function() {
+
+					document.getElementById( "poke_button" ).addEventListener(
+						'click', () => client.poke_server() );
+
+					document.getElementById( "who_button" ).addEventListener(
+						'click', () => client.who_server() );
+
+					client.app_init( "client_index", "poke_button", "who_button" );
+				}
+			);
+
+		</script>
+
+	</head>
+
+	<body>
+
+		<div class="page_header">
+			<h1><em>WebSock</em> Client <div id="client_index" style="display: inline;"></div></h1>
+		</div>
+
+		<div id="page_contents">
+
+			input:
+			<button id="poke_button">poke</button>
+			<button id="who_button">who</button>
+
+		</div>
+
+		<div class="page_footer">
+			<p>
+			<em> © thiebaux 2022 </em>
+		</div>
+
+	</body>
+</html>

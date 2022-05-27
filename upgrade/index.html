@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>upgrade client</title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<script type="module">
+
+			function create_socket( wsurl )	{
+
+				const wsclient = new WebSocket( wsurl );
+
+				wsclient.addEventListener(
+					'open',
+					function( event ) {
+
+						console.log( "Client open event:" );
+//						console.log( " origin: " + event.origin );
+						console.log( " target url: " + event.target.url );
+//						console.log( " ports: " + event.ports );
+//						console.log( " data: " + event.data );
+
+						wsclient.send( "Hello from Client." );
+					}
+				);
+
+				wsclient.addEventListener(
+					'message',
+					function( event ) {
+
+						console.log( "Client message event:" );
+						console.log( " origin: " + event.origin );
+						console.log( " target url: " + event.target.url );
+//						console.log( " ports: " + event.ports );
+						console.log( " data: " + event.data );
+					}
+				);
+			}
+
+			window.addEventListener(
+				'load',
+				function() {
+
+					console.log( window.location.protocol );
+					console.log( window.location.origin );
+					console.log( window.location.pathname );
+
+					create_socket( "ws://localhost:8080" );
+
+				}
+			);
+
+		</script>
+
+	</head>
+
+	<body>
+
+		<div class="page_header">
+			<h1><em>Upgrade</em> Client <div id="client_index" style="display: inline;"></div></h1>
+		</div>
+
+		<div id="page_contents">
+
+		</div>
+
+		<div class="page_footer">
+			<p>
+			<em> © thiebaux 2022 </em>
+		</div>
+
+	</body>
+</html>
