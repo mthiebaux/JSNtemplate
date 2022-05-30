@@ -5,16 +5,12 @@ export {
 	who_server
 };
 
-let client_info = {
-	id: -1,
-	uid: "",
-	uuid: ""
-};
-
 let client_page_index_id = "";
 let client_poke_button_id = "";
 let client_who_button_id = "";
 let client_output_log_id = "";
+
+let client_info = { id: -1 };
 
 let client_socket = null;
 
@@ -73,17 +69,31 @@ function output_log_response( response_obj )	{
 
 /////////////////////////////////////////////////////////
 
-function create_socket( portal, uuid )	{
+function create_socket( portal )	{
 
-//	const wsclient = new WebSocket( portal.wslocal );
-	const wsclient = new WebSocket( portal.wstunnel );
-//	const wsclient = new WebSocket( portal.wss );
+//	const wsclient = new WebSocket( portal.local );
+	const wsclient = new WebSocket( portal.tunnel );
+//	const wsclient = new WebSocket( portal.secure );
 
 	wsclient.addEventListener(
 		"open",
 		function( event ) {
 
+			display_client_index( client_info.id );
 			console.log( "Client open event." );
+
+// NOT SUFFICIENT TO SUSTAIN
+			let HEARTBEAT = 120000; // outside of 60 sec timeout
+			setInterval( () =>	{
+
+				let server_ping = {
+					token: "PING",
+					client: client_info
+				};
+				wsclient.send( JSON.stringify( server_ping ) );
+
+			}, HEARTBEAT );
+
 		}
 	);
 
@@ -92,74 +102,47 @@ function create_socket( portal, uuid )	{
 		function( event ) {
 
 			let data_obj = JSON.parse( event.data );
-//			console.log( JSON.stringify( data_obj, null, 2 ) );
 
 			if( data_obj.token )	{
 
 				let tok = data_obj.token;
 
-				if( tok === "registration" )	{
+				if( tok === "PONG" )	{
 
-					client_info = data_obj.client;
-					client_info.uuid = uuid;
-
-					display_client_index( client_info.id );
-
-					let alive = {
-						token: "ALIVE",
-						client: client_info
-					};
-					let payload_str = JSON.stringify( alive );
-
-					wsclient.send( payload_str );
-
-					if( 0 )	{
-//						let HEARTBEAT = 10000;  // 10 seconds
-						let HEARTBEAT = 120000; // outside of 60 sec timeout
-						setInterval( () =>	{
-
-							wsclient.send( payload_str );
-
-						}, HEARTBEAT );
-					}
+					console.log( "server PONG" );
 
 				}
 				else
 				if( tok === "POKE" )	{
 
-					// console.log( "poked" );
-
-					let poked = {
-						token: "POKED",
+					let server_alive = {
+						token: "ALIVE",
 						client: client_info
 					};
-					wsclient.send( JSON.stringify( poked ) );
+					wsclient.send( JSON.stringify( server_alive ) );
 
 				}
 				else
 				if( tok === "poke" )	{
 
-					let poked = {
+					let alive = {
 						token: "alive",
 						client: client_info
 					};
-					wsclient.send( JSON.stringify( poked ) );
+					wsclient.send( JSON.stringify( alive ) );
 
 				}
 				else
 				if( tok === "clients" )	{
 
 					console.log( "clients: " + data_obj.clients );
-
 					output_log_response( data_obj );
 
 				}
 				else
 				if( tok === "alive" )	{
 
-//					console.log( "alive: " + data_obj.client );
 					console.log( "alive: " + data_obj.id );
-
 					output_log_response( data_obj );
 
 				}
@@ -237,10 +220,10 @@ function fetch_request( url, fetch_config, callback )	{
 			// RESUBMIT
 			if( result.status === 504 )	{
 
-				return( // trigger resubmit
+				return( // timeout
 					{
 						status: true,
-						payload: "fetch_request: 504 timeout resubmit poll"
+						payload: "fetch_request: 504 timeout resubmit ?"
 					}
 				);
 			}
@@ -297,9 +280,13 @@ function connect_request_handler( result_obj )	{
 	console.log( "connect result_obj:" );
 	console.log( JSON.stringify( result_obj, null, 2 ) );
 
+	client_info = result_obj.client;
+
+
 	if( result_obj.portal )	{
 
-		client_socket = create_socket( result_obj.portal, result_obj.uuid );
+
+		client_socket = create_socket( result_obj.portal );
 
 	}
 }

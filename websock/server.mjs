@@ -26,34 +26,13 @@ let wss_tunnel = "";
 
 //////////////////////////////////////////////////////
 
-let connect_arr = [];
+let reg_list = [];
 
-function add_connection( in_socket )	{
+function print_registrations()	{
 
-	function pseudo_uid( id )	{
-		const alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		return( alpha[ id ] + "-" + id + id + "-" + ( id + id ) );
-	}
-
-	let c = connect_arr.length;
-	let conn_obj = {
-		client: {
-			id: c,
-			uid: pseudo_uid( c ),
-			uuid: ""
-		},
-		socket: in_socket
-	}
-	connect_arr.push( conn_obj );
-
-	return( conn_obj );
-}
-
-function print_connections()	{
-
-	console.log( "connections:" );
-	for( let cn of connect_arr )	{
-		console.log( cn.client );
+	console.log( "registrations:" );
+	for( let r of reg_list )	{
+		console.log( r );
 	}
 }
 
@@ -75,22 +54,24 @@ server.get(
 	'/connect',
 	( request, response ) => {
 
-		console.log( "CONNECT:" );
-
-		let report = build_request_report( request );
-		console.log( report );
+		let c = reg_list.length;
+		let client_obj = {
+			id: c,
+			uuid: request.id // from: express-request-id
+		};
+		reg_list.push( client_obj );
 
 		let output = {
-			report: report,
+			report: build_request_report( request ),
 			portal: {
-				wslocal: "ws://localhost:" + port,
-				wstunnel: ws_tunnel,
-				wss: wss_tunnel
+				local: "ws://localhost:" + port,
+				tunnel: ws_tunnel,
+				secure: wss_tunnel  // not supported
 			},
-			uuid: request.id  // from: express-request-id
+			client: client_obj
 		};
-		console.log( "INVITE CLIENT TO PORTAL:" );
-		console.log( output.portal );
+		console.log( "REGISTER CLIENT:" );
+		console.log( output );
 
 		response.send( output );
 	}
@@ -102,17 +83,9 @@ wsserver.on(
 	"connection",
 	( socket, request ) => {
 
-		console.log( "WS-CONNECTION:" );
-		console.log( " request.url: " + request.url );
+		console.log( "WEBSOCK CONNECTION:" );
 		console.log( " request.method: " + request.method );
-
-		let conn = add_connection( socket );
-
-		let registration = {
-			token: "registration",
-			client: conn.client
-		}
-		socket.send( JSON.stringify( registration ) );
+		console.log( " request.url: " + request.url );
 
 		if( 1 ) {
 			let poke = {
@@ -128,11 +101,7 @@ wsserver.on(
 			}, HEARTBEAT );
 		}
 
-		console.log( "Client registered:" );
-		console.log( conn.client );
-
-		print_connections();
-
+		print_registrations();
 
 		socket.on(
 			"message",
@@ -145,38 +114,18 @@ wsserver.on(
 
 					let tok = data_obj.token;
 
-					if( tok === "ALIVE" )	{
+					if( tok === "PING" )	{ // client initiated
+						// not sufficient to sustain connection
+						console.log( data_obj );
+						socket.send( JSON.stringify( { token: "PONG" } ) );
+					}
+					else
+					if( tok === "ALIVE" )	{ // client responds to server POKE
 						// sustain connection
 						console.log( data_obj );
 					}
 					else
-					if( tok === "POKED" )	{
-						// sustain connection
-					}
-					else
-					if( tok === "alive" )	{
-
-//						console.log( "alive: " + data_obj.client.id );
-						wsserver.clients.forEach(
-							function( client ) {
-
-								if( client.readyState === WebSocket.OPEN ) {
-
-									let push = {
-										token: "alive",
-//										client: data_obj.client.id
-										id: data_obj.client.id
-									}
-									let payload_str = JSON.stringify( push );
-
-									client.send( payload_str );
-								}
-							}
-						);
-
-					}
-					else
-					if( tok === "poke" )	{
+					if( tok === "poke" )	{ // poke peers
 
 						// broadcast to client Set:
 						wsserver.clients.forEach(
@@ -185,12 +134,28 @@ wsserver.on(
 				//		  		if (client !== socket && client.readyState === WebSocket.OPEN) {
 								if( client.readyState === WebSocket.OPEN ) {
 
-									let push = {
+									let bcast = {
 										token: "poke"
 									}
-									let payload_str = JSON.stringify( push );
+									client.send( JSON.stringify( bcast ) );
+								}
+							}
+						);
 
-									client.send( payload_str );
+					}
+					else
+					if( tok === "alive" )	{ // peer responds to poke
+
+						wsserver.clients.forEach( // broadcast
+							function( client ) {
+
+								if( client.readyState === WebSocket.OPEN ) {
+
+									let bcast = {
+										token: "alive",
+										id: data_obj.client.id
+									}
+									client.send( JSON.stringify( bcast ) );
 								}
 							}
 						);
@@ -200,17 +165,15 @@ wsserver.on(
 					if( tok === "who" )	{
 
 						let id_arr = [];
-						for( let cn of connect_arr )	{
-							id_arr.push( cn.client.id );
+						for( let r of reg_list )	{
+							id_arr.push( r.id );
 						}
 
 						let clients = {
 							token: "clients",
 							clients: id_arr
 						}
-						let payload_str = JSON.stringify( clients );
-
-						socket.send( payload_str );
+						socket.send( JSON.stringify( clients ) );
 
 					}
 					else	{
