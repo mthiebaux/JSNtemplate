@@ -24,15 +24,19 @@ let port = 8080;
 let ws_tunnel = "";
 let wss_tunnel = "";
 
+let tunnel_config = {
+	port: port
+};
+
 //////////////////////////////////////////////////////
 
 let reg_list = [];
 
-function print_registrations()	{
+function print_clients()	{
 
-	console.log( "registrations:" );
+	console.log( "registered clients:" );
 	for( let r of reg_list )	{
-		console.log( r );
+		console.log( r.client );
 	}
 }
 
@@ -51,7 +55,7 @@ function build_request_report( request )	{
 }
 
 server.get(
-	'/connect',
+	'/register',
 	( request, response ) => {
 
 		let c = reg_list.length;
@@ -59,7 +63,13 @@ server.get(
 			id: c,
 			uuid: request.id // from: express-request-id
 		};
-		reg_list.push( client_obj );
+
+		let register_obj = {
+			client: client_obj,
+			socket: null
+		}
+		reg_list.push( register_obj );
+
 
 		let output = {
 			report: build_request_report( request ),
@@ -101,7 +111,7 @@ wsserver.on(
 			}, HEARTBEAT );
 		}
 
-		print_registrations();
+		print_clients();
 
 		socket.on(
 			"message",
@@ -114,6 +124,16 @@ wsserver.on(
 
 					let tok = data_obj.token;
 
+					if( tok === "REGISTER" )	{ // client has uuid
+
+						if( reg_list[ data_obj.client.id ].socket !== null ) {
+							// check UUID, destroy
+
+						}
+						reg_list[ data_obj.client.id ].socket = socket;
+
+					}
+					else
 					if( tok === "PING" )	{ // client initiated
 						// not sufficient to sustain connection
 						console.log( data_obj );
@@ -121,52 +141,55 @@ wsserver.on(
 					}
 					else
 					if( tok === "ALIVE" )	{ // client responds to server POKE
-						// sustain connection
+						// sustaining connection
 						console.log( data_obj );
 					}
 					else
-					if( tok === "poke" )	{ // poke peers
+					if( tok === "poke" )	{ // broadcast poke to all peers
 
 						// broadcast to client Set:
+						let bcast = {
+							token: "poke"
+						};
+if( 1 )	{
+						for( let r of reg_list )	{
+						//	if( r.socket !== socket ) // sender to self ?
+							if( r.socket.readyState === WebSocket.OPEN ) {
+								r.socket.send( JSON.stringify( bcast ) );
+							}
+						}
+} else	{
 						wsserver.clients.forEach(
 							function( client ) {
 
 				//		  		if (client !== socket && client.readyState === WebSocket.OPEN) {
 								if( client.readyState === WebSocket.OPEN ) {
-
-									let bcast = {
-										token: "poke"
-									}
 									client.send( JSON.stringify( bcast ) );
 								}
 							}
 						);
+}
 
 					}
 					else
-					if( tok === "alive" )	{ // peer responds to poke
+					if( tok === "alive" )	{ // broadcast respondses to all poke
 
-						wsserver.clients.forEach( // broadcast
-							function( client ) {
-
-								if( client.readyState === WebSocket.OPEN ) {
-
-									let bcast = {
-										token: "alive",
-										id: data_obj.client.id
-									}
-									client.send( JSON.stringify( bcast ) );
-								}
+						let bcast = {
+							token: "alive",
+							id: data_obj.client.id
+						};
+						for( let r of reg_list )	{
+							if( r.socket.readyState === WebSocket.OPEN ) {
+								r.socket.send( JSON.stringify( bcast ) );
 							}
-						);
-
+						}
 					}
 					else
 					if( tok === "who" )	{
 
 						let id_arr = [];
 						for( let r of reg_list )	{
-							id_arr.push( r.id );
+							id_arr.push( r.client.id );
 						}
 
 						let clients = {
@@ -178,7 +201,8 @@ wsserver.on(
 					}
 					else	{
 
-						console.log( "unhandled token: " + tok );
+						console.log( "unhandled message token:" );
+						console.log( data_obj );
 					}
 
 				}
@@ -208,11 +232,6 @@ wsserver.on(
 );
 
 //////////////////////////////////////////////////////
-
-let tunnel_config = {
-	port: port
-};
-
 
 let listener = server.listen(
 	port,
@@ -260,8 +279,6 @@ let tunneller = localtunnel(
 		console.log( " │   Tunnel Server:                  │" );
 		console.log( " │                                   │" );
 		console.log( " │       " + tunnel.url.replace( "https", "http" ) );
-//		console.log( " │                                   │" );
-//		console.log( " │       " + tunnel.url );
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 

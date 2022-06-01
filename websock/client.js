@@ -10,9 +10,27 @@ let client_poke_button_id = "";
 let client_who_button_id = "";
 let client_output_log_id = "";
 
-let client_info = { id: -1 };
+let reg_info = {
+	client: {
+		id: -1,
+		uuid: ""
+	},
+	socket: null
+};
 
-let client_socket = null;
+/*
+
+Each client initiates WebSock registration by submitting 'GET /register' to the server using fetch().
+The server responds with a new id and uuid, and a socket portal to connect.
+
+Once the socket opens, the client begins exchanging socket messages using the token property for
+message routing, beginning with 'REGISTER' plus its client identifiers, to complete the socket
+registration process.
+
+This two step process ensures that the socket connection handlers are mapped to the correct
+client identifiers, to maintain two-way push communication and forwarding.
+
+*/
 
 /////////////////////////////////////////////////////////
 
@@ -23,30 +41,30 @@ function app_init( page_client_id, poke_button_id, who_button_id, output_log_id 
 	client_who_button_id = who_button_id;
 	client_output_log_id = output_log_id;
 
-	fetch_get_request( "connect", connect_request_handler );
+	fetch_get_request( "register", register_request_handler );
 }
 
 function who_server()	{
 
-	if( client_socket )	{
+	if( reg_info.socket )	{
 
 		let who = {
 			token: "who",
-			client: client_info
+			client: reg_info.client
 		};
-		client_socket.send( JSON.stringify( who ) );
+		reg_info.socket.send( JSON.stringify( who ) );
 	}
 }
 
 function poke_server()	{
 
-	if( client_socket )	{
+	if( reg_info.socket )	{
 
 		let poke = {
 			token: "poke",
-			client: client_info
+			client: reg_info.client
 		};
-		client_socket.send( JSON.stringify( poke ) );
+		reg_info.socket.send( JSON.stringify( poke ) );
 	}
 }
 
@@ -69,18 +87,31 @@ function output_log_response( response_obj )	{
 
 /////////////////////////////////////////////////////////
 
-function create_socket( portal )	{
+function register_request_handler( result_obj )	{
 
-//	const wsclient = new WebSocket( portal.local );
-	const wsclient = new WebSocket( portal.tunnel );
-//	const wsclient = new WebSocket( portal.secure );
+	console.log( "register result_obj:" );
+	console.log( JSON.stringify( result_obj, null, 2 ) );
 
-	wsclient.addEventListener(
+	reg_info.client = result_obj.client;
+
+//	if( reg_info.socket !== null ) {} // destroy
+
+//	reg_info.socket = new WebSocket( result_obj.portal.local );
+	reg_info.socket = new WebSocket( result_obj.portal.tunnel );
+//	reg_info.socket = new WebSocket( result_obj.portal.secure );
+
+	reg_info.socket.addEventListener(
 		"open",
 		function( event ) {
 
-			display_client_index( client_info.id );
+			display_client_index( reg_info.client.id );
 			console.log( "Client open event." );
+
+			let websock_reg = {
+				token: "REGISTER",
+				client: reg_info.client
+			};
+			reg_info.socket.send( JSON.stringify( websock_reg ) );
 
 // NOT SUFFICIENT TO SUSTAIN
 			let HEARTBEAT = 120000; // outside of 60 sec timeout
@@ -88,16 +119,16 @@ function create_socket( portal )	{
 
 				let server_ping = {
 					token: "PING",
-					client: client_info
+					client: reg_info.client
 				};
-				wsclient.send( JSON.stringify( server_ping ) );
+				reg_info.socket.send( JSON.stringify( server_ping ) );
 
 			}, HEARTBEAT );
 
 		}
 	);
 
-	wsclient.addEventListener(
+	reg_info.socket.addEventListener(
 		'message',
 		function( event ) {
 
@@ -117,9 +148,9 @@ function create_socket( portal )	{
 
 					let server_alive = {
 						token: "ALIVE",
-						client: client_info
+						client: reg_info.client
 					};
-					wsclient.send( JSON.stringify( server_alive ) );
+					reg_info.socket.send( JSON.stringify( server_alive ) );
 
 				}
 				else
@@ -127,9 +158,9 @@ function create_socket( portal )	{
 
 					let alive = {
 						token: "alive",
-						client: client_info
+						client: reg_info.client
 					};
-					wsclient.send( JSON.stringify( alive ) );
+					reg_info.socket.send( JSON.stringify( alive ) );
 
 				}
 				else
@@ -163,16 +194,14 @@ function create_socket( portal )	{
 		}
 	);
 
-	wsclient.addEventListener(
+	reg_info.socket.addEventListener(
 		'error',
 		function( event ) {
 
 			console.log( "Client error event:" );
-			console.log( " event: " + event );
+			console.log( " event: ", event );
 		}
 	);
-
-	return( wsclient );
 }
 
 /////////////////////////////////////////////////////////
@@ -236,7 +265,7 @@ function fetch_request( url, fetch_config, callback )	{
 		}
   	).catch(
   		function( error ) {
-//  			output_log_error( "fetch_request FAILED: " + url );
+//  		output_log_error( "fetch_request FAILED: " + url );
         	console.error( error );
 		}
 	);
@@ -272,23 +301,4 @@ function fetch_post_request( url, cmd_obj, callback )	{
 		callback
 	);
 }
-
-/////////////////////////////////////////////////////////
-
-function connect_request_handler( result_obj )	{
-
-	console.log( "connect result_obj:" );
-	console.log( JSON.stringify( result_obj, null, 2 ) );
-
-	client_info = result_obj.client;
-
-
-	if( result_obj.portal )	{
-
-
-		client_socket = create_socket( result_obj.portal );
-
-	}
-}
-
 

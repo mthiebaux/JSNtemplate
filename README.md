@@ -291,9 +291,15 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 ## Testing WebSock
 
-* The *WebSock* channel is kept open against timeouts using hidden POKE and ALIVE tokens.
+* Each client initiates *WebSock* registration by submitting 'GET /register' to the server using fetch(). The server responds with a new id and uuid, and a socket portal to connect.
 
-* The *who* button logs the client list, and the *poke* button logs client 'alive' tokens.
+* Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus its client identifiers, to complete client-socket registration.
+
+* This two step process ensures that the server's socket connection handlers are mapped to the correct client identifiers, to maintain two-way push communication and forwarding.
+
+* Each *WebSock* channel is kept open against timeouts using hidden POKE and ALIVE tokens.
+
+* The client's *who* button logs the server client list, and the *poke* button logs client 'alive' response tokens.
 
 
 
