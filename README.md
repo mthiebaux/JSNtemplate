@@ -293,7 +293,43 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 * Each client initiates *WebSock* registration by submitting 'GET /register' to the server using fetch(). The server responds with a new id and uuid, and a socket portal to connect.
 
+```
+{
+  "report": {
+    "method": "GET",
+    "url": "/register",
+    "path": "/register",
+    "params": {},
+    "query": {},
+    "body": {}
+  },
+  "portal": {
+    "local": "ws://localhost:8080",
+    "tunnel": "ws://dry-onions-design-174-196-198-45.loca.lt",
+    "secure": ""
+  },
+  "client": {
+    "id": 0,
+    "uuid": "50d59cf3-13d5-46bf-85da-bdbb109232e8"
+  }
+}
+```
+
 * Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus its client identifiers, to complete client-socket registration.
+
+```
+socket.send(
+	JSON.stringify(
+		{
+			token: "REGISTER",
+			client: {
+				id: 0,
+				uuid: "50d59cf3-13d5-46bf-85da-bdbb109232e8"
+			}
+		}
+	)
+);
+```
 
 * This two step process ensures that the server's socket connection handlers are mapped to the correct client identifiers, to maintain two-way push communication and forwarding.
 

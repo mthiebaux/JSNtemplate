@@ -18,19 +18,7 @@ let reg_info = {
 	socket: null
 };
 
-/*
 
-Each client initiates WebSock registration by submitting 'GET /register' to the server using fetch().
-The server responds with a new id and uuid, and a socket portal to connect.
-
-Once the socket opens, the client begins exchanging socket messages using the token property for
-message routing, beginning with 'REGISTER' plus its client identifiers, to complete the socket
-registration process.
-
-This two step process ensures that the socket connection handlers are mapped to the correct
-client identifiers, to maintain two-way push communication and forwarding.
-
-*/
 
 /////////////////////////////////////////////////////////
 
@@ -113,7 +101,7 @@ function register_request_handler( result_obj )	{
 			};
 			reg_info.socket.send( JSON.stringify( websock_reg ) );
 
-// NOT SUFFICIENT TO SUSTAIN
+		// NOT SUFFICIENT TO SUSTAIN AGAINST TIMEOUtS
 			let HEARTBEAT = 120000; // outside of 60 sec timeout
 			setInterval( () =>	{
 
@@ -261,7 +249,8 @@ function fetch_request( url, fetch_config, callback )	{
   		}
   	).then(
   		function( result_obj ) {
-			callback( result_obj );
+
+			callback( result_obj ); // success
 		}
   	).catch(
   		function( error ) {
