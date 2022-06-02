@@ -291,7 +291,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 ## Testing WebSock
 
-* Each client initiates *WebSock* registration by submitting 'GET /register' to the server using fetch(). The server responds with a new id and uuid, and a socket portal to connect.
+* Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid, and a socket portal to connect.
 
 ```
 {
@@ -315,7 +315,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 }
 ```
 
-* Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus its client identifiers, to complete client-socket registration.
+* Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus its client identifiers to complete client-socket registration.
 
 ```
 socket.send(
