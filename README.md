@@ -4,11 +4,9 @@
 
 <img src="./images/express_client.png" width="500">
 
-* Comparing a bare-bones CJS server with full featured 'express' server module. These utility templates make implementing a server API an easy task, and demonstrate versatile vanilla RPC (remote procedure) support.
+* Comparing a bare-bones CJS server with full featured 'express' server module. These utility templates make implementing a flexible server API an easy task, and demonstrate versatile vanilla RPC (remote procedure) support. With RPC, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
-* While calling a remote procedure by routed key is not difficult, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
-
-* An interactive server console facilitates development and diagnostics of more complex communication. Push notifications are implemented with long polling, and clients are identified by simple id and UUID, using 'express-request-id'.
+* An interactive server console facilitates development and diagnostics of more complex communication. Clients are identified by simple id and UUID using 'express-request-id', *localtunnel* enables external testing, and push notifications are implemented with both long polling and websocket connections.
 
 
 | template      | dependencies        | size
@@ -18,13 +16,14 @@
 | *Express*     | express install     | 1.9 MB |
 | *Console*     | request-id install  | 2.1 MB |
 | *-tunnel*     | localtunnel install | 3.2 MB |
+| *WebSock*     | ws install          | 3.3 MB |
 
 
 ## *Vanilla*
 
 Vanilla just means a 'bare bones' implementation, using older, built-in JavaScript features such as XMLHttpRequest() on the client side, and http.createServer() on the server side.
 
-While there may be only a few good reasons to build with what are often deprecated interfaces, they are lightweight, with few dependencies bloating the project with loads of unused features.
+While there are only a few good reasons to build with what are often deprecated interfaces, they are lightweight, with few dependencies bloating the project with loads of unused features.
 
 More specifically, they illustrate what is really happening behind the scenes when using popular modules like 'express', which hide a lot of complexity while greatly simplifying specific tasks.
 
@@ -36,7 +35,7 @@ Converting to strict ESM module specification for import/export, server scripts 
 
 ## *Express*
 
-As the name suggests, the *Express* app imports the 'express' module which brings with it a LOT of essential functionality, like automatic URL query parsing.
+As the name suggests, the *Express* app imports the 'express' module which brings with it a lot of essential functionality, like automatic URL query parsing.
 
 The example GET/POST handlers in server.mjs demonstrate parameter passing via traditional query strings, as well as structured URL parameters widely used to implement REST APIs. These are conveniently parsed by the express module.
 
@@ -45,19 +44,17 @@ The example GET/POST handlers in server.mjs demonstrate parameter passing via tr
 | Query string  | /api?arg1=1&arg2=2 | query: { arg1: 1, arg1: 2 }  |
 | URL params    | /api/v1/v2         | params: { arg1: 'v1', arg2: 'v2' }  |
 
-A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring these parameters to be exposed in the URL.
+A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring that these parameters be exposed in the URL.
 
 
 ## *Console*
 
-An experimental app featuring an interactive server console, push notifications, and client to client exchange, including ping pong.
-
-Integrating the 'localtunnel' module provides a working external URL for remote testing.
+Tha basic *Console* app features an interactive server console, push notifications, and client to client exchange, including ping pong. Integrating the 'localtunnel' module provides a working external URL for remote testing.
 
 
 ## *Upgrade*
 
-Integrating express WebSocketServer using shared port, SSL... generates cert errors in Safari.
+Integrating express WebSocketServer using shared port, and SSL (generates cert errors in Safari).
 
 
 ## *Websock*
@@ -315,7 +312,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 }
 ```
 
-* Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus its client identifiers to complete client-socket registration.
+* Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration.
 
 ```
 socket.send(
