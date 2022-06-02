@@ -66,10 +66,10 @@ server.get(
 
 		let register_obj = {
 			client: client_obj,
-			socket: null
+			socket: null,
+			ival_id: null
 		}
 		reg_list.push( register_obj );
-
 
 		let output = {
 			report: build_request_report( request ),
@@ -97,20 +97,6 @@ wsserver.on(
 		console.log( " request.method: " + request.method );
 		console.log( " request.url: " + request.url );
 
-		if( 1 ) {
-			let poke = {
-				token: "POKE"
-			}
-			let payload_str = JSON.stringify( poke );
-
-			let HEARTBEAT = 30000; // 30 second sustain connection
-			setInterval( () =>	{
-
-				socket.send( payload_str );
-
-			}, HEARTBEAT );
-		}
-
 		print_clients();
 
 		socket.on(
@@ -126,11 +112,31 @@ wsserver.on(
 
 					if( tok === "REGISTER" )	{ // client has uuid
 
-						if( reg_list[ data_obj.client.id ].socket !== null ) {
-							// check UUID, destroy
+						// check UUID, destroy pre-existing
 
+						if( reg_list[ data_obj.client.id ].ival_id  !== null )	{
+
+							clearInterval( reg_list[ data_obj.client.id ].ival_id );
+						}
+						if( reg_list[ data_obj.client.id ].socket !== null ) {
+
+//							reg_list[ data_obj.client.id ].socket.close();
+							reg_list[ data_obj.client.id ].socket.terminate();
 						}
 						reg_list[ data_obj.client.id ].socket = socket;
+
+						if( 1 ) {
+							let HEARTBEAT = 30000; // 30 second sustain connection
+
+							reg_list[ data_obj.client.id ].ival_id = setInterval( () =>	{
+
+								let poke = {
+									token: "POKE"
+								};
+								socket.send( JSON.stringify( poke ) );
+
+							}, HEARTBEAT );
+						}
 
 					}
 					else
@@ -199,6 +205,7 @@ if( 1 )	{
 						for( let r of reg_list )	{
 
 							if( data_obj.to.includes( r.client.id ) )	{
+
 								if( r.socket.readyState === WebSocket.OPEN ) {
 									r.socket.send( JSON.stringify( message ) );
 								}

@@ -1,5 +1,7 @@
 
 export {
+	open_registration,
+	open_socket,
 	app_init,
 	app_send,
 	reg_info
@@ -13,17 +15,19 @@ let reg_info = {
 		id: -1,
 		uuid: ""
 	},
-	socket: null
+	uri: "",
+	socket: null,
+	ival_id: null
 };
 
 /////////////////////////////////////////////////////////
 
-function app_init( page_client_id,process_token_f )	{
+function app_init( page_client_id, process_token_f )	{
 
 	client_page_index_id = page_client_id;
 	process_client_token = process_token_f;
 
-	fetch_get_request( "register", register_request_handler );
+	open_registration();
 }
 
 function app_send( submit_obj )	{
@@ -46,18 +50,19 @@ function display_client_index( id )	{
 
 /////////////////////////////////////////////////////////
 
-function register_request_handler( result_obj )	{
+function open_socket()	{
 
-	console.log( "register result_obj:" );
-	console.log( JSON.stringify( result_obj, null, 2 ) );
+	if( reg_info.ival_id !== null )	{
 
-	reg_info.client = result_obj.client;
+		clearInterval( reg_info.ival_id );
+	}
+	if( reg_info.socket !== null ) {
 
-//	if( reg_info.socket !== null ) {} // destroy
+		reg_info.socket.close();
+//		reg_info.socket.terminate(); // undefined
+	}
 
-//	reg_info.socket = new WebSocket( result_obj.portal.local );
-	reg_info.socket = new WebSocket( result_obj.portal.tunnel );
-//	reg_info.socket = new WebSocket( result_obj.portal.secure );
+	reg_info.socket = new WebSocket( reg_info.uri );
 
 	reg_info.socket.addEventListener(
 		"open",
@@ -72,17 +77,20 @@ function register_request_handler( result_obj )	{
 			};
 			reg_info.socket.send( JSON.stringify( websock_reg ) );
 
-		// NOT SUFFICIENT TO SUSTAIN AGAINST TIMEOUtS
-			let HEARTBEAT = 120000; // outside of 60 sec timeout
-			setInterval( () =>	{
+			if( 1 )	{
+			// NOT SUFFICIENT TO SUSTAIN AGAINST TIMEOUtS
+				let HEARTBEAT = 120000; // outside of 60 sec timeout
 
-				let server_ping = {
-					token: "PING",
-					client: reg_info.client
-				};
-				reg_info.socket.send( JSON.stringify( server_ping ) );
+				reg_info.ival_id = setInterval( () =>	{
 
-			}, HEARTBEAT );
+					let server_ping = {
+						token: "PING",
+						client: reg_info.client
+					};
+					reg_info.socket.send( JSON.stringify( server_ping ) );
+
+				}, HEARTBEAT );
+			}
 
 		}
 	);
@@ -100,7 +108,6 @@ function register_request_handler( result_obj )	{
 				if( tok === "PONG" )	{
 
 					console.log( "server PONG" );
-
 				}
 				else
 				if( tok === "POKE" )	{
@@ -110,7 +117,6 @@ function register_request_handler( result_obj )	{
 						client: reg_info.client
 					};
 					reg_info.socket.send( JSON.stringify( server_alive ) );
-
 				}
 				else	{
 
@@ -128,7 +134,6 @@ function register_request_handler( result_obj )	{
 
 				console.log( "Client unhandled event:" );
 				console.log( JSON.stringify( data_obj, null, 2 ) );
-
 			}
 
 		}
@@ -142,6 +147,25 @@ function register_request_handler( result_obj )	{
 			console.log( " event: ", event );
 		}
 	);
+}
+
+function register_request_handler( result_obj )	{
+
+	console.log( "register result_obj:" );
+	console.log( JSON.stringify( result_obj, null, 2 ) );
+
+	reg_info.client = result_obj.client;
+
+//	reg_info.uri = result_obj.portal.local;
+	reg_info.uri = result_obj.portal.tunnel;
+//	reg_info.uri = result_obj.portal.secure;
+
+	open_socket();
+}
+
+function open_registration()	{
+
+	fetch_get_request( "register", register_request_handler );
 }
 
 /////////////////////////////////////////////////////////
@@ -186,13 +210,12 @@ function fetch_request( url, fetch_config, callback )	{
 				);
 			}
 
-			// RESUBMIT
 			if( result.status === 504 )	{
 
 				return( // timeout
 					{
 						status: true,
-						payload: "fetch_request: 504 timeout resubmit ?"
+						payload: "fetch_request: 504 timeout... resubmit ?"
 					}
 				);
 			}

@@ -16,6 +16,13 @@
 				'load',
 				function() {
 
+					document.getElementById( "reg_button" ).addEventListener(
+						'click', Client.open_registration );
+
+					document.getElementById( "sock_button" ).addEventListener(
+						'click', Client.open_socket );
+
+
 					function output_log( response_obj )	{
 
 						let log_area = document.getElementById( "output_log" );
@@ -70,11 +77,12 @@
 
 							output_log( obj );
 
+
 // test targeted message send:
 							let message = {
 								token: "send",
-								client: Client.reg_info.client,
-								to: obj.payload, // client list
+								client: Client.reg_info.client,		// credentials
+								to: obj.payload, 					// client list
 								payload: "hello from " + Client.reg_info.client.id
 							};
 							Client.app_send( message );
@@ -108,8 +116,24 @@
 		<div id="page_contents">
 
 			input:
+			<br>
+			<button id="reg_button">reg</button>
+			<button id="sock_button">sock</button>
+			:
 			<button id="who_button">who</button>
 			<button id="poke_button">poke</button>
+			<br>
+			<input id="dest_buffer"
+				type="text"
+				placeholder="enter ids"
+				size="50em"></input>
+			<br>
+			<input id="message_buffer"
+				type="text"
+				placeholder="enter message"
+				size="50em"></input>
+			<br>
+			<button id="send_button">send</button>
 			<p>
 
 			log:
