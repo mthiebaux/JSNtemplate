@@ -10,19 +10,88 @@
 
 		<script type="module">
 
-			import * as client from './client.js';
+			import * as Client from './client.js';
 
 			window.addEventListener(
 				'load',
 				function() {
 
-					document.getElementById( "who_button" ).addEventListener(
-						'click', () => client.who_server() );
+					function output_log( response_obj )	{
+
+						let log_area = document.getElementById( "output_log" );
+						log_area.value += "response: ";
+						log_area.value += JSON.stringify( response_obj, null, 4 );
+						log_area.value += '\n';
+						log_area.scrollTop = log_area.scrollHeight;
+					}
+
+					function submit_poke()	{
+
+						let poke = {
+							token: "poke",
+							client: Client.reg_info.client
+						};
+						Client.app_send( poke );
+					}
 
 					document.getElementById( "poke_button" ).addEventListener(
-						'click', () => client.poke_server() );
+						'click', submit_poke );
 
-					client.app_init( "client_index", "poke_button", "who_button", "output_log" );
+					function submit_who()	{
+						let who = {
+							token: "who",
+							client: Client.reg_info.client
+						};
+						Client.app_send( who );
+					}
+
+					document.getElementById( "who_button" ).addEventListener(
+						'click', submit_who );
+
+					function receive_token( obj )	{
+
+						if( obj.token === "poke" )	{
+
+							let alive = {
+								token: "alive",
+								payload: Client.reg_info.client.id
+							};
+							Client.app_send( alive );
+							return( true );
+						}
+						else
+						if( obj.token === "alive" ) 	{
+
+							output_log( obj );
+							return( true );
+						}
+						else
+						if( obj.token === "clients" )	{
+
+							output_log( obj );
+
+// test targeted message send:
+							let message = {
+								token: "send",
+								client: Client.reg_info.client,
+								to: obj.payload, // client list
+								payload: "hello from " + Client.reg_info.client.id
+							};
+							Client.app_send( message );
+
+							return( true );
+						}
+						else
+						if( obj.token === "message" )	{
+
+							output_log( obj );
+							return( true );
+						}
+
+						return( false ); // unhandled
+					}
+
+					Client.app_init( "client_index", receive_token );
 				}
 			);
 

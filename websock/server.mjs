@@ -172,19 +172,6 @@ if( 1 )	{
 
 					}
 					else
-					if( tok === "alive" )	{ // broadcast respondses to all poke
-
-						let bcast = {
-							token: "alive",
-							id: data_obj.client.id
-						};
-						for( let r of reg_list )	{
-							if( r.socket.readyState === WebSocket.OPEN ) {
-								r.socket.send( JSON.stringify( bcast ) );
-							}
-						}
-					}
-					else
 					if( tok === "who" )	{
 
 						let id_arr = [];
@@ -194,15 +181,45 @@ if( 1 )	{
 
 						let clients = {
 							token: "clients",
-							clients: id_arr
+							payload: id_arr
 						}
 						socket.send( JSON.stringify( clients ) );
 
 					}
+					else
+					if( tok === "send" )	{
+
+						let message = {
+							token: "message",
+							from: data_obj.client.id,
+							to: data_obj.to,
+							payload: data_obj.payload
+						}
+
+						for( let r of reg_list )	{
+
+							if( data_obj.to.includes( r.client.id ) )	{
+								if( r.socket.readyState === WebSocket.OPEN ) {
+									r.socket.send( JSON.stringify( message ) );
+								}
+							}
+						}
+
+					}
 					else	{
 
-						console.log( "unhandled message token:" );
+						console.log( "broadcast message token:" );
 						console.log( data_obj );
+
+						let bcast = {
+							token: tok,
+							payload: data_obj.payload
+						};
+						for( let r of reg_list )	{
+							if( r.socket.readyState === WebSocket.OPEN ) {
+								r.socket.send( JSON.stringify( bcast ) );
+							}
+						}
 					}
 
 				}

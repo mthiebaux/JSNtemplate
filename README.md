@@ -49,7 +49,7 @@ A POST request adds the option to pass arbitrary JSON contents to the server in 
 
 ## *Console*
 
-Tha basic *Console* app features an interactive server console, push notifications, and client to client exchange, including ping pong. Integrating the 'localtunnel' module provides a working external URL for remote testing.
+Tha basic *Console* app features an interactive server console, long-poll push notifications, and client to client exchange, including ping pong. Integrating the 'localtunnel' module provides a working external URL for remote testing.
 
 
 ## *Upgrade*
@@ -60,6 +60,11 @@ Integrating express WebSocketServer using shared port, and SSL (generates cert e
 ## *Websock*
 
 Building a clean, exemplary websocket client to replace fragile long polling and enable faster ping pong.
+
+
+## *Session*
+
+Supporting c2c client exchange (clean ping pong app) with server console diagnostics. tba
 
 
 ## Installation
@@ -312,7 +317,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 }
 ```
 
-* Once the socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration.
+* Once a socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration.
 
 ```
 socket.send(

@@ -1,14 +1,12 @@
 
 export {
 	app_init,
-	poke_server,
-	who_server
+	app_send,
+	reg_info
 };
 
 let client_page_index_id = "";
-let client_poke_button_id = "";
-let client_who_button_id = "";
-let client_output_log_id = "";
+let process_client_token = null;
 
 let reg_info = {
 	client: {
@@ -18,41 +16,23 @@ let reg_info = {
 	socket: null
 };
 
-
-
 /////////////////////////////////////////////////////////
 
-function app_init( page_client_id, poke_button_id, who_button_id, output_log_id )	{
+function app_init( page_client_id,process_token_f )	{
 
 	client_page_index_id = page_client_id;
-	client_poke_button_id = poke_button_id;
-	client_who_button_id = who_button_id;
-	client_output_log_id = output_log_id;
+	process_client_token = process_token_f;
 
 	fetch_get_request( "register", register_request_handler );
 }
 
-function who_server()	{
+function app_send( submit_obj )	{
 
 	if( reg_info.socket )	{
-
-		let who = {
-			token: "who",
-			client: reg_info.client
-		};
-		reg_info.socket.send( JSON.stringify( who ) );
+		reg_info.socket.send( JSON.stringify( submit_obj ) );
 	}
-}
-
-function poke_server()	{
-
-	if( reg_info.socket )	{
-
-		let poke = {
-			token: "poke",
-			client: reg_info.client
-		};
-		reg_info.socket.send( JSON.stringify( poke ) );
+	else	{
+		console.log( "app_send ERR: socket not registered" );
 	}
 }
 
@@ -62,15 +42,6 @@ function display_client_index( id )	{
 
 	var id_div = document.getElementById( client_page_index_id );
 	id_div.innerHTML = id;
-}
-
-function output_log_response( response_obj )	{
-
-	let log_area = document.getElementById( client_output_log_id );
-	log_area.value += "response: ";
-	log_area.value += JSON.stringify( response_obj, null, 4 );
-	log_area.value += '\n';
-	log_area.scrollTop = log_area.scrollHeight;
 }
 
 /////////////////////////////////////////////////////////
@@ -141,35 +112,16 @@ function register_request_handler( result_obj )	{
 					reg_info.socket.send( JSON.stringify( server_alive ) );
 
 				}
-				else
-				if( tok === "poke" )	{
-
-					let alive = {
-						token: "alive",
-						client: reg_info.client
-					};
-					reg_info.socket.send( JSON.stringify( alive ) );
-
-				}
-				else
-				if( tok === "clients" )	{
-
-					console.log( "clients: " + data_obj.clients );
-					output_log_response( data_obj );
-
-				}
-				else
-				if( tok === "alive" )	{
-
-					console.log( "alive: " + data_obj.id );
-					output_log_response( data_obj );
-
-				}
 				else	{
 
-					console.log( "Client unhandled token event:" );
-					console.log( JSON.stringify( data_obj, null, 2 ) );
-
+					let handled = false;
+					if( process_client_token )	{
+						handled = process_client_token( data_obj );
+					}
+					if( !handled )	{
+						console.log( "Client unhandled token event:" );
+						console.log( JSON.stringify( data_obj, null, 2 ) );
+					}
 				}
 			}
 			else	{
