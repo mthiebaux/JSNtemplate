@@ -55,6 +55,36 @@
 					document.getElementById( "who_button" ).addEventListener(
 						'click', submit_who );
 
+					function submit_send()	{
+
+						function isNumeric(n) {
+							return( !isNaN( parseFloat( n ) ) && isFinite( n ) );
+						}
+
+						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
+						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
+							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
+						).map(
+							s => Number( s )
+						).filter(
+							n => isNumeric( n )
+						);
+
+						let message = {
+							token: "send",
+							client: Client.reg_info.client,	// credentials
+							to: to_arr,						// client list
+							payload: document.getElementById( "message_buffer" ).value
+						};
+
+//						console.log( JSON.stringify( message, null, 4 ) );
+						Client.app_send( message );
+					}
+
+					document.getElementById( "send_button" ).addEventListener(
+						'click', submit_send );
+
+
 					function receive_token( obj )	{
 
 						if( obj.token === "poke" )	{
@@ -76,17 +106,6 @@
 						if( obj.token === "clients" )	{
 
 							output_log( obj );
-
-
-// test targeted message send:
-							let message = {
-								token: "send",
-								client: Client.reg_info.client,		// credentials
-								to: obj.payload, 					// client list
-								payload: "hello from " + Client.reg_info.client.id
-							};
-							Client.app_send( message );
-
 							return( true );
 						}
 						else
