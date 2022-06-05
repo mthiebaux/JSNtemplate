@@ -33,7 +33,7 @@ function app_init( client_id, input_id, output_id, log_id )	{
 	output_buffer_id = output_id;
 	output_log_id = log_id;
 
-	submit_connect_request(); // refreshes id and uuid
+	submit_connect_request(); // refresh id and uuid
 }
 
 /////////////////////////////////////////////////////////

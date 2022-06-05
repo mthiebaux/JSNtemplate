@@ -138,12 +138,14 @@ function process_message_token( socket, data_obj )	{
 			}
 			else	{
 				// uuid not matched
-
+				console.log( "REGISTER ERR: mismatched UUID" );
+				console.log( data_obj.client );
 			}
 		}
 		else	{
 			// id out of bounds
-
+			console.log( "REGISTER ERR: ID out of bounds" );
+			console.log( data_obj.client );
 		}
 
 	}
@@ -259,8 +261,6 @@ wsserver.on(
 		console.log( " request.method: " + request.method );
 		console.log( " request.url: " + request.url );
 
-//		print_clients();
-
 		socket.on(
 			"message",
 			( buffer ) => {
@@ -286,7 +286,7 @@ wsserver.on(
 
 				console.log( "WEBSOCK DISCONNECT:" );
 
-			// identify which client id...
+				// identify which client id...
 				for( let r of reg_list )	{
 					if( r.socket === socket	)	{
 
@@ -295,7 +295,6 @@ wsserver.on(
 						clearInterval( r.ival_id );
 						r.ival_id = null;
 						r.socket = null;
-
 					}
 				}
 				console.log( "  code: " + code );
@@ -338,12 +337,6 @@ function console_loop()	{
 				if( input == "who" || input == "clients" )	{
 
 					print_clients();
-/*
-					console.log( "clients:" );
-					for( let r of reg_list )	{
-						console.log( r.client );
-					}
-*/
 				}
 				else
 				if( input == "push" )	{
@@ -439,11 +432,6 @@ let tunneller = localtunnel(
 			return;
 		}
 
-//		ws_tunnel = tunnel.url.replace( "https", "ws" );
-//		ws_tunnel = tunnel.url.replace( "http", "ws" );
-//		wss_tunnel = tunnel.url.replace( "https", "wss" );
-
-//		console.log( "" );
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
 		console.log( " │   Tunnel Server:                  │" );
@@ -452,14 +440,14 @@ let tunneller = localtunnel(
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 
-///*
+/*
 		tunnel.on(
 			'request',
 			( info ) => {
 				console.log( "localtunnel request: " + JSON.stringify( info, null, 2 ) );
 			}
 		);
-//*/
+*/
 		tunnel.on(
 			'error',
 			( err ) => {
