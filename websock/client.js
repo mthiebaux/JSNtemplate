@@ -228,11 +228,16 @@ function fetch_request( url, fetch_config, callback )	{
 	).then(
 		function( result ) {
 
+			console.log( "fetch response status: " + result.status );
+
 			if( result.status === 200 )	{
+
+//	console.log( "fetch 200: " + JSON.stringify( result.json(), null, 2 ) );
 
 				return( result.json() ); // return promise passes to next handler
 			}
 
+/*
 			console.log( "RESULT status: " + result.status );
 
 			if( result.status === 404 )	{
@@ -269,18 +274,26 @@ function fetch_request( url, fetch_config, callback )	{
 					}
 				);
 			}
-
+*/
 			console.log( "UNHANDLED status: " + result.status );
+
+			throw new Error( "UNHANDLED status: " + result.status );
   		}
   	).then(
   		function( result_obj ) {
 
-			callback( result_obj ); // success
+//console.log( "fetch_request: " + result_obj );
+//			if( result_obj )	{
+
+				callback( result_obj ); // success
+//			}
 		}
   	).catch(
   		function( error ) {
+
 //  		output_log_error( "fetch_request FAILED: " + url );
-        	console.error( error );
+        	console.log( "fetch ERR: " + error );
+//        	console.error( error );
 		}
 	);
 }

@@ -46,6 +46,14 @@ function print_clients()	{
 	for( let r of reg_list )	{
 		console.log( r.client );
 	}
+	console.log( "connected clients:" );
+	for( let r of reg_list )	{
+		if( r.socket !== null ) {
+			if( r.socket.readyState === WebSocket.OPEN ) {
+				console.log( r.client );
+			}
+		}
+	}
 }
 
 //////////////////////////////////////////////////////
@@ -187,7 +195,11 @@ if( 1 )	{
 
 		let id_arr = [];
 		for( let r of reg_list )	{
-			id_arr.push( r.client.id );
+			if( r.socket !== null ) {
+				if( r.socket.readyState === WebSocket.OPEN ) {
+					id_arr.push( r.client.id );
+				}
+			}
 		}
 
 		let clients = {
@@ -247,7 +259,7 @@ wsserver.on(
 		console.log( " request.method: " + request.method );
 		console.log( " request.url: " + request.url );
 
-		print_clients();
+//		print_clients();
 
 		socket.on(
 			"message",
@@ -300,34 +312,6 @@ wsserver.on(
 
 //////////////////////////////////////////////////////
 
-function process_line_input( input )	{
-
-	if( input == "who" || input == "clients" )	{
-
-		console.log( "clients:" );
-		for( let r of reg_list )	{
-			console.log( r.client );
-		}
-	}
-	else
-	if( input == "push" )	{
-
-		for( let r of reg_list )	{
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-
-					console.log( "push: " + r.client.id );
-
-					r.socket.send( JSON.stringify( { token: "push" } ) );
-				}
-			}
-		}
-	}
-	else	{
-		console.log( "process_line_input ERR: uncaught input key: " + input );
-	}
-}
-
 function console_loop()	{
 
 	let count = 0;
@@ -350,7 +334,34 @@ function console_loop()	{
 		}
 		else	{
 			if( input.length )	{
-				process_line_input( input );
+
+				if( input == "who" || input == "clients" )	{
+
+					print_clients();
+/*
+					console.log( "clients:" );
+					for( let r of reg_list )	{
+						console.log( r.client );
+					}
+*/
+				}
+				else
+				if( input == "push" )	{
+
+					for( let r of reg_list )	{
+						if( r.socket !== null ) {
+							if( r.socket.readyState === WebSocket.OPEN ) {
+
+								console.log( "push: " + r.client.id );
+
+								r.socket.send( JSON.stringify( { token: "push" } ) );
+							}
+						}
+					}
+				}
+				else	{
+					console.log( "prompt_handler ERR: uncaught input key: " + input );
+				}
 			}
 			prompt();
 		}
@@ -475,8 +486,8 @@ process.on(
 			if( r.socket !== null ) {
 				if( r.socket.readyState === WebSocket.OPEN ) {
 
-	// localhost will restart without this, but localtunnel will not:
-					r.socket.send( JSON.stringify( { token: "close" } ) );
+	// disables client auto-reconnect
+//					r.socket.send( JSON.stringify( { token: "close" } ) );
 
 					if( r.ival_id  !== null )	{
 						clearInterval( r.ival_id );
