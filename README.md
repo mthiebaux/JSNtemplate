@@ -293,7 +293,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 ## Testing WebSock
 
-* Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid, and a socket portal to connect.
+* Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid.
 
 ```
 {
@@ -304,11 +304,6 @@ The port and tunnel URL can be changed using commandline arguments as follows:
         "params": {},
         "query": {},
         "body": {}
-    },
-    "portal": {
-        "local": "ws://localhost:8080",
-        "tunnel": "ws://dry-onions-design-174-196-198-45.loca.lt",
-        "secure": ""
     },
     "client": {
         "id": 0,

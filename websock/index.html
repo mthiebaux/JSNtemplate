@@ -16,11 +16,23 @@
 				'load',
 				function() {
 
+					document.getElementById( "reload_button" ).addEventListener(
+						'click', () => { window.location.reload() } );
+
 					document.getElementById( "reg_button" ).addEventListener(
 						'click', Client.open_registration );
 
 					document.getElementById( "sock_button" ).addEventListener(
 						'click', Client.open_socket );
+
+					document.getElementById( "poke_button" ).addEventListener(
+						'click', submit_poke );
+
+					document.getElementById( "who_button" ).addEventListener(
+						'click', submit_who );
+
+					document.getElementById( "send_button" ).addEventListener(
+						'click', submit_send );
 
 
 					function output_log( response_obj )	{
@@ -41,9 +53,6 @@
 						Client.app_send( poke );
 					}
 
-					document.getElementById( "poke_button" ).addEventListener(
-						'click', submit_poke );
-
 					function submit_who()	{
 						let who = {
 							token: "who",
@@ -51,9 +60,6 @@
 						};
 						Client.app_send( who );
 					}
-
-					document.getElementById( "who_button" ).addEventListener(
-						'click', submit_who );
 
 					function submit_send()	{
 
@@ -80,10 +86,6 @@
 //						console.log( JSON.stringify( message, null, 4 ) );
 						Client.app_send( message );
 					}
-
-					document.getElementById( "send_button" ).addEventListener(
-						'click', submit_send );
-
 
 					function receive_token( obj )	{
 
@@ -118,7 +120,7 @@
 						return( false ); // unhandled
 					}
 
-					Client.app_init( "client_index", receive_token );
+					Client.app_init( "client_index", receive_token, output_log );
 				}
 			);
 
@@ -136,6 +138,7 @@
 
 			input:
 			<br>
+			<button id="reload_button">rld</button>
 			<button id="reg_button">reg</button>
 			<button id="sock_button">sock</button>
 			:

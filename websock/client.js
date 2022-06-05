@@ -9,6 +9,7 @@ export {
 
 let client_page_index_id = "";
 let process_client_token = null;
+let output_client_log = null;
 
 let reg_info = {
 	client: {
@@ -20,12 +21,15 @@ let reg_info = {
 	ival_id: null
 };
 
+let srv_ping_out = false;
+
 /////////////////////////////////////////////////////////
 
-function app_init( page_client_id, process_token_f )	{
+function app_init( page_client_id, process_token_f, output_log_f )	{
 
 	client_page_index_id = page_client_id;
 	process_client_token = process_token_f;
+	output_client_log = output_log_f;
 
 	open_registration();
 }
@@ -42,25 +46,33 @@ function app_send( submit_obj )	{
 
 /////////////////////////////////////////////////////////
 
-function display_client_index( id )	{
+function display_client_index()	{
 
 	var id_div = document.getElementById( client_page_index_id );
-	id_div.innerHTML = id;
+	id_div.innerHTML = reg_info.client.id;
 }
 
 /////////////////////////////////////////////////////////
 
-function open_socket()	{
+function close_socket()	{
 
 	if( reg_info.ival_id !== null )	{
 
 		clearInterval( reg_info.ival_id );
+		reg_info.ival_id = null;
 	}
 	if( reg_info.socket !== null ) {
 
 		reg_info.socket.close();
 //		reg_info.socket.terminate(); // undefined
+		reg_info.socket = null;
 	}
+
+}
+
+function open_socket()	{
+
+	close_socket();
 
 	reg_info.socket = new WebSocket( reg_info.uri );
 
@@ -68,7 +80,7 @@ function open_socket()	{
 		"open",
 		function( event ) {
 
-			display_client_index( reg_info.client.id );
+			display_client_index();
 			console.log( "Client open event." );
 
 			let websock_reg = {
@@ -78,16 +90,29 @@ function open_socket()	{
 			reg_info.socket.send( JSON.stringify( websock_reg ) );
 
 			if( 1 )	{
-			// NOT SUFFICIENT TO SUSTAIN AGAINST TIMEOUtS
-				let HEARTBEAT = 120000; // outside of 60 sec timeout
+			// NOT SUFFICIENT TO SUSTAIN AGAINST TIMEOUTS
+
+//				let HEARTBEAT = 120000; // outside of 60 sec timeout
+				let HEARTBEAT = 10000; // inside of 30 sec server poke
 
 				reg_info.ival_id = setInterval( () =>	{
 
-					let server_ping = {
-						token: "PING",
-						client: reg_info.client
-					};
-					reg_info.socket.send( JSON.stringify( server_ping ) );
+					if( srv_ping_out )	{
+
+						console.log( "ERR: PONG not received after " + HEARTBEAT );
+						srv_ping_out = false;
+
+						open_registration();
+					}
+					else	{
+
+						let server_ping = {
+							token: "PING",
+							client: reg_info.client
+						};
+						srv_ping_out = true;
+						reg_info.socket.send( JSON.stringify( server_ping ) );
+					}
 
 				}, HEARTBEAT );
 			}
@@ -107,6 +132,7 @@ function open_socket()	{
 
 				if( tok === "PONG" )	{
 
+					srv_ping_out = false;
 					console.log( "server PONG" );
 				}
 				else
@@ -118,13 +144,27 @@ function open_socket()	{
 					};
 					reg_info.socket.send( JSON.stringify( server_alive ) );
 				}
+				else
+				if( tok === "push" )	{ // server initiated push token
+
+					output_client_log( { msg: "server push." } );
+					console.log( "server push" );
+				}
+				else
+				if( tok === "close" )	{ // server initiated close on exit
+
+					close_socket();
+					reg_info.client.id = -1;
+					reg_info.client.uuid = "";
+					display_client_index();
+
+					output_client_log( { msg: "server closed." } );
+					console.log( "Server closed." );
+				}
 				else	{
 
-					let handled = false;
-					if( process_client_token )	{
-						handled = process_client_token( data_obj );
-					}
-					if( !handled )	{
+					if( process_client_token( data_obj ) == false )	{ // hand off to app
+
 						console.log( "Client unhandled token event:" );
 						console.log( JSON.stringify( data_obj, null, 2 ) );
 					}
@@ -156,9 +196,19 @@ function register_request_handler( result_obj )	{
 
 	reg_info.client = result_obj.client;
 
-//	reg_info.uri = result_obj.portal.local;
-	reg_info.uri = result_obj.portal.tunnel;
-//	reg_info.uri = result_obj.portal.secure;
+/*
+	console.log( "href:			" + window.location.href );
+	console.log( "origin:		" + window.location.origin );
+	console.log( "protocol:		" + window.location.protocol );	// http:
+	console.log( "host:			" + window.location.host );		// localhost:8080
+	console.log( "hostname:		" + window.location.hostname );
+	console.log( "pathname:		" + window.location.pathname );
+	console.log( "port:			" + window.location.port );
+*/
+// When SSL certs are functioning, check location.protocol for https --> wss
+
+	reg_info.uri = "ws://" + window.location.host;
+	console.log( "WebSocket URI: " + reg_info.uri );
 
 	open_socket();
 }
