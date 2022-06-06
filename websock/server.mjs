@@ -17,7 +17,7 @@ server.use( requestID() );
 server.get( '/favicon.ico', ( req, res ) => res.status( 204 ).end() );
 
 const wsserver = new WebSocketServer(
-	{ noServer: true }
+	{ noServer: true } // express server upgrade routing to ws
 );
 
 //////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ function process_message_token( socket, data_obj )	{
 
 	if( tok === "REGISTER" )	{ // client has uuid
 
-		// check UUID, destroy pre-existing ?
+		// check UUID, destroy pre-existing or block mismatched registration ?
 
 		if( ( data_obj.client.id >= 0 )&&( data_obj.client.id < reg_list.length ) )	{
 
@@ -124,7 +124,7 @@ function process_message_token( socket, data_obj )	{
 				reg_list[ data_obj.client.id ].socket = socket;
 
 				if( 1 ) {
-					let HEARTBEAT = 30000; // 30 second sustain connection
+					let HEARTBEAT = 30000; // 30 second sustain connection before 60 sec timeout
 
 					reg_list[ data_obj.client.id ].ival_id = setInterval( () =>	{
 
@@ -152,6 +152,7 @@ function process_message_token( socket, data_obj )	{
 	else
 	if( tok === "PING" )	{ // client initiated
 		// not sufficient to sustain connection
+		// used to auto-reconnect with server restart
 
 		console.log( data_obj );
 		socket.send( JSON.stringify( { token: "PONG" } ) );
@@ -169,8 +170,6 @@ function process_message_token( socket, data_obj )	{
 		let bcast = {
 			token: "poke"
 		};
-
-if( 1 )	{
 		for( let r of reg_list )	{
 		//	if( r.socket !== socket ) // send to self ?
 			if( r.socket !== null ) {
@@ -179,18 +178,6 @@ if( 1 )	{
 				}
 			}
 		}
-} else	{
-		wsserver.clients.forEach(
-			function( client ) {
-
-//		  		if (client !== socket && client.readyState === WebSocket.OPEN) {
-				if( client.readyState === WebSocket.OPEN ) {
-					client.send( JSON.stringify( bcast ) );
-				}
-			}
-		);
-}
-
 	}
 	else
 	if( tok === "who" )	{
@@ -203,7 +190,6 @@ if( 1 )	{
 				}
 			}
 		}
-
 		let clients = {
 			token: "clients",
 			payload: id_arr
@@ -220,7 +206,6 @@ if( 1 )	{
 			to: data_obj.to,
 			payload: data_obj.payload
 		}
-
 		for( let r of reg_list )	{
 
 			if( data_obj.to.includes( r.client.id ) )	{
@@ -305,7 +290,6 @@ wsserver.on(
 		socket.onerror = function ( err ) {
 			console.log( "Some Error occurred: " + err );
 		};
-
 	}
 );
 
@@ -392,7 +376,7 @@ let listener = server.listen(
 		console.log( " │                                   │" );
 		console.log( " └───────────────────────────────────┘" );
 
-//		console_loop();
+//		console_loop(); // moved to tunnel start
 	}
 );
 
@@ -474,7 +458,7 @@ process.on(
 			if( r.socket !== null ) {
 				if( r.socket.readyState === WebSocket.OPEN ) {
 
-	// disables client auto-reconnect
+	// This will disable client auto-reconnect
 //					r.socket.send( JSON.stringify( { token: "close" } ) );
 
 					if( r.ival_id  !== null )	{

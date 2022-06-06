@@ -68,6 +68,7 @@
 						}
 
 						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
+
 						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
 							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
 						).map(
@@ -148,12 +149,11 @@
 			<input id="dest_buffer"
 				type="text"
 				placeholder="enter ids"
-				size="50em"></input>
-			<br>
+				size="20em"></input>
 			<input id="message_buffer"
 				type="text"
 				placeholder="enter message"
-				size="50em"></input>
+				size="30em"></input>
 			<br>
 			<button id="send_button">send</button>
 			<p>

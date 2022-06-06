@@ -7,6 +7,13 @@ export {
 	reg_info
 };
 
+/*
+import from app.js
+	client_page_index_id
+	process_client_token
+	output_client_log
+*/
+
 let client_page_index_id = "";
 let process_client_token = null;
 let output_client_log = null;
@@ -64,7 +71,6 @@ function close_socket()	{
 	if( reg_info.socket !== null ) {
 
 		reg_info.socket.close();
-//		reg_info.socket.terminate(); // undefined
 		reg_info.socket = null;
 	}
 
@@ -90,7 +96,8 @@ function open_socket()	{
 			reg_info.socket.send( JSON.stringify( websock_reg ) );
 
 			if( 1 )	{
-			// NOT SUFFICIENT TO SUSTAIN AGAINST TIMEOUTS
+			// not sufficient to sustain connection against timeouts
+			// used to auto-reconnect with server restart
 
 //				let HEARTBEAT = 120000; // outside of 60 sec timeout
 				let HEARTBEAT = 10000; // inside of 30 sec server poke
@@ -153,6 +160,7 @@ function open_socket()	{
 				else
 				if( tok === "close" )	{ // server initiated close on exit
 
+	// This will disable client auto-reconnect
 					close_socket();
 					reg_info.client.id = -1;
 					reg_info.client.uuid = "";
@@ -228,72 +236,22 @@ function fetch_request( url, fetch_config, callback )	{
 	).then(
 		function( result ) {
 
-			console.log( "fetch response status: " + result.status );
-
 			if( result.status === 200 )	{
-
-//	console.log( "fetch 200: " + JSON.stringify( result.json(), null, 2 ) );
 
 				return( result.json() ); // return promise passes to next handler
 			}
-
-/*
-			console.log( "RESULT status: " + result.status );
-
-			if( result.status === 404 )	{
-				return(
-					{
-						status: false,
-						payload: "fetch_request: 404 error"
-					}
-				);
-			}
-			if( result.status === 500 )	{
-				return(
-					{
-						status: false,
-						payload: "fetch_request: 500 Internal Server Error"
-					}
-				);
-			}
-			if( result.status === 502 )	{
-				return(
-					{
-						status: false,
-						payload: "fetch_request: 502 Bad Gateway"
-					}
-				);
-			}
-
-			if( result.status === 504 )	{
-
-				return( // timeout
-					{
-						status: true,
-						payload: "fetch_request: 504 timeout... resubmit ?"
-					}
-				);
-			}
-*/
-			console.log( "UNHANDLED status: " + result.status );
 
 			throw new Error( "UNHANDLED status: " + result.status );
   		}
   	).then(
   		function( result_obj ) {
 
-//console.log( "fetch_request: " + result_obj );
-//			if( result_obj )	{
-
-				callback( result_obj ); // success
-//			}
+			callback( result_obj ); // success
 		}
   	).catch(
   		function( error ) {
 
-//  		output_log_error( "fetch_request FAILED: " + url );
         	console.log( "fetch ERR: " + error );
-//        	console.error( error );
 		}
 	);
 }

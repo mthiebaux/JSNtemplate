@@ -332,7 +332,18 @@ socket.send(
 
 * Each *WebSock* channel is kept open against timeouts using hidden POKE and ALIVE tokens.
 
-* The client's *who* button logs the server client list, and the *poke* button logs client 'alive' response tokens.
+* Each client uses hidden PING/PONG tokens to detect an unresponsive server, and re-register if necessary.
+
+* Auxiliary client buttons are used to analyze fault tolerance procedures, server restart, etc:
+
+** *rld* will reload entire page from server, acquiring a new id.
+** *reg* will re-register existing page with server, with new id.
+** *sock* will reconnect with a new socket using existing id.
+
+* The client's *who* button logs the server's active client list, and the *poke* button logs client 'alive' response tokens.
+
+* The first text input field accepts integer ids, followed by an arbitrary text message for forwarding to peers, using the *send* button.
+
 
 
 
