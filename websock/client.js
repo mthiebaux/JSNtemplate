@@ -251,7 +251,7 @@ function fetch_request( url, fetch_config, callback )	{
   	).catch(
   		function( error ) {
 
-        	console.log( "fetch ERR: " + error );
+        	console.log( error );
 		}
 	);
 }
