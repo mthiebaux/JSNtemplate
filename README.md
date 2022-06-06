@@ -64,7 +64,7 @@ Building a clean, exemplary websocket client to replace fragile long polling and
 
 ### *Session*
 
-Supporting c2c client exchange (clean ping pong app) with server console diagnostics. tba
+Building on *WebSock* client exchange with ping pong message protocol.
 
 
 ## Installation
@@ -360,5 +360,8 @@ connected clients:
 { id: 1, uuid: 'bd4f5363-d040-40a1-9708-b15717d1f75d' }
 { id: 2, uuid: '6d1c1cf7-dac5-4543-8613-727215278464' }
 ```
+
+## Testing Session
+
 
 
