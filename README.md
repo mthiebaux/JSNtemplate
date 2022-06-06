@@ -336,9 +336,7 @@ socket.send(
 
 * This two step process ensures that the server's socket connection handlers are mapped to the correct client identifiers, to maintain two-way push communication and forwarding.
 
-* Each *WebSock* channel is kept open against timeouts using hidden POKE and ALIVE tokens.
-
-* Each client uses hidden PING/PONG tokens to detect an unresponsive server, and re-register if necessary.
+* Each *WebSock* channel is kept open against network timeouts using hidden POKE and ALIVE tokens. Each client uses hidden PING/PONG tokens to detect an unresponsive server, and re-register if necessary.
 
 * Auxiliary client buttons are used to analyze fault tolerance procedures, server restart, etc:
 
@@ -348,7 +346,7 @@ socket.send(
 
 * The client's *who* button logs the server's active client list, and the *poke* button logs client 'alive' response tokens.
 
-* The first text input field accepts integer ids, followed by an arbitrary text message for forwarding to peers, using the *send* button.
+* The first text input field accepts integer client ids, followed by an arbitrary text message for forwarding to peers, using the *send* button.
 
 * The app console allows inspection of the client connections with the *who* command:
 
