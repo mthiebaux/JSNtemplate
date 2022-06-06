@@ -293,7 +293,13 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 ## Testing WebSock
 
-* Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid.
+* The *WebSock* app requires one extra lightweight module to support sockets in conjunction with localtunnel:
+
+```
+> npm install ws
+```
+
+* Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid:
 
 ```
 {
@@ -312,7 +318,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 }
 ```
 
-* Once a socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration.
+* Once a socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration:
 
 ```
 socket.send(
@@ -344,6 +350,17 @@ socket.send(
 
 * The first text input field accepts integer ids, followed by an arbitrary text message for forwarding to peers, using the *send* button.
 
+* The app console allows inspection of the client connections with the *who* command:
 
+```
+> who
+registered clients:
+{ id: 0, uuid: 'cab5b616-2f15-46de-a9e9-4b30c10f08e8' }
+{ id: 1, uuid: 'bd4f5363-d040-40a1-9708-b15717d1f75d' }
+{ id: 2, uuid: '6d1c1cf7-dac5-4543-8613-727215278464' }
+connected clients:
+{ id: 1, uuid: 'bd4f5363-d040-40a1-9708-b15717d1f75d' }
+{ id: 2, uuid: '6d1c1cf7-dac5-4543-8613-727215278464' }
+```
 
 

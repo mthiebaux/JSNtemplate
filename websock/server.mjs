@@ -329,7 +329,7 @@ function console_loop()	{
 						if( r.socket !== null ) {
 							if( r.socket.readyState === WebSocket.OPEN ) {
 
-								console.log( "push: " + r.client.id );
+//								console.log( "push: " + r.client.id );
 
 								r.socket.send( JSON.stringify( { token: "push" } ) );
 							}
