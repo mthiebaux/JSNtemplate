@@ -19,7 +19,7 @@
 | *WebSock*     | ws install          | 3.3 MB |
 
 
-## *Vanilla*
+### *Vanilla*
 
 Vanilla just means a 'bare bones' implementation, using older, built-in JavaScript features such as XMLHttpRequest() on the client side, and http.createServer() on the server side.
 
@@ -29,11 +29,11 @@ More specifically, they illustrate what is really happening behind the scenes wh
 
 There are no packages required other than what Node.js includes by default. One key drawback to the basic http server is that you must explicitly handle any and all GET requests for all types of files.
 
-## *Module*
+### *Module*
 
 Converting to strict ESM module specification for import/export, server scripts have been named with the *.mjs* extension. This is deemed preferable to setting a global flag in *package.json*, for backward compatibility with CJS libraries.
 
-## *Express*
+### *Express*
 
 As the name suggests, the *Express* app imports the 'express' module which brings with it a lot of essential functionality, like automatic URL query parsing.
 
@@ -47,22 +47,22 @@ The example GET/POST handlers in server.mjs demonstrate parameter passing via tr
 A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring that these parameters be exposed in the URL.
 
 
-## *Console*
+### *Console*
 
 Tha basic *Console* app features an interactive server console, long-poll push notifications, and client to client exchange, including ping pong. Integrating the 'localtunnel' module provides a working external URL for remote testing.
 
 
-## *Upgrade*
+### *Upgrade*
 
 Integrating express WebSocketServer using shared port, and SSL (generates cert errors in Safari).
 
 
-## *Websock*
+### *Websock*
 
 Building a clean, exemplary websocket client to replace fragile long polling and enable faster ping pong.
 
 
-## *Session*
+### *Session*
 
 Supporting c2c client exchange (clean ping pong app) with server console diagnostics. tba
 
@@ -253,7 +253,7 @@ response: {
 If the server is restarted, a client can reconnect using the *conn* button and will receive a new id. The client's *push* button will submit a request to the server to push a token to all current clients, updating the long poll queue.
 
 
-## *Ping Pong*
+### *Ping Pong*
 
 A client can initiate a ping pong session with any other clients by issuing a 'ping' message. For example, client 0 issues the following to client 1:
 
@@ -274,7 +274,7 @@ Once stopped, the client will not join a loop again until it receives a 'start' 
 ```
 
 
-## *Localtunnel*
+### *Localtunnel*
 
 The *Console* app automatically sets up a localtunnel URL for public access to the client, using port 8080. When the server is running, the client can access it directly via a sharable, auto-generated URL resembling the following:
 
