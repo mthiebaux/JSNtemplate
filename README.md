@@ -64,7 +64,7 @@ Building a clean, exemplary websocket client to replace fragile long polling and
 
 ### *Session*
 
-Building on *WebSock* client exchange with ping pong message protocol.
+Building on *WebSock* client exchange with ping pong message protocol. Consideration for persistent client sessions using stored account state, to traverse auto-reconnect events.
 
 
 ## Installation

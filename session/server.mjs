@@ -123,6 +123,9 @@ function process_message_token( socket, data_obj )	{
 				}
 				reg_list[ data_obj.client.id ].socket = socket;
 
+				console.log( "CONNECT CLIENT:" );
+				console.log( data_obj.client );
+
 				if( 1 ) {
 					let HEARTBEAT = 30000; // 30 second sustain connection before 60 sec timeout
 
