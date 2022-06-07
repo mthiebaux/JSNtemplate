@@ -348,7 +348,7 @@ socket.send(
 
 * The client text input fields accept a list of integer client ids, and an arbitrary text message for forwarding to peers, using the *send* button.
 
-* The app console allows inspection of the client connections with the *who* command:
+* The server console allows inspection of the client connections with the *who* command:
 
 ```
 > who
