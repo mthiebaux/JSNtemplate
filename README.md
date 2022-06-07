@@ -346,7 +346,7 @@ socket.send(
 
 * The client's *who* button logs the server's active client list, and the *poke* button logs client 'alive' response tokens.
 
-* The text input fields accept a list of integer client ids, and an arbitrary text message for forwarding to peers, using the *send* button.
+* The client text input fields accept a list of integer client ids, and an arbitrary text message for forwarding to peers, using the *send* button.
 
 * The app console allows inspection of the client connections with the *who* command:
 
