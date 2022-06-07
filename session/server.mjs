@@ -373,7 +373,7 @@ let listener = server.listen(
 
 		console.log( " ┌───────────────────────────────────┐" );
 		console.log( " │                                   │" );
-		console.log( " │   WebSock Http Server:            │" );
+		console.log( " │   Session Http Server:            │" );
 		console.log( " │                                   │" );
 		console.log( " │       http://localhost:" + port + "       │" );
 		console.log( " │                                   │" );

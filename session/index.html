@@ -35,11 +35,12 @@
 					function output_log( response_obj )	{
 
 						let log_area = document.getElementById( "output_log" );
-						log_area.value += "response: ";
+//						log_area.value += "response: ";
 						log_area.value += JSON.stringify( response_obj, null, 4 );
 						log_area.value += '\n';
 						log_area.scrollTop = log_area.scrollHeight;
 					}
+					output_log( "HELLO" );
 
 					function submit_poke()	{
 
@@ -191,18 +192,22 @@
 
 		<div id="page_contents">
 
-			input:
+			input:<br>
+			<input id="name_buffer"
+				type="text"
+				placeholder="your name"
+				size="15em"></input>
 			<button id="who_button">who</button>
 			<button id="poke_button">poke</button>
 			<br>
 			<input id="dest_buffer"
 				type="text"
 				placeholder="enter ids"
-				size="20em"></input>
+				size="15em"></input>
 			<input id="message_buffer"
 				type="text"
 				placeholder="enter message"
-				size="30em"></input>
+				size="25em"></input>
 			<br>
 			<button id="send_button">send</button>
 			<p>

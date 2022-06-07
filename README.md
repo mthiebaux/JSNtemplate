@@ -363,5 +363,6 @@ connected clients:
 
 ## Testing Session
 
+<img src="./images/session_client.png" width="500">
 
 
