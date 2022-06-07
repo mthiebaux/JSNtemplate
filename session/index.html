@@ -59,12 +59,16 @@
 					}
 
 					function submit_send()	{
+/*
+	send to: [ id list ]
+	send to: all
+	send to: other
+*/
+						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
 
 						function isNumeric(n) {
 							return( !isNaN( parseFloat( n ) ) && isFinite( n ) );
 						}
-
-						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
 
 						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
 							s => { let t = s.trim(); return( t.length ); }	// strip out any ''

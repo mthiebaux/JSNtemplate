@@ -57,7 +57,7 @@ Tha basic *Console* app features an interactive server console, long-poll push n
 Integrating express WebSocketServer using shared port, and SSL (generates cert errors in Safari).
 
 
-### *Websock*
+### *WebSock*
 
 Building a clean, exemplary websocket client to replace fragile long polling and enable faster ping pong.
 
