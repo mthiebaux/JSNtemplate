@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<title>storage client</title>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+		<script type="module">
+
+			window.addEventListener(
+				'load',
+				function() {
+
+					document.getElementById( "button" ).addEventListener(
+						'click', submit_button );
+
+					function submit_button()	{
+
+						output_log( "button" );
+					}
+
+					function output_log( output_obj )	{
+
+						let log_area = document.getElementById( "output_log" );
+						log_area.value += JSON.stringify( output_obj, null, 4 );
+						log_area.value += '\n';
+						log_area.scrollTop = log_area.scrollHeight;
+					}
+					output_log( "HELLO" );
+/*
+					output_log( sessionStorage );
+					console.log( sessionStorage );
+					console.log( sessionStorage.length );
+
+					sessionStorage.setItem( 'test-key3', 'test-value' );
+
+					output_log( sessionStorage );
+					console.log( sessionStorage );
+					console.log( sessionStorage.length );
+*/
+					sessionStorage.clear();
+
+					output_log( localStorage );
+					console.log( localStorage );
+					console.log( localStorage.length );
+
+//					localStorage.setItem( 'perm-key-lh-0', 'perm-value' );
+//					localStorage.setItem( 'perm-key-lt-0', 'perm-value' );
+
+					output_log( localStorage );
+					console.log( localStorage );
+					console.log( localStorage.length );
+
+//					localStorage.clear();
+
+/*
+					const key = "jsntemplate-storage-app";
+
+					let val_obj = {
+
+						profiles:	{
+
+							"A": {
+
+								"registration":	"a07d4b07-fd03-4587-84f1-ef6795a8afd9",
+								"session":		"fb047635-c3ba-4624-97bf-ec32576b4b9f"
+							},
+							"B": {
+
+								"registration":	"7853b338-736c-4484-bd0d-f520fc6477c9",
+								"session":		""
+							}
+						}
+					};
+
+					let val_str = JSON.stringify( val_obj );
+
+					localStorage.setItem( key, val_str );
+*/
+
+
+				}
+			);
+
+		</script>
+
+	</head>
+
+	<body>
+
+		<div class="page_header">
+			<h1><em>Storage</em> Client <div id="client_index" style="display: inline;"></div></h1>
+		</div>
+
+		<div id="page_contents">
+
+			input:<br>
+			<button id="button">button</button>
+			<br>
+			log:
+			<br>
+			<textarea id="output_log" readonly=true rows="12" cols="40"></textarea>
+
+		</div>
+
+		<div class="page_footer">
+			<p>
+			<em> © thiebaux 2022 </em>
+		</div>
+
+	</body>
+</html>

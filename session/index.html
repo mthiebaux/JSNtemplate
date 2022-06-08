@@ -18,15 +18,20 @@
 			let ping_count = 0;
 			let pong_count = 0;
 
+			function app_on_load()	{
+
+
+			}
+
 			window.addEventListener(
 				'load',
 				function() {
 
-					document.getElementById( "poke_button" ).addEventListener(
-						'click', submit_poke );
-
 					document.getElementById( "who_button" ).addEventListener(
 						'click', submit_who );
+
+					document.getElementById( "poke_button" ).addEventListener(
+						'click', submit_poke );
 
 					document.getElementById( "send_button" ).addEventListener(
 						'click', submit_send );
@@ -197,6 +202,8 @@
 				type="text"
 				placeholder="your name"
 				size="15em"></input>
+			<button id="who_button">conn</button>
+			:
 			<button id="who_button">who</button>
 			<button id="poke_button">poke</button>
 			<br>
