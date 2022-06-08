@@ -4,7 +4,9 @@
 
 <img src="./images/express_client.png" width="500">
 
-* Comparing a bare-bones CJS server with full featured 'express' server module. These utility templates make implementing a flexible server API an easy task, and demonstrate versatile vanilla RPC (remote procedure) support. With RPC, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
+* Comparing a bare-bones CJS server with full featured 'express' server module and beyond. This is a series of independent client-server web apps, which build progressively on each other by introducing functionality from established node modules.
+
+* These utility templates make implementing a flexible server API an easy task, and demonstrate versatile vanilla RPC (remote procedure) support. With RPC, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
 * An interactive server console facilitates development and diagnostics of more complex communication. Clients are identified by simple id and UUID using 'express-request-id', *localtunnel* enables external testing, and push notifications are implemented with both long polling and websocket connections.
 
@@ -71,7 +73,7 @@ The localStorage allocations persist across system reboot, and can quickly becom
 
 ### *Session*
 
-Building on *WebSock* client exchange with ping pong message protocol. Consideration for persistent client sessions using stored account state (see *Storage* app), to traverse auto-reconnect events.
+Building on *WebSock* message exchange with client-to-client ping pong message protocol. Consideration for persistent client sessions using stored account state (see *Storage* app), to traverse auto-reconnect events.
 
 
 ## Installation
