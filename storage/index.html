@@ -14,12 +14,107 @@
 				'load',
 				function() {
 
-					document.getElementById( "button" ).addEventListener(
-						'click', submit_button );
+					const local_storage_app_key = "jsntemplate-storage-app";
+//					const local_storage_app_key = "jsntemplate-storage-appX";
 
-					function submit_button()	{
+if( 0 )	{
+					localStorage.clear();
+}
+if( 1 )	{
+			// run once after clearing website-data from browsers
+					function testing_profile_setup()	{
 
-						output_log( "button" );
+						localStorage.clear();
+						let app_storage_obj = {
+							profiles:	{
+								"A": {
+									"registration":	"a07d4b07-fd03-4587-84f1-ef6795a8afd9",
+									"session":		"fb047635-c3ba-4624-97bf-ec32576b4b9f"
+								},
+								"B": {
+									"registration":	"7853b338-736c-4484-bd0d-f520fc6477c9",
+									"session":		""
+								}
+							}
+						};
+						localStorage.setItem( local_storage_app_key, JSON.stringify( app_storage_obj ) );
+					}
+					testing_profile_setup();
+}
+
+					function init_local_storage_profiles()	{ // create if none exists
+
+						if( localStorage.getItem( local_storage_app_key ) === null )	{
+
+							console.log( "init: create: " + local_storage_app_key );
+
+							localStorage.setItem(
+								local_storage_app_key,
+								JSON.stringify( { profiles: {} } )
+							);
+						}
+					}
+					init_local_storage_profiles(); // ensure it exists
+
+					function add_local_storage_profile( name )	{
+
+						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+						if( app_storage_obj.profiles.hasOwnProperty( name ) )	{
+
+							output_log( "ERR: name exists: " + name );
+						}
+						else	{
+
+							app_storage_obj.profiles[ name ] = {
+								registration: "",
+								session: ""
+							};
+							localStorage.setItem(
+								local_storage_app_key,
+								JSON.stringify( app_storage_obj )
+							);
+						}
+						return( app_storage_obj.profiles[ name ] );
+					}
+					function get_local_storage_profile( name )	{
+
+						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+						if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
+
+							return( app_storage_obj.profiles[ name ] );
+						}
+						output_log( "Creating new profile: " + name );
+						return( null );
+					}
+
+					function update_profile_registration( name, uuid )	{
+
+					}
+					function update_profile_session( name, uuid )	{
+
+					}
+
+					function print_local_storage()	{
+
+						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+						output_log( app_storage_obj );
+					}
+
+					function submit_conn_button()	{
+
+						let name = document.getElementById( "name_buffer" ).value.trim();
+						if( name )	{
+							let profile = get_local_storage_profile( name );
+							if( profile === null )	{
+								profile = add_local_storage_profile( name );
+							}
+							output_log( profile );
+						}
+						else	{
+							output_log( "ERR: non-empty name string required" );
+						}
 					}
 
 					function output_log( output_obj )	{
@@ -29,58 +124,14 @@
 						log_area.value += '\n';
 						log_area.scrollTop = log_area.scrollHeight;
 					}
+
+					document.getElementById( "conn_button" ).addEventListener(
+						'click', submit_conn_button );
+
+					document.getElementById( "storage_button" ).addEventListener(
+						'click', print_local_storage );
+
 					output_log( "HELLO" );
-/*
-					output_log( sessionStorage );
-					console.log( sessionStorage );
-					console.log( sessionStorage.length );
-
-					sessionStorage.setItem( 'test-key3', 'test-value' );
-
-					output_log( sessionStorage );
-					console.log( sessionStorage );
-					console.log( sessionStorage.length );
-*/
-					sessionStorage.clear();
-
-					output_log( localStorage );
-					console.log( localStorage );
-					console.log( localStorage.length );
-
-//					localStorage.setItem( 'perm-key-lh-0', 'perm-value' );
-//					localStorage.setItem( 'perm-key-lt-0', 'perm-value' );
-
-					output_log( localStorage );
-					console.log( localStorage );
-					console.log( localStorage.length );
-
-//					localStorage.clear();
-
-/*
-					const key = "jsntemplate-storage-app";
-
-					let val_obj = {
-
-						profiles:	{
-
-							"A": {
-
-								"registration":	"a07d4b07-fd03-4587-84f1-ef6795a8afd9",
-								"session":		"fb047635-c3ba-4624-97bf-ec32576b4b9f"
-							},
-							"B": {
-
-								"registration":	"7853b338-736c-4484-bd0d-f520fc6477c9",
-								"session":		""
-							}
-						}
-					};
-
-					let val_str = JSON.stringify( val_obj );
-
-					localStorage.setItem( key, val_str );
-*/
-
 
 				}
 			);
@@ -98,11 +149,17 @@
 		<div id="page_contents">
 
 			input:<br>
-			<button id="button">button</button>
-			<br>
+			<input id="name_buffer"
+				type="text"
+				placeholder="your name"
+				size="15em"></input>
+			<button id="conn_button">connect</button>
+			<button id="storage_button">storage</button>
+			<p>
+
 			log:
 			<br>
-			<textarea id="output_log" readonly=true rows="12" cols="40"></textarea>
+			<textarea id="output_log" readonly=true rows="12" cols="60"></textarea>
 
 		</div>
 
