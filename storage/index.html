@@ -17,12 +17,14 @@
 					const local_storage_app_key = "jsntemplate-storage-app";
 //					const local_storage_app_key = "jsntemplate-storage-appX";
 
+/////////////////////////////////
+
 if( 0 )	{
 					localStorage.clear();
 }
-if( 1 )	{
+if( 0 )	{
 			// run once after clearing website-data from browsers
-					function testing_profile_setup()	{
+					function profile_testing_setup()	{
 
 						localStorage.clear();
 						let app_storage_obj = {
@@ -39,14 +41,15 @@ if( 1 )	{
 						};
 						localStorage.setItem( local_storage_app_key, JSON.stringify( app_storage_obj ) );
 					}
-					testing_profile_setup();
+					profile_testing_setup();
 }
+/////////////////////////////////
 
 					function init_local_storage_profiles()	{ // create if none exists
 
 						if( localStorage.getItem( local_storage_app_key ) === null )	{
 
-							console.log( "init: create: " + local_storage_app_key );
+							console.log( "Creating new storage: " + local_storage_app_key );
 
 							localStorage.setItem(
 								local_storage_app_key,
@@ -85,15 +88,25 @@ if( 1 )	{
 
 							return( app_storage_obj.profiles[ name ] );
 						}
-						output_log( "Creating new profile: " + name );
 						return( null );
 					}
 
-					function update_profile_registration( name, uuid )	{
+					function update_profile_field( name, field, uuid )	{
 
-					}
-					function update_profile_session( name, uuid )	{
+						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
 
+						if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
+
+							let profile = app_storage_obj.profiles[ name ];
+							profile[ field ] = uuid;
+
+							localStorage.setItem(
+								local_storage_app_key,
+								JSON.stringify( app_storage_obj )
+							);
+							return;
+						}
+						output_log( "Update \'" + field + "\' ERR: name does not exist: " + name );
 					}
 
 					function print_local_storage()	{
@@ -108,8 +121,11 @@ if( 1 )	{
 						if( name )	{
 							let profile = get_local_storage_profile( name );
 							if( profile === null )	{
+
+								output_log( "Creating new profile: " + name );
 								profile = add_local_storage_profile( name );
 							}
+							output_log( "Connect: " + name );
 							output_log( profile );
 						}
 						else	{
@@ -132,6 +148,9 @@ if( 1 )	{
 						'click', print_local_storage );
 
 					output_log( "HELLO" );
+
+
+//					update_profile_field( "D", "registration", "XXX" );
 
 				}
 			);
