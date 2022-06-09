@@ -11,10 +11,10 @@
 * An interactive server console facilitates development and diagnostics of more complex communication. Clients are identified by simple id and UUID using 'express-request-id', *localtunnel* enables external testing, and push notifications are implemented with both long polling and websocket connections.
 
 
-| template      | dependency  | size
-| ------------- |:------- ---:|:-------------:|
-| *Vanilla*     | defaults    | 9 KB |
-| *Module*      | defaults    | 9 KB |
+| template      | dependency  | size   |
+| ------------- |:-----------:|:------:|
+| *Vanilla*     | defaults    | 9 KB   |
+| *Module*      | defaults    | 9 KB   |
 | *Express*     | express     | 1.9 MB |
 | *Console*     | request-id  | 2.1 MB |
 | *-tunnel*     | localtunnel | 3.2 MB |
