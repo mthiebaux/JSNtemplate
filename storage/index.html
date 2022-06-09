@@ -10,120 +10,27 @@
 
 		<script type="module">
 
+			import * as Client from './client.js';
+
 			window.addEventListener(
 				'load',
 				function() {
 
-					const local_storage_app_key = "jsntemplate-storage-app";
-//					const local_storage_app_key = "jsntemplate-storage-appX";
+					document.getElementById( "storage_button" ).addEventListener(
+						'click', Client.print_local_storage );
 
-/////////////////////////////////
-
-if( 0 )	{
-					localStorage.clear();
-}
-if( 0 )	{
-			// run once after clearing website-data from browsers
-					function profile_testing_setup()	{
-
-						localStorage.clear();
-						let app_storage_obj = {
-							profiles:	{
-								"A": {
-									"registration":	"a07d4b07-fd03-4587-84f1-ef6795a8afd9",
-									"session":		"fb047635-c3ba-4624-97bf-ec32576b4b9f"
-								},
-								"B": {
-									"registration":	"7853b338-736c-4484-bd0d-f520fc6477c9",
-									"session":		""
-								}
-							}
-						};
-						localStorage.setItem( local_storage_app_key, JSON.stringify( app_storage_obj ) );
-					}
-					profile_testing_setup();
-}
-/////////////////////////////////
-
-					function init_local_storage_profiles()	{ // create if none exists
-
-						if( localStorage.getItem( local_storage_app_key ) === null )	{
-
-							console.log( "Creating new storage: " + local_storage_app_key );
-
-							localStorage.setItem(
-								local_storage_app_key,
-								JSON.stringify( { profiles: {} } )
-							);
-						}
-					}
-					init_local_storage_profiles(); // ensure it exists
-
-					function add_local_storage_profile( name )	{
-
-						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-
-						if( app_storage_obj.profiles.hasOwnProperty( name ) )	{
-
-							output_log( "ERR: name exists: " + name );
-						}
-						else	{
-
-							app_storage_obj.profiles[ name ] = {
-								registration: "",
-								session: ""
-							};
-							localStorage.setItem(
-								local_storage_app_key,
-								JSON.stringify( app_storage_obj )
-							);
-						}
-						return( app_storage_obj.profiles[ name ] );
-					}
-					function get_local_storage_profile( name )	{
-
-						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-
-						if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
-
-							return( app_storage_obj.profiles[ name ] );
-						}
-						return( null );
-					}
-
-					function update_profile_field( name, field, uuid )	{
-
-						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-
-						if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
-
-							let profile = app_storage_obj.profiles[ name ];
-							profile[ field ] = uuid;
-
-							localStorage.setItem(
-								local_storage_app_key,
-								JSON.stringify( app_storage_obj )
-							);
-							return;
-						}
-						output_log( "Update \'" + field + "\' ERR: name does not exist: " + name );
-					}
-
-					function print_local_storage()	{
-
-						let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-						output_log( app_storage_obj );
-					}
+					document.getElementById( "conn_button" ).addEventListener(
+						'click', submit_conn_button );
 
 					function submit_conn_button()	{
 
 						let name = document.getElementById( "name_buffer" ).value.trim();
 						if( name )	{
-							let profile = get_local_storage_profile( name );
+							let profile = Client.get_local_storage_profile( name );
 							if( profile === null )	{
 
-								output_log( "Creating new profile: " + name );
-								profile = add_local_storage_profile( name );
+								output_log( "ERR: profile should already exist: " + name );
+								return;
 							}
 							output_log( "Connect: " + name );
 							output_log( profile );
@@ -141,17 +48,8 @@ if( 0 )	{
 						log_area.scrollTop = log_area.scrollHeight;
 					}
 
-					document.getElementById( "conn_button" ).addEventListener(
-						'click', submit_conn_button );
-
-					document.getElementById( "storage_button" ).addEventListener(
-						'click', print_local_storage );
-
 					output_log( "HELLO" );
-
-
-//					update_profile_field( "D", "registration", "XXX" );
-
+					Client.app_init( output_log );
 				}
 			);
 
@@ -167,13 +65,15 @@ if( 0 )	{
 
 		<div id="page_contents">
 
+			<button id="storage_button">storage</button>
+			<p>
+
 			input:<br>
 			<input id="name_buffer"
 				type="text"
 				placeholder="your name"
 				size="15em"></input>
 			<button id="conn_button">connect</button>
-			<button id="storage_button">storage</button>
 			<p>
 
 			log:
