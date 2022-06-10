@@ -188,6 +188,13 @@ function process_message_token( socket, data_obj )	{
 			socket.send( JSON.stringify( { token: "ERROR", msg: "bad registration" } ) );
 		}
 	}
+	else
+	if( tok === "send" )	{ // test send
+
+		console.log( data_obj );
+
+		socket.send( JSON.stringify( { token: "Server recieved send" } ) );
+	}
 /*
 	else
 	if( tok === "REGISTER" )	{ // client has uuid
@@ -288,7 +295,7 @@ function process_message_token( socket, data_obj )	{
 
 	}
 	else
-	if( tok === "send" )	{
+	if( tok === "sendX" )	{
 
 		let message = {
 			token: "message",

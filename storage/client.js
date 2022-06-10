@@ -2,7 +2,9 @@
 export {
 	print_local_storage,
 	app_init,
-	app_register
+	app_register,
+	app_connect,
+	app_send
 };
 
 const local_storage_app_key = "jsntemplate-storage-app";
@@ -45,6 +47,11 @@ function app_register( name, pass )	{
 	);
 }
 
+function app_connect()	{
+
+	open_socket();
+}
+
 function register_request_handler( response_obj )	{
 
 	output_log( response_obj.result );
@@ -65,6 +72,27 @@ function register_request_handler( response_obj )	{
 	}
 	else	{
 		output_log( "registration failed" );
+	}
+}
+
+function app_send( token, to, payload )	{
+
+	if( client_info.socket )	{
+
+		let send_obj = {
+			token: token,
+			client: {
+				name: client_info.name,
+				registration: client_info.registration
+			},
+			to: to,
+			payload: payload
+		};
+
+		client_info.socket.send( JSON.stringify( send_obj ) );
+	}
+	else	{
+		console.log( "app_send ERR: socket not registered" );
 	}
 }
 
@@ -152,8 +180,26 @@ function update_profile_field( name, field, uuid )	{
 
 /////////////////////////////////////////////////////////
 
+function close_socket()	{
+
+/*
+	if( reg_info.ival_id !== null )	{
+
+		clearInterval( reg_info.ival_id );
+		reg_info.ival_id = null;
+	}
+*/
+	if( client_info.socket !== null ) {
+
+		client_info.socket.close();
+		client_info.socket = null;
+	}
+
+}
+
 function open_socket()	{
 
+	close_socket();
 
 	let websock_uri = "ws://" + window.location.host;
 	console.log( "WebSocket URI: " + websock_uri );

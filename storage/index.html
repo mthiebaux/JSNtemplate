@@ -22,6 +22,12 @@
 					document.getElementById( "reg_button" ).addEventListener(
 						'click', submit_reg_button );
 
+					document.getElementById( "conn_button" ).addEventListener(
+						'click', submit_conn_button );
+
+					document.getElementById( "send_button" ).addEventListener(
+						'click', submit_send_button );
+
 					function quick_pass( name )	{
 						let str = name.split( '' ).reverse().join( '' ).toLowerCase();
 						return( str[ 0 ] );
@@ -47,6 +53,16 @@
 						else	{
 							output_log( "ERR: name required" );
 						}
+					}
+
+					function submit_conn_button()	{
+
+						Client.app_connect();
+					}
+
+					function submit_send_button()	{
+
+						Client.app_send( "send", [], {} );
 					}
 
 					function output_log( output_obj )	{
@@ -87,6 +103,7 @@
 				placeholder="password"
 				size="15em"></input>
 			<button id="reg_button">reg</button>
+			<button id="conn_button">conn</button>
 			<p>
 
 			<input id="input_buffer"
