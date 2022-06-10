@@ -1,9 +1,9 @@
 
+import fs from "fs";
 import express from 'express';
 import requestID from 'express-request-id';
 import localtunnel from 'localtunnel';
 import * as readline from "readline";
-
 import { WebSocket, WebSocketServer } from 'ws';
 
 //////////////////////////////////////////////////////
@@ -38,22 +38,78 @@ if( process.argv.length > 3 )	{
 
 //////////////////////////////////////////////////////
 
-let reg_list = [];
+const profiles_filename = "profiles.json";
 
-function print_clients()	{
+let client_connections = {};
 
-	console.log( "registered clients:" );
-	for( let r of reg_list )	{
-		console.log( r.client );
-	}
-	console.log( "connected clients:" );
-	for( let r of reg_list )	{
-		if( r.socket !== null ) {
-			if( r.socket.readyState === WebSocket.OPEN ) {
-				console.log( r.client );
-			}
+// IIFE for automatic storage loading
+( function load_profiles()	{
+
+	try	{
+		let client_profiles = JSON.parse( fs.readFileSync( profiles_filename ) );
+		for( let name in client_profiles )	{
+
+			let conn_obj = {
+				profile: client_profiles[ name ],
+				socket: null
+			};
+			client_connections[ name ] = conn_obj;
+		}
+	} catch( err )	{
+
+		if( err.code === 'ENOENT' ) { // no such file or directory
+
+			client_connections = {}; // scratch
+
+		} else {
+		  throw err;
 		}
 	}
+} )();
+//load_profiles();
+
+function save_profiles()	{
+
+	let client_profiles = {};
+	for( let name in client_connections )	{
+
+		client_profiles[ name ] = client_connections[ name ].profile;
+	}
+
+	fs.writeFileSync(
+		profiles_filename,
+		JSON.stringify( client_profiles, null, 4 ),
+		(err) => {
+			if (err) console.log( err );
+		}
+	);
+}
+
+function update_profile( name, password, uuid )	{
+
+	if( client_connections[ name ] )	{
+
+		if( client_connections[ name ].profile.password !== password )	{
+
+			console.log( "ERR: password incorrect" );
+			return( false );
+		}
+	}
+	else	{
+
+		client_connections[ name ] = {
+
+			profile: {
+				password: password,
+				registration: ""
+			}
+		};
+	}
+
+	client_connections[ name ].profile.registration = uuid;
+
+	save_profiles();
+	return( true );
 }
 
 //////////////////////////////////////////////////////
@@ -70,30 +126,32 @@ function build_request_report( request )	{
 	} );
 }
 
-server.get(
+server.post(
 	'/register',
 	( request, response ) => {
 
-		let c = reg_list.length;
-		let client_obj = {
-			id: c,
-			uuid: request.id // from: express-request-id
-		};
-
-		let register_obj = {
-			client: client_obj,
-			socket: null,
-			ival_id: null
-		}
-		reg_list.push( register_obj );
+		let uuid = request.id; // registration key
 
 		let output = {
-			report: build_request_report( request ),
-			client: client_obj
+			report: build_request_report( request )
 		};
-		console.log( "REGISTER CLIENT:" );
-		console.log( output );
+		console.log( "register request:" );
+		console.log( request.body );
 
+		if( update_profile( request.body.name, request.body.password, uuid ) )	{
+
+			output.result = {
+				msg: "registered",
+				registration: uuid
+			}
+		}
+		else	{
+			output.result = {
+				msg: "registration failed"
+			}
+		}
+
+//		console.log( output );
 		response.send( output );
 	}
 );
@@ -104,6 +162,34 @@ function process_message_token( socket, data_obj )	{
 
 	let tok = data_obj.token;
 
+	if( tok === "connect" )	{ // client has uuid
+
+		console.log( "process_message_token: CONNECT" );
+		console.log( data_obj );
+
+//console.log( client_connections );
+
+		let client = client_connections[ data_obj.client.name ];
+
+//console.log( client );
+
+//console.log( "incoming: " + data_obj.client.registration );
+//console.log( "stored:   " + client.profile.registration );
+
+
+		if( data_obj.client.registration === client.profile.registration )	{
+
+			client.socket = socket;
+
+			socket.send( JSON.stringify( { token: "HELLO" } ) );
+		}
+		else	{
+
+			socket.send( JSON.stringify( { token: "ERROR", msg: "bad registration" } ) );
+		}
+	}
+/*
+	else
 	if( tok === "REGISTER" )	{ // client has uuid
 
 		// check UUID, destroy pre-existing or block mismatched registration ?
@@ -152,6 +238,7 @@ function process_message_token( socket, data_obj )	{
 		}
 
 	}
+*/
 	else
 	if( tok === "PING" )	{ // client initiated
 		// not sufficient to sustain connection
@@ -274,6 +361,7 @@ wsserver.on(
 
 				console.log( "WEBSOCK DISCONNECT:" );
 
+/*
 				// identify which client id...
 				for( let r of reg_list )	{
 					if( r.socket === socket	)	{
@@ -285,6 +373,7 @@ wsserver.on(
 						r.socket = null;
 					}
 				}
+*/
 				console.log( "  code: " + code );
 				console.log( "  reason: " + reason );
 			}
@@ -457,6 +546,7 @@ process.on(
 	() => {
 		console.log( "process: SIGTERM" );
 
+/*
 		for( let r of reg_list )	{
 			if( r.socket !== null ) {
 				if( r.socket.readyState === WebSocket.OPEN ) {
@@ -471,6 +561,18 @@ process.on(
 					r.socket.close();		// graceful
 					r.socket.terminate();
 					r.socket = null
+				}
+			}
+		}
+*/
+		for( let name in client_connections )	{
+
+			let socket = client_connections[ name ].socket;
+			if( socket )	{
+				if( socket.readyState === WebSocket.OPEN ) {
+					socket.close();		// graceful
+					socket.terminate();
+					socket = null
 				}
 			}
 		}

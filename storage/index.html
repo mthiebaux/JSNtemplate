@@ -19,24 +19,33 @@
 					document.getElementById( "storage_button" ).addEventListener(
 						'click', Client.print_local_storage );
 
-					document.getElementById( "conn_button" ).addEventListener(
-						'click', submit_conn_button );
+					document.getElementById( "reg_button" ).addEventListener(
+						'click', submit_reg_button );
 
-					function submit_conn_button()	{
+					function quick_pass( name )	{
+						let str = name.split( '' ).reverse().join( '' ).toLowerCase();
+						return( str[ 0 ] );
+					}
+
+					function submit_reg_button()	{
 
 						let name = document.getElementById( "name_buffer" ).value.trim();
 						if( name )	{
-							let profile = Client.get_local_storage_profile( name );
-							if( profile === null )	{
 
-								output_log( "ERR: profile should already exist: " + name );
-								return;
+							let pass = document.getElementById( "pass_buffer" ).value.trim();
+
+							if( !pass ) pass = quick_pass( name ); // short cut
+
+							if( pass )	{
+
+								Client.app_register( name, pass );
 							}
-							output_log( "Connect: " + name );
-							output_log( profile );
+							else	{
+								output_log( "ERR: password required" );
+							}
 						}
 						else	{
-							output_log( "ERR: non-empty name string required" );
+							output_log( "ERR: name required" );
 						}
 					}
 
@@ -73,7 +82,18 @@
 				type="text"
 				placeholder="your name"
 				size="15em"></input>
-			<button id="conn_button">connect</button>
+			<input id="pass_buffer"
+				type="text"
+				placeholder="password"
+				size="15em"></input>
+			<button id="reg_button">reg</button>
+			<p>
+
+			<input id="input_buffer"
+				type="text"
+				placeholder="enter message"
+				size="30em"></input>
+			<button id="send_button">send</button>
 			<p>
 
 			log:

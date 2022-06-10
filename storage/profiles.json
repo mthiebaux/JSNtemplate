@@ -1,12 +1,10 @@
 {
-	"A":	{
-
-		"registration":	"a07d4b07-fd03-4587-84f1-ef6795a8afd9",
-		"session":		"fb047635-c3ba-4624-97bf-ec32576b4b9f"
-	},
-	"B": {
-
-		"registration":	"7853b338-736c-4484-bd0d-f520fc6477c9",
-		"session":		""
-	}
+    "B": {
+        "password": "b",
+        "registration": "1986db10-5bc2-4350-b395-fc9696a80a89"
+    },
+    "A": {
+        "password": "a",
+        "registration": "caf21a12-ad74-41b7-b84b-dfd6d7919a67"
+    }
 }
