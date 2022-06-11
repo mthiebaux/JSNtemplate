@@ -19,14 +19,25 @@ Client submit register POST:
 		password:	pass
 	}
 
-Client submit WebSocket:
+Client WebSocket connect:
+
+	let connect_obj = {
+		token: "connect",
+		client: {
+			name: "A",
+			registration: "xxx-xxx"
+		}
+	}
+
+Client WebSocket send:
 
 	let message_obj = {
-		token: <token-str>,
+		token: "send"",
 		client: {
 			name: "A",
 			registration: "xxx-xxx"
 		},
+		to: [],
 		payload: ...
 	}
 
@@ -53,7 +64,7 @@ Server JSON, client_profiles:
 		}
 	}
 
-Server response:
+Server register response:
 
 	let output = {
 		report: { <request-report> },

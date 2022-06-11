@@ -164,28 +164,30 @@ function process_message_token( socket, data_obj )	{
 
 	if( tok === "connect" )	{ // client has uuid
 
-		console.log( "process_message_token: CONNECT" );
+//		console.log( "process_message_token: CONNECT" );
 		console.log( data_obj );
-
-//console.log( client_connections );
 
 		let client = client_connections[ data_obj.client.name ];
 
-//console.log( client );
+		if( client )	{
+			if( data_obj.client.registration === client.profile.registration )	{
 
-//console.log( "incoming: " + data_obj.client.registration );
-//console.log( "stored:   " + client.profile.registration );
+				client.socket = socket;
 
+				socket.send( JSON.stringify( { token: "HELLO" } ) );
+			}
+			else	{
 
-		if( data_obj.client.registration === client.profile.registration )	{
-
-			client.socket = socket;
-
-			socket.send( JSON.stringify( { token: "HELLO" } ) );
+				socket.send( JSON.stringify( { token: "ERROR", msg: "bad registration" } ) );
+			}
 		}
 		else	{
-
-			socket.send( JSON.stringify( { token: "ERROR", msg: "bad registration" } ) );
+			socket.send(
+				JSON.stringify( {
+					token: "ERROR",
+					msg: "name \'" + data_obj.client.name + "\' not recognized"
+				} )
+			);
 		}
 	}
 	else

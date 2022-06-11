@@ -19,6 +19,10 @@
 					document.getElementById( "storage_button" ).addEventListener(
 						'click', Client.print_local_storage );
 
+					document.getElementById( "clear_storage_button" ).addEventListener(
+						'click', Client.clear_storage_profiles );
+
+
 					document.getElementById( "reg_button" ).addEventListener(
 						'click', submit_reg_button );
 
@@ -39,6 +43,7 @@
 						if( name )	{
 
 							let pass = document.getElementById( "pass_buffer" ).value.trim();
+							document.getElementById( "pass_buffer" ).value = "";
 
 							if( !pass ) pass = quick_pass( name ); // short cut
 
@@ -57,7 +62,14 @@
 
 					function submit_conn_button()	{
 
-						Client.app_connect();
+						let name = document.getElementById( "name_buffer" ).value.trim();
+						if( name )	{
+
+							Client.app_connect( name );
+						}
+						else	{
+							output_log( "ERR: name required" );
+						}
 					}
 
 					function submit_send_button()	{
@@ -91,6 +103,7 @@
 		<div id="page_contents">
 
 			<button id="storage_button">storage</button>
+			<button id="clear_storage_button">clear</button>
 			<p>
 
 			input:<br>
@@ -109,7 +122,7 @@
 			<input id="input_buffer"
 				type="text"
 				placeholder="enter message"
-				size="30em"></input>
+				size="40em"></input>
 			<button id="send_button">send</button>
 			<p>
 

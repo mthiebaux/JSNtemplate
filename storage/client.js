@@ -1,6 +1,7 @@
 
 export {
 	print_local_storage,
+	clear_storage_profiles,
 	app_init,
 	app_register,
 	app_connect,
@@ -27,14 +28,16 @@ function app_init( output_log_f )	{
 function app_register( name, pass )	{
 
 	client_info.name = name;
-	client_info.registration = get_local_storage_profile( name );
+
+	let profile = get_local_storage_profile( name );
+	client_info.registration = profile.registration;
+
 	if( client_info.registration === null )	{
 
 		output_log( "ERR: profile should already exist: " + name );
 		return;
 	}
-	output_log( "Register: " + name );
-//	output_log( client_info.registration );
+	output_log( "Register: " + name + " : " + client_info.registration );
 
 	let register_obj = {
 		name:		name,
@@ -47,9 +50,23 @@ function app_register( name, pass )	{
 	);
 }
 
-function app_connect()	{
+function app_connect( name )	{
 
-	open_socket();
+	client_info.name = name;
+
+	if( client_info.name )	{
+
+		let profile = get_local_storage_profile( name );
+		client_info.registration = profile.registration;
+
+		output_log( "Connect: " + name + " : " + client_info.registration );
+
+		open_socket();
+	}
+	else	{
+
+		// name required
+	}
 }
 
 function register_request_handler( response_obj )	{
@@ -98,88 +115,6 @@ function app_send( token, to, payload )	{
 
 /////////////////////////////////////////////////////////
 
-if( 0 )	{
-	localStorage.clear(); // force sratch
-}
-
-// IIFE for automatic storage loading
-( function init_local_storage_app_profiles()	{ // create if none exists
-
-	if( localStorage.getItem( local_storage_app_key ) === null )	{
-
-		console.log( "Creating new storage: " + local_storage_app_key );
-
-		localStorage.setItem(
-			local_storage_app_key,
-			JSON.stringify( { profiles: {} } ) // scratch
-		);
-	}
-} )();
-//init_local_storage_app_profiles(); // ensure it exists
-
-///////////////////////////
-
-function print_local_storage()	{
-
-	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-	output_log( app_storage_obj );
-}
-
-function create_local_storage_profile( name )	{
-
-	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-
-	if( app_storage_obj.profiles.hasOwnProperty( name ) )	{
-
-		output_log( "Create profile ERR: name exists: " + name );
-	}
-	else	{
-		output_log( "Creating new profile: " + name );
-
-		app_storage_obj.profiles[ name ] = {
-			registration: ""
-		};
-		localStorage.setItem(
-			local_storage_app_key,
-			JSON.stringify( app_storage_obj )
-		);
-	}
-	return( app_storage_obj.profiles[ name ] );
-}
-
-function get_local_storage_profile( name )	{
-
-	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-
-	if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
-
-		return( app_storage_obj.profiles[ name ] );
-	}
-	return( create_local_storage_profile( name ) );
-}
-
-function update_profile_field( name, field, uuid )	{
-
-//	const recognized_fields = [];
-
-	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
-
-	if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
-
-		let profile = app_storage_obj.profiles[ name ];
-		profile[ field ] = uuid;
-
-		localStorage.setItem(
-			local_storage_app_key,
-			JSON.stringify( app_storage_obj )
-		);
-		return;
-	}
-	output_log( "Update \'" + field + "\' ERR: name does not exist: " + name );
-}
-
-/////////////////////////////////////////////////////////
-
 function close_socket()	{
 
 /*
@@ -212,14 +147,14 @@ function open_socket()	{
 
 			console.log( "Client open event." );
 
-			let websock_reg = {
+			let connect_obj = {
 				token: "connect",
 				client: {
 					name: client_info.name,
 					registration: client_info.registration
 				}
 			};
-			client_info.socket.send( JSON.stringify( websock_reg ) );
+			client_info.socket.send( JSON.stringify( connect_obj ) );
 
 		}
 	);
@@ -334,6 +269,95 @@ function fetch_post_request( url, cmd_obj, callback )	{
 	);
 }
 
+/////////////////////////////////////////////////////////
+
+if( 0 )	{
+	localStorage.clear(); // force sratch
+}
+
+// IIFE for automatic storage loading
+( function init_local_storage_app_profiles()	{ // create if none exists
+
+	if( localStorage.getItem( local_storage_app_key ) === null )	{
+
+		console.log( "Creating new storage: " + local_storage_app_key );
+
+		localStorage.setItem(
+			local_storage_app_key,
+			JSON.stringify( { profiles: {} } ) // scratch
+		);
+	}
+} )();
+
+function clear_storage_profiles()	{
+
+	localStorage.clear();
+	localStorage.setItem(
+		local_storage_app_key,
+		JSON.stringify( { profiles: {} } ) // scratch
+	);
+}
+
+///////////////////////////
+
+function print_local_storage()	{
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+	output_log( app_storage_obj );
+}
+
+function create_local_storage_profile( name )	{
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+	if( app_storage_obj.profiles.hasOwnProperty( name ) )	{
+
+		output_log( "Create profile ERR: name exists: " + name );
+	}
+	else	{
+		output_log( "Creating new profile: " + name );
+
+		app_storage_obj.profiles[ name ] = {
+			registration: ""
+		};
+		localStorage.setItem(
+			local_storage_app_key,
+			JSON.stringify( app_storage_obj )
+		);
+	}
+	return( app_storage_obj.profiles[ name ] );
+}
+
+function get_local_storage_profile( name )	{
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+	if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
+
+		return( app_storage_obj.profiles[ name ] );
+	}
+	return( create_local_storage_profile( name ) );
+}
+
+function update_profile_field( name, field, uuid )	{
+
+//	const recognized_fields = [];
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+	if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
+
+		let profile = app_storage_obj.profiles[ name ];
+		profile[ field ] = uuid;
+
+		localStorage.setItem(
+			local_storage_app_key,
+			JSON.stringify( app_storage_obj )
+		);
+		return;
+	}
+	output_log( "Update \'" + field + "\' ERR: name does not exist: " + name );
+}
 
 
 
