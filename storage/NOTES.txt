@@ -4,19 +4,27 @@ Client localStorage:
 	{
 		profiles:	{
 			"A": {
-				"registration":	"a07d4b07-fd03-4587-84f1-ef6795a8afd9"
+				"registration":	"XXX-XXX"
 			},
 			"B": {
-				"registration":	"7853b338-736c-4484-bd0d-f520fc6477c9"
+				"registration":	"XXX-XXX"
 			}
 		}
 	}
 
-Client submit register POST:
+Client client_info:
+
+	{
+		name: "A",
+		registration: "XXX-XXX",
+		socket: <websocket-handle>
+	}
+
+Client POST register:
 
 	let register_obj = {
-		name:		name,
-		password:	pass
+		name:		"A",
+		password:	"a"
 	}
 
 Client WebSocket connect:
@@ -25,52 +33,34 @@ Client WebSocket connect:
 		token: "connect",
 		client: {
 			name: "A",
-			registration: "xxx-xxx"
+			registration: "XXX-XXX"
 		}
 	}
 
-Client WebSocket send:
+Client WebSocket send message:
 
 	let message_obj = {
 		token: "send"",
 		client: {
 			name: "A",
-			registration: "xxx-xxx"
+			registration: "XXX-XXX"
 		},
 		to: [],
 		payload: ...
 	}
 
-Client info:
-
-	{
-		name: "A",
-		registration: "xxx-xxx",
-		socket: <websocket-handle>
-	}
-
 /////////////////////////
 
-Server JSON, client_profiles:
+Server JSON, profiles:
 
 	{
 		"A": {
-			"password": "c",
-			"registration": "7ba5b55c-9109-4006-82eb-8db4295453c2"
+			"password": "a",
+			"registration": "XXX-XXX"
 		},
 		"B": {
 			"password": "b",
-			"registration": "7853b338-736c-4484-bd0d-f520fc6477c9"
-		}
-	}
-
-Server register response:
-
-	let output = {
-		report: { <request-report> },
-		result: {
-			msg: "registered",
-			registration: "xxx-xxx"
+			"registration": "XXX-XXX"
 		}
 	}
 
@@ -80,8 +70,19 @@ Server client_connections:
 		"A": {
 			profile:	{
 				password: "a",
-				registration: "xxx-xxx"
+				registration: "XXX-XXX"
 			},
 			socket: <websocket-handle>
 		}
 	}
+
+Server register response:
+
+	let output_obj = {
+		report: { <request-report> },
+		result: {
+			msg: "registered",
+			registration: "XXX-XXX"
+		}
+	}
+

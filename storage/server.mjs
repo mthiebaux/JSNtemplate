@@ -46,11 +46,11 @@ let client_connections = {};
 ( function load_profiles()	{
 
 	try	{
-		let client_profiles = JSON.parse( fs.readFileSync( profiles_filename ) );
-		for( let name in client_profiles )	{
+		let profiles = JSON.parse( fs.readFileSync( profiles_filename ) );
+		for( let name in profiles )	{
 
 			let conn_obj = {
-				profile: client_profiles[ name ],
+				profile: profiles[ name ],
 				socket: null
 			};
 			client_connections[ name ] = conn_obj;
@@ -66,19 +66,18 @@ let client_connections = {};
 		}
 	}
 } )();
-//load_profiles();
 
 function save_profiles()	{
 
-	let client_profiles = {};
+	let profiles = {};
 	for( let name in client_connections )	{
 
-		client_profiles[ name ] = client_connections[ name ].profile;
+		profiles[ name ] = client_connections[ name ].profile;
 	}
 
 	fs.writeFileSync(
 		profiles_filename,
-		JSON.stringify( client_profiles, null, 4 ),
+		JSON.stringify( profiles, null, 4 ),
 		(err) => {
 			if (err) console.log( err );
 		}
@@ -160,42 +159,45 @@ server.post(
 
 function process_message_token( socket, data_obj )	{
 
-	let tok = data_obj.token;
+	// check registration first
 
-	if( tok === "connect" )	{ // client has uuid
+	let client = client_connections[ data_obj.client.name ];
+	if( client )	{
+		if( data_obj.client.registration !== client.profile.registration )	{
 
-//		console.log( "process_message_token: CONNECT" );
-		console.log( data_obj );
-
-		let client = client_connections[ data_obj.client.name ];
-
-		if( client )	{
-			if( data_obj.client.registration === client.profile.registration )	{
-
-				client.socket = socket;
-
-				socket.send( JSON.stringify( { token: "HELLO" } ) );
-			}
-			else	{
-
-				socket.send( JSON.stringify( { token: "ERROR", msg: "bad registration" } ) );
-			}
-		}
-		else	{
-			socket.send(
-				JSON.stringify( {
-					token: "ERROR",
-					msg: "name \'" + data_obj.client.name + "\' not recognized"
-				} )
-			);
+			socket.send( JSON.stringify( { token: "ERROR", msg: "stale registration" } ) );
+			return;
 		}
 	}
-	else
-	if( tok === "send" )	{ // test send
+	else	{
+		socket.send(
+			JSON.stringify( {
+				token: "ERROR",
+				msg: "name \'" + data_obj.client.name + "\' not found"
+			} )
+		);
+		return;
+	}
+
+	let tok = data_obj.token;
+
+	if( tok === "connect" )	{
+
+		client.socket = socket;
 
 		console.log( data_obj );
 
-		socket.send( JSON.stringify( { token: "Server recieved send" } ) );
+		socket.send( JSON.stringify( { token: "HELLO" } ) );
+
+	}
+	else
+	if( tok === "send" )	{
+
+		console.log( data_obj );
+
+		socket.send( JSON.stringify( { token: "OK" } ) );
+
+
 	}
 /*
 	else
