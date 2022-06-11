@@ -66,9 +66,9 @@ Building a clean, exemplary websocket client to replace fragile long polling and
 
 ### *Storage*
 
-Developing persistent profile and session states using client-side sessionStorage, localStorage, and server-side client profile storage.
+Developing persistent profile and session states using client-side localStorage, and server-side client profile storage.
 
-The localStorage allocations persist across system reboot, and can quickly become polluted during app testing and development. These can be cleared through the browser's cookies/website-data management tools, listed as 'localhost', 'loca.lt', etc.
+The localStorage allocations persist across system reboot, and can become polluted during app testing and development. These are cleared through the browser's cookies/website-data management tools, listed as 'localhost', 'loca.lt', etc.
 
 
 ### *Session*
