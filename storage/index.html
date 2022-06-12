@@ -32,11 +32,6 @@
 					document.getElementById( "send_button" ).addEventListener(
 						'click', submit_send_button );
 
-					function quick_pass( name )	{
-						let str = name.split( '' ).reverse().join( '' ).toLowerCase();
-						return( str[ 0 ] );
-					}
-
 					function submit_reg_button()	{
 
 						let name = document.getElementById( "name_buffer" ).value.trim();
@@ -45,7 +40,12 @@
 							let pass = document.getElementById( "pass_buffer" ).value.trim();
 							document.getElementById( "pass_buffer" ).value = "";
 
-							if( !pass ) pass = quick_pass( name ); // short cut
+							 // short cut
+							function quick_pass( name )	{
+								let str = name.split( '' ).reverse().join( '' ).toLowerCase();
+								return( str[ 0 ] );
+							}
+							if( !pass ) pass = quick_pass( name );
 
 							if( pass )	{
 
@@ -74,7 +74,15 @@
 
 					function submit_send_button()	{
 
-						Client.app_send( "send", [], {} );
+						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
+						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
+							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
+						);
+						Client.app_send(
+							"send",
+							to_arr,
+							document.getElementById( "message_buffer" ).value
+						);
 					}
 
 					function output_log( output_obj )	{
@@ -85,7 +93,6 @@
 						log_area.scrollTop = log_area.scrollHeight;
 					}
 
-					output_log( "HELLO" );
 					Client.app_init( output_log );
 				}
 			);
@@ -106,7 +113,7 @@
 			<button id="clear_storage_button">clear</button>
 			<p>
 
-			input:<br>
+			login:<br>
 			<input id="name_buffer"
 				type="text"
 				placeholder="your name"
@@ -117,9 +124,15 @@
 				size="15em"></input>
 			<button id="reg_button">reg</button>
 			<button id="conn_button">conn</button>
-			<p>
+			<br>
 
-			<input id="input_buffer"
+			message:<br>
+			<input id="dest_buffer"
+				type="text"
+				placeholder="enter ids"
+				size="40em"></input>
+			<br>
+			<input id="message_buffer"
 				type="text"
 				placeholder="enter message"
 				size="40em"></input>

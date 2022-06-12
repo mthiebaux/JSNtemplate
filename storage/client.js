@@ -64,8 +64,7 @@ function app_connect( name )	{
 		open_socket();
 	}
 	else	{
-
-		// name required
+		console.log( "ERR: no name specified" );
 	}
 }
 
@@ -105,7 +104,6 @@ function app_send( token, to, payload )	{
 			to: to,
 			payload: payload
 		};
-
 		client_info.socket.send( JSON.stringify( send_obj ) );
 	}
 	else	{
@@ -134,12 +132,12 @@ function close_socket()	{
 
 function open_socket()	{
 
-	close_socket();
+	close_socket(); // always close previous
 
 	let websock_uri = "ws://" + window.location.host;
 	console.log( "WebSocket URI: " + websock_uri );
 
-	client_info.socket = new WebSocket( websock_uri );
+	client_info.socket = new WebSocket( websock_uri ); // always produces new socket
 
 	client_info.socket.addEventListener(
 		"open",
@@ -171,14 +169,22 @@ function open_socket()	{
 
 				if( tok === "HELLO" )	{
 
-					output_log( "server HELLO" );
+					output_log( "HELLO from server" );
+				}
+				else
+				if( tok === "GOODBYE" )	{
 
+					output_log( "GOODBYE from server" );
 				}
 				else
 				if( tok === "ERROR" )	{
 
 					output_log( data_obj );
+				}
+				else
+				if( tok === "recv" )	{ // forwarded client send
 
+					output_log( data_obj );
 				}
 				else	{
 

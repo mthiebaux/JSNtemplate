@@ -183,73 +183,47 @@ function process_message_token( socket, data_obj )	{
 
 	if( tok === "connect" )	{
 
-		client.socket = socket;
-
 		console.log( data_obj );
 
-		socket.send( JSON.stringify( { token: "HELLO" } ) );
+		if( client.socket )	{
+			if( client.socket.readyState === WebSocket.OPEN ) {
 
+				client.socket.send( JSON.stringify( { token: "GOODBYE" } ) );
+				client.socket.close();		// graceful
+				client.socket.terminate();
+				client.socket = null
+			}
+		}
+		client.socket = socket;
+
+		socket.send( JSON.stringify( { token: "HELLO" } ) );
 	}
 	else
 	if( tok === "send" )	{
 
 		console.log( data_obj );
 
-		socket.send( JSON.stringify( { token: "OK" } ) );
+		let forward_obj = {
+			token: "recv",
+			from: data_obj.client.name,
+			payload: data_obj.payload
+		};
+		let forward_str = JSON.stringify( forward_obj );
 
+		for( let name of data_obj.to )	{
 
-	}
-/*
-	else
-	if( tok === "REGISTER" )	{ // client has uuid
+			let client = client_connections[ name ];
+			if( client )	{
+				if( client.socket )	{
+					if( client.socket.readyState === WebSocket.OPEN ) {
 
-		// check UUID, destroy pre-existing or block mismatched registration ?
-
-		if( ( data_obj.client.id >= 0 )&&( data_obj.client.id < reg_list.length ) )	{
-
-			if( data_obj.client.uuid === reg_list[ data_obj.client.id ].client.uuid )	{
-
-				if( reg_list[ data_obj.client.id ].ival_id  !== null )	{
-
-					clearInterval( reg_list[ data_obj.client.id ].ival_id );
-				}
-				if( reg_list[ data_obj.client.id ].socket !== null ) {
-
-		//			reg_list[ data_obj.client.id ].socket.close();
-					reg_list[ data_obj.client.id ].socket.terminate();
-				}
-				reg_list[ data_obj.client.id ].socket = socket;
-
-				console.log( "CONNECT CLIENT:" );
-				console.log( data_obj.client );
-
-				if( 1 ) {
-					let HEARTBEAT = 30000; // 30 second sustain connection before 60 sec timeout
-
-					reg_list[ data_obj.client.id ].ival_id = setInterval( () =>	{
-
-						let poke = {
-							token: "POKE"
-						};
-						socket.send( JSON.stringify( poke ) );
-
-					}, HEARTBEAT );
+						client.socket.send( forward_str );
+					}
 				}
 			}
-			else	{
-				// uuid not matched
-				console.log( "REGISTER ERR: mismatched UUID" );
-				console.log( data_obj.client );
-			}
-		}
-		else	{
-			// id out of bounds
-			console.log( "REGISTER ERR: ID out of bounds" );
-			console.log( data_obj.client );
 		}
 
 	}
-*/
 	else
 	if( tok === "PING" )	{ // client initiated
 		// not sufficient to sustain connection
@@ -296,28 +270,6 @@ function process_message_token( socket, data_obj )	{
 			payload: id_arr
 		}
 		socket.send( JSON.stringify( clients ) );
-
-	}
-	else
-	if( tok === "sendX" )	{
-
-		let message = {
-			token: "message",
-			from: data_obj.client.id,
-			to: data_obj.to,
-			payload: data_obj.payload
-		}
-		for( let r of reg_list )	{
-
-			if( data_obj.to.includes( r.client.id ) )	{
-
-				if( r.socket !== null ) {
-					if( r.socket.readyState === WebSocket.OPEN ) {
-						r.socket.send( JSON.stringify( message ) );
-					}
-				}
-			}
-		}
 
 	}
 	else	{
@@ -371,20 +323,6 @@ wsserver.on(
 			( code, reason ) => {
 
 				console.log( "WEBSOCK DISCONNECT:" );
-
-/*
-				// identify which client id...
-				for( let r of reg_list )	{
-					if( r.socket === socket	)	{
-
-						console.log( "  client: " + JSON.stringify( r.client ) );
-
-						clearInterval( r.ival_id );
-						r.ival_id = null;
-						r.socket = null;
-					}
-				}
-*/
 				console.log( "  code: " + code );
 				console.log( "  reason: " + reason );
 			}
