@@ -161,6 +161,8 @@ function process_message_token( socket, data_obj )	{
 
 	// check registration first
 
+	// if( data_obj.client ) { if( data_obj.client.name ) { } }
+
 	let client = client_connections[ data_obj.client.name ];
 	if( client )	{
 		if( data_obj.client.registration !== client.profile.registration )	{
@@ -188,7 +190,12 @@ function process_message_token( socket, data_obj )	{
 		if( client.socket )	{
 			if( client.socket.readyState === WebSocket.OPEN ) {
 
-				client.socket.send( JSON.stringify( { token: "GOODBYE" } ) );
+				client.socket.send(
+					JSON.stringify( {
+						token: "DISCONNECT",
+						msg: "logged in elsewhere"
+					} )
+				);
 				client.socket.close();		// graceful
 				client.socket.terminate();
 				client.socket = null
@@ -196,12 +203,52 @@ function process_message_token( socket, data_obj )	{
 		}
 		client.socket = socket;
 
-		socket.send( JSON.stringify( { token: "HELLO" } ) );
+		socket.send(
+			JSON.stringify(
+				{
+					token: "CONNECT",
+					msg: "HELLO from server"
+				}
+			)
+		);
+	}
+	else
+	if( tok === "who" )	{
+
+		let id_arr = [];
+		for( let name in client_connections )	{
+			id_arr.push( name );
+		}
+		let client_arr_obj = {
+			token: "CLIENTS",
+			payload: id_arr
+		}
+		socket.send( JSON.stringify( client_arr_obj ) );
+
+		let forward_obj = {
+			token: "recv",
+			from: data_obj.client.name,
+			payload: {
+				token: "poke"
+			}
+		};
+		let forward_str = JSON.stringify( forward_obj );
+
+		for( let name in client_connections )	{ // from process.on( "SIGTERM"...
+
+			let socket = client_connections[ name ].socket;
+			if( socket )	{
+				if( socket.readyState === WebSocket.OPEN ) {
+
+					socket.send( forward_str );
+				}
+			}
+		}
 	}
 	else
 	if( tok === "send" )	{
 
-		console.log( data_obj );
+//		console.log( data_obj );
 
 		let forward_obj = {
 			token: "recv",
@@ -232,62 +279,15 @@ function process_message_token( socket, data_obj )	{
 //		console.log( data_obj );
 		socket.send( JSON.stringify( { token: "PONG" } ) );
 	}
+
 	else
 	if( tok === "ALIVE" )	{ // client responds to server POKE
 		// sustaining connection
 
 //		console.log( data_obj );
 	}
-	else
-	if( tok === "poke" )	{ // broadcast poke to all peers
-
-		// broadcast to client Set:
-		let bcast = {
-			token: "poke"
-		};
-		for( let r of reg_list )	{
-		//	if( r.socket !== socket ) // send to self ?
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-					r.socket.send( JSON.stringify( bcast ) );
-				}
-			}
-		}
-	}
-	else
-	if( tok === "who" )	{
-
-		let id_arr = [];
-		for( let r of reg_list )	{
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-					id_arr.push( r.client.id );
-				}
-			}
-		}
-		let clients = {
-			token: "clients",
-			payload: id_arr
-		}
-		socket.send( JSON.stringify( clients ) );
-
-	}
 	else	{
-
-		console.log( "broadcast message token:" );
-		console.log( data_obj );
-
-		let bcast = {
-			token: tok,
-			payload: data_obj.payload
-		};
-		for( let r of reg_list )	{
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-					r.socket.send( JSON.stringify( bcast ) );
-				}
-			}
-		}
+		console.log( "unhandled token: " + tok );
 	}
 }
 

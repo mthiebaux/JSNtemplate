@@ -29,7 +29,10 @@
 					document.getElementById( "conn_button" ).addEventListener(
 						'click', submit_conn_button );
 
-					document.getElementById( "send_button" ).addEventListener(
+					document.getElementById( "who_button" ).addEventListener(
+						'click', Client.app_who );
+
+					document.getElementById( "send_fwd_button" ).addEventListener(
 						'click', submit_send_button );
 
 					function submit_reg_button()	{
@@ -78,11 +81,20 @@
 						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
 							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
 						);
+
 						Client.app_send(
 							"send",
 							to_arr,
-							document.getElementById( "message_buffer" ).value
+							{
+								token: "message",
+								data: document.getElementById( "message_buffer" ).value
+							}
 						);
+					}
+
+					function set_dest_buffer( str )	{
+
+						document.getElementById( "dest_buffer" ).value = str;
 					}
 
 					function output_log( output_obj )	{
@@ -93,7 +105,7 @@
 						log_area.scrollTop = log_area.scrollHeight;
 					}
 
-					Client.app_init( output_log );
+					Client.app_init( set_dest_buffer, output_log );
 				}
 			);
 
@@ -126,17 +138,18 @@
 			<button id="conn_button">conn</button>
 			<br>
 
-			message:<br>
+			send:<br>
 			<input id="dest_buffer"
 				type="text"
-				placeholder="enter ids"
+				placeholder="to:"
 				size="40em"></input>
+			<button id="who_button">who</button>
 			<br>
 			<input id="message_buffer"
 				type="text"
-				placeholder="enter message"
+				placeholder="message:"
 				size="40em"></input>
-			<button id="send_button">send</button>
+			<button id="send_fwd_button">send</button>
 			<p>
 
 			log:

@@ -5,23 +5,30 @@ export {
 	app_init,
 	app_register,
 	app_connect,
+	app_who,
 	app_send
 };
 
 const local_storage_app_key = "jsntemplate-storage-app";
 
+let set_dest_buffer = null;
 let output_log = null;
 
 let client_info = {
-	name: "",
-	registration: null,
-	socket: null
-}
+	name: 			"",
+	registration:	null,
+	socket:			null,
+	interval:		null,
+	pingout:		false
+};
+
+let active_peers = [];
 
 /////////////////////////////////////////////////////////
 
-function app_init( output_log_f )	{
+function app_init( set_dest_f, output_log_f )	{
 
+	set_dest_buffer = set_dest_f;
 	output_log = output_log_f;
 }
 
@@ -37,7 +44,7 @@ function app_register( name, pass )	{
 		output_log( "ERR: profile should already exist: " + name );
 		return;
 	}
-	output_log( "Register: " + name + " : " + client_info.registration );
+//	output_log( "Register: " + name + " : " + client_info.registration );
 
 	let register_obj = {
 		name:		name,
@@ -74,7 +81,7 @@ function register_request_handler( response_obj )	{
 
 	if( response_obj.result.registration )	{
 
-		output_log( "registered" );
+//		output_log( "registered" );
 
 		client_info.registration = response_obj.result.registration;
 
@@ -91,7 +98,27 @@ function register_request_handler( response_obj )	{
 	}
 }
 
-function app_send( token, to, payload )	{
+function app_who()	{
+
+	if( client_info.socket )	{
+
+		let who_obj = {
+			token: "who",
+			client: {
+				name: client_info.name,
+				registration: client_info.registration
+			}
+		};
+
+		set_dest_buffer( "" );
+		client_info.socket.send( JSON.stringify( who_obj ) );
+	}
+	else	{
+		console.log( "app_who ERR: socket not registered" );
+	}
+}
+
+function app_send( token, to_arr, payload )	{
 
 	if( client_info.socket )	{
 
@@ -101,7 +128,7 @@ function app_send( token, to, payload )	{
 				name: client_info.name,
 				registration: client_info.registration
 			},
-			to: to,
+			to: to_arr,
 			payload: payload
 		};
 		client_info.socket.send( JSON.stringify( send_obj ) );
@@ -136,8 +163,7 @@ function open_socket()	{
 
 	let websock_uri = "ws://" + window.location.host;
 	console.log( "WebSocket URI: " + websock_uri );
-
-	client_info.socket = new WebSocket( websock_uri ); // always produces new socket
+	client_info.socket = new WebSocket( websock_uri ); // always produce new socket
 
 	client_info.socket.addEventListener(
 		"open",
@@ -153,7 +179,6 @@ function open_socket()	{
 				}
 			};
 			client_info.socket.send( JSON.stringify( connect_obj ) );
-
 		}
 	);
 
@@ -167,14 +192,16 @@ function open_socket()	{
 
 				let tok = data_obj.token;
 
-				if( tok === "HELLO" )	{
+				if( tok === "CONNECT" )	{
 
-					output_log( "HELLO from server" );
+//					output_log( "HELLO from server" );
+					output_log( data_obj );
 				}
 				else
-				if( tok === "GOODBYE" )	{
+				if( tok === "DISCONNECT" )	{
 
-					output_log( "GOODBYE from server" );
+//					output_log( "DISCONNECT from server" );
+					output_log( data_obj );
 				}
 				else
 				if( tok === "ERROR" )	{
@@ -182,13 +209,54 @@ function open_socket()	{
 					output_log( data_obj );
 				}
 				else
-				if( tok === "recv" )	{ // forwarded client send
+				if( tok === "CLIENTS" )	{ // server response to client who
 
-					output_log( data_obj );
+					output_log( data_obj.payload );
+				}
+				else
+				if( tok === "recv" )	{ // forwarded client peer send
+
+					let pay_tok = data_obj.payload.token;
+
+					if( pay_tok === "message" )	{
+
+//						output_log( data_obj );
+//						output_log( "message from: " + data_obj.from + ": " + data_obj.payload.data );
+
+						output_log(
+							{
+								from: data_obj.from,
+								msg:  data_obj.payload.data
+							}
+						);
+					}
+					else
+					if( pay_tok === "poke" )	{
+
+						app_send(
+							"send",
+							[ data_obj.from ],
+							{ token: "alive" }
+						);
+					}
+					else
+					if( pay_tok === "alive" )	{
+
+						if( data_obj.from !== client_info.name )	{ // ignore self alive
+
+							active_peers.push( data_obj.from );
+							set_dest_buffer( active_peers.join( ", " ) );
+						}
+					}
+					else	{
+
+						console.log( "Client unhandled payload token event:" );
+						console.log( JSON.stringify( data_obj, null, 2 ) );
+					}
 				}
 				else	{
 
-//					if( process_client_token( data_obj ) == false )	{ // hand off to app
+//					if( process_app_token( data_obj ) == false )	{ // hand off to app
 					if( 1 )	{
 
 						console.log( "Client unhandled token event:" );
@@ -302,6 +370,8 @@ function clear_storage_profiles()	{
 		local_storage_app_key,
 		JSON.stringify( { profiles: {} } ) // scratch
 	);
+
+	output_log( "local storage profiles cleared" );
 }
 
 ///////////////////////////
