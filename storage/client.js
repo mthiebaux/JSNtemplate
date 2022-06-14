@@ -100,6 +100,8 @@ function register_request_handler( response_obj )	{
 
 function app_who()	{
 
+	active_peers = [];
+
 	if( client_info.socket )	{
 
 		let who_obj = {
