@@ -240,7 +240,12 @@ function open_socket()	{
 				if( tok === "PONG" )	{
 
 					client_info.pingout = false;
-//					output_log( data_obj );
+				}
+				else
+				if( tok === "PUSH" )	{
+
+					output_log( data_obj );
+					app_send( "ALIVE", [], {} );
 				}
 				else
 				if( tok === "CLIENTS" )	{ // server response to client who

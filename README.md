@@ -402,5 +402,18 @@ let forward_obj = {
 
 The receiving client utility passes "message" tokens to the front-end app code in index.html, where the message body is checked for recognized operations. Otherwise it is dumped to the output log buffer. These layers help distinguish top level client-to-client message passing from other internal messages.
 
+At the server console, the *push* command will cue up a list of responding clients internally, and the *who* command will print a list of registered clients followed by those responding to the push:
+
+```
+> push
+> who
+registered:
+{ name: 'A', registration: '131488c9-1c61-4871-a312-ef391a839ad1' }
+{ name: 'B', registration: 'f13c07df-c9b9-496d-a434-32a739859b1d' }
+{ name: 'C', registration: 'bd4f5363-d040-40a1-9708-b15717d1f75d' }
+responding:
+[ 'B', 'A' ]
+```
+
 
 

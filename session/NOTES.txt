@@ -17,7 +17,9 @@ Client client_info:
 	{
 		name: "A",
 		registration: "XXX-XXX",
-		socket: <websocket-handle>
+		socket:		<websocket-handle>
+		interval:	null,
+		pingout:	false
 	}
 
 Client POST register:
@@ -37,7 +39,7 @@ Client WebSocket connect:
 		}
 	}
 
-Client WebSocket send message:
+Client WebSocket forward message:
 
 	let message_obj = {
 		token: "forward",
@@ -46,8 +48,22 @@ Client WebSocket send message:
 			registration: "XXX-XXX"
 		},
 		to: [],
-		payload: ...
+		payload: {
+			token: "message",
+			message: "ping"
+		}
 	}
+
+Client WebSocket receive message:
+
+	let forward_obj = {
+		token: "recv",
+		from: "A",
+		payload: {
+			token: "message",
+			message: "ping"
+		}
+	};
 
 /////////////////////////
 

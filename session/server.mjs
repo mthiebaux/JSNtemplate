@@ -41,6 +41,7 @@ if( process.argv.length > 3 )	{
 const profiles_filename = "profiles.json";
 
 let client_connections = {};
+let responding_clients = [];
 
 // IIFE for automatic storage loading
 ( function load_profiles()	{
@@ -262,6 +263,12 @@ function process_message_token( socket, data_obj )	{
 		}
 	}
 	else
+	if( tok === "ALIVE" )	{
+		// client initiated
+
+		responding_clients.push( data_obj.client.name );
+	}
+	else
 	if( tok === "PING" )	{
 		// client initiated
 		// used to auto-reconnect with server restart
@@ -341,13 +348,38 @@ function console_loop()	{
 		else	{
 			if( input.length )	{
 
-				if( input == "who" )	{
+				if( input == "push" )	{
 
+					responding_clients = [];
+					let push_str = JSON.stringify( { token: "PUSH" } );
+
+					for( let name in client_connections )	{
+
+						let socket = client_connections[ name ].socket;
+						if( socket )	{
+							if( socket.readyState === WebSocket.OPEN ) {
+
+								socket.send( push_str );
+							}
+						}
+					}
 
 				}
 				else
-				if( input == "push" )	{
+				if( input == "who" )	{
 
+					console.log( "registered:" );
+					for( let name in client_connections )	{
+
+						console.log(
+							{
+								name: name,
+								registration: client_connections[ name ].profile.registration
+							}
+						);
+					}
+					console.log( "responding:" );
+					console.log( responding_clients );
 
 				}
 				else	{
