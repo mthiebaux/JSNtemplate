@@ -64,16 +64,11 @@ Integrating express WebSocketServer using shared port, and SSL (generates cert e
 Building a clean, exemplary websocket client to replace fragile long polling and enable faster ping pong.
 
 
-### *Storage*
-
-Developing persistent profile and session states using client-side localStorage, and server-side client profile storage.
-
-The localStorage allocations persist across system reboot, and can become polluted during app testing and development. These are cleared through the browser's cookies/website-data management tools, listed as 'localhost', 'loca.lt', etc.
-
-
 ### *Session*
 
-Building on *WebSock* message exchange with client-to-client ping pong message protocol. Consideration for persistent client sessions using stored account state (see *Storage* app), to traverse auto-reconnect events.
+Building on *WebSock* message exchange, with client-to-client ping pong message protocol, using persistent profile and session states using client-side localStorage, and server-side client profile storage.
+
+The localStorage allocations persist across system reboot, and can become polluted during app testing and development. These are cleared through the browser's cookies/website-data management tools, listed as 'localhost', 'loca.lt', etc.
 
 
 ## Installation
