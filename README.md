@@ -289,13 +289,13 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 
 ## Testing WebSock
 
-* The *WebSock* app requires one extra lightweight module to support sockets in conjunction with localtunnel:
+The *WebSock* app requires one extra lightweight module to support sockets in conjunction with localtunnel:
 
 ```
 > npm install ws
 ```
 
-* Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid:
+Each client initiates *WebSock* registration by submitting a GET '/register' request to the server using fetch(). The server responds with a new id and uuid:
 
 ```
 {
@@ -314,7 +314,7 @@ The port and tunnel URL can be changed using commandline arguments as follows:
 }
 ```
 
-* Once a socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration:
+Once a socket opens, the client begins exchanging socket messages using the *token* property for message routing, beginning with 'REGISTER' plus client identifiers to complete client-socket registration:
 
 ```
 socket.send(
@@ -330,21 +330,21 @@ socket.send(
 );
 ```
 
-* This two step process ensures that the server's socket connection handlers are mapped to the correct client identifiers, to maintain two-way push communication and forwarding.
+This two step process ensures that the server's socket connection handlers are mapped to the correct client identifiers, to maintain two-way push communication and forwarding.
 
-* Each *WebSock* channel is kept open against network timeouts using hidden POKE and ALIVE tokens. Each client uses hidden PING/PONG tokens to detect an unresponsive server, and re-register if necessary.
+Each *WebSock* channel is kept open against network timeouts using hidden POKE and ALIVE tokens. Each client uses hidden PING/PONG tokens to detect an unresponsive server, and re-register if necessary.
 
-* Auxiliary client buttons are used to analyze fault tolerance procedures, server restart, etc:
+Auxiliary client buttons are used to analyze fault tolerance procedures, server restart, etc:
 
     * *rld* will reload entire page from server, acquiring a new id.
     * *reg* will re-register existing page with server, with new id.
     * *sock* will reconnect with a new socket using existing id.
 
-* The client's *who* button logs the server's active client list, and the *poke* button logs client 'alive' response tokens.
+The client's *who* button logs the server's active client list, and the *poke* button logs client 'alive' response tokens.
 
-* The client text input fields accept a list of integer client ids, and an arbitrary text message for forwarding to peers, using the *send* button.
+The client text input fields accept a list of integer client ids, and an arbitrary text message for forwarding to peers, using the *send* button.
 
-* The server console allows inspection of the client connections with the *who* command:
+The server console allows inspection of the client connections with the *who* command:
 
 ```
 > who
