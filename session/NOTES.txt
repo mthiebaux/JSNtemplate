@@ -40,7 +40,7 @@ Client WebSocket connect:
 Client WebSocket send message:
 
 	let message_obj = {
-		token: "send"",
+		token: "forward",
 		client: {
 			name: "A",
 			registration: "XXX-XXX"

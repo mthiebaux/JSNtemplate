@@ -14,174 +14,186 @@
 
 			import * as Client from './client.js';
 
+			let name = "";
+			let active_peers = [];
 			let ping_mode = true;
 			let ping_count = 0;
 			let pong_count = 0;
-
-			function app_on_load()	{
-
-
-			}
 
 			window.addEventListener(
 				'load',
 				function() {
 
+					document.getElementById( "storage_button" ).addEventListener(
+						'click', Client.print_local_storage );
+
+					document.getElementById( "clear_storage_button" ).addEventListener(
+						'click', Client.clear_storage_profiles );
+
+
+					document.getElementById( "reg_button" ).addEventListener(
+						'click', submit_reg_button );
+
+/*
+					document.getElementById( "conn_button" ).addEventListener(
+						'click', submit_conn_button );
+*/
 					document.getElementById( "who_button" ).addEventListener(
-						'click', submit_who );
+						'click', submit_who_button );
 
-					document.getElementById( "poke_button" ).addEventListener(
-						'click', submit_poke );
-
-					document.getElementById( "send_button" ).addEventListener(
-						'click', submit_send );
+					document.getElementById( "send_fwd_button" ).addEventListener(
+						'click', submit_send_button );
 
 
-					function output_log( response_obj )	{
+					function submit_reg_button()	{
+
+						name = document.getElementById( "name_buffer" ).value.trim();
+						if( name )	{
+
+							document.getElementById( "client_name" ).innerHTML = name;
+
+							let pass = document.getElementById( "pass_buffer" ).value.trim();
+							document.getElementById( "pass_buffer" ).value = "";
+
+							 // short cut
+							function quick_pass( name )	{
+								let str = name.split( '' ).reverse().join( '' ).toLowerCase();
+								return( str[ 0 ] );
+							}
+							if( !pass ) pass = quick_pass( name );
+
+							if( pass )	{
+
+								Client.app_register( name, pass );
+							}
+							else	{
+								output_log( "ERR: password required" );
+							}
+						}
+						else	{
+							output_log( "ERR: name required" );
+						}
+					}
+
+/*
+					function submit_conn_button()	{
+
+						name = document.getElementById( "name_buffer" ).value.trim();
+						if( name )	{
+
+							Client.app_connect( name );
+						}
+						else	{
+							output_log( "ERR: name required" );
+						}
+					}
+*/
+
+					function submit_who_button()	{
+
+						active_peers = [];
+
+						Client.app_who();
+					}
+
+					function submit_send_button()	{
+
+						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
+						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
+							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
+						);
+
+						Client.app_send(
+							"forward",
+							to_arr,
+							{
+								token: "message",
+								message: document.getElementById( "message_buffer" ).value
+							}
+						);
+					}
+
+					function receive_message( from, payload )	{
+
+						let msg_tok = payload.message.toLowerCase();
+
+						if( msg_tok === "poke" )	{
+
+							Client.app_send(
+								"forward",
+								[ from ],
+								{ token: "message", message: "alive" }
+							);
+						}
+						else
+						if( msg_tok === "alive" )	{
+
+							if( from !== name )	{ // ignore self alive
+
+								active_peers.push( from );
+								set_dest_buffer( active_peers.join( ", " ) );
+							}
+						}
+						else
+						if( msg_tok === "ping" )	{
+
+							ping_count++;
+							output_log( "pingpong: [ " + ping_count + ", " + pong_count + " ]" );
+
+							if( ping_mode )	{
+								Client.app_send(
+									"forward",
+									[ from ],
+									{ token: "message", message: "pong" }
+								);
+							}
+							ping_mode = true;
+						}
+						else
+						if( msg_tok === "pong" )	{
+
+							pong_count++;
+							output_log( "pingpong: [ " + ping_count + ", " + pong_count + " ]" );
+
+							if( ping_mode )	{
+								Client.app_send(
+									"forward",
+									[ from ],
+									{ token: "message", message: "ping" }
+								);
+							}
+							ping_mode = true;
+						}
+ 						else
+						if( msg_tok === "stop" )	{
+
+							ping_mode = false;
+							output_log( "Stop ping mode" );
+						}
+						else	{
+							output_log(
+								{
+									from: from,
+									msg: payload.message
+								}
+							);
+						}
+					}
+
+					function set_dest_buffer( str )	{
+
+						document.getElementById( "dest_buffer" ).value = str;
+					}
+
+					function output_log( output_obj )	{
 
 						let log_area = document.getElementById( "output_log" );
-//						log_area.value += "response: ";
-						log_area.value += JSON.stringify( response_obj, null, 4 );
+						log_area.value += JSON.stringify( output_obj, null, 4 );
 						log_area.value += '\n';
 						log_area.scrollTop = log_area.scrollHeight;
 					}
-					output_log( "HELLO" );
 
-					function submit_poke()	{
-
-						let poke = {
-							token: "poke",
-							client: Client.reg_info.client
-						};
-						Client.app_send( poke );
-					}
-
-					function submit_who()	{
-						let who = {
-							token: "who",
-							client: Client.reg_info.client
-						};
-						Client.app_send( who );
-					}
-
-					function submit_send()	{
-/*
-	send to: [ id list ]
-	send to: all
-	send to: other
-*/
-						let gsi = document.getElementById( "dest_buffer" ).value; // garbage string input
-
-						function isNumeric(n) {
-							return( !isNaN( parseFloat( n ) ) && isFinite( n ) );
-						}
-
-						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
-							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
-						).map(
-							s => Number( s )
-						).filter(
-							n => isNumeric( n )
-						);
-
-						let message = {
-							token: "send",
-							client: Client.reg_info.client,	// credentials
-							to: to_arr,						// client list
-							payload: document.getElementById( "message_buffer" ).value
-						};
-
-//						console.log( JSON.stringify( message, null, 4 ) );
-						Client.app_send( message );
-					}
-
-					function receive_token( obj )	{
-
-						if( obj.token === "poke" )	{
-
-							let alive = {
-								token: "alive",
-								payload: Client.reg_info.client.id
-							};
-							Client.app_send( alive );
-							return( true );
-						}
-						else
-						if( obj.token === "alive" ) 	{
-
-							output_log( obj );
-							return( true );
-						}
-						else
-						if( obj.token === "clients" )	{
-
-							output_log( obj );
-							return( true );
-						}
-						else
-						if( obj.token === "message" )	{
-
-							let msg_tok = obj.payload.toLowerCase();
-
-							if( msg_tok === "ping" )	{
-
-								ping_count++;
-								output_log( {
-									from: obj.from,
-									pingpong : [ ping_count, pong_count ]
-								} );
-
-								if( ping_mode )	{
-									let pong = {
-										token: "send",
-										client: Client.reg_info.client,
-										to: [ obj.from ],
-										payload: "pong"
-									}
-									Client.app_send( pong );
-								}
-							}
-							else
-							if( msg_tok === "pong" )	{
-
-								pong_count++;
-								output_log( {
-									from: obj.from,
-									pingpong : [ ping_count, pong_count ]
-								} );
-
-								if( ping_mode )	{
-									let ping = {
-										token: "send",
-										client: Client.reg_info.client,
-										to: [ obj.from ],
-										payload: "ping"
-									}
-									Client.app_send( ping );
-								}
-							}
-							else
-							if( msg_tok === "start" )	{
-								ping_mode = true;
-								output_log( { msg: "ping start" } );
-							}
-							else
-							if( msg_tok === "stop" )	{
-								ping_mode = false;
-								output_log( { msg: "ping stop" } );
-							}
-							else	{
-
-								output_log( obj );
-							}
-
-							return( true );
-						}
-
-						return( false ); // unhandled
-					}
-
-					Client.app_init( "client_index", receive_token, output_log );
+					Client.app_init( set_dest_buffer, receive_message, output_log );
 				}
 			);
 
@@ -192,36 +204,47 @@
 	<body>
 
 		<div class="page_header">
-			<h1><em>Session</em> Client <div id="client_index" style="display: inline;"></div></h1>
+			<h1><em>Session</em> Client <div id="client_name" style="display: inline;"></div></h1>
 		</div>
 
 		<div id="page_contents">
 
-			input:<br>
+			login:<br>
 			<input id="name_buffer"
 				type="text"
 				placeholder="your name"
-				size="15em"></input>
-			<button id="who_button">conn</button>
-			:
-			<button id="who_button">who</button>
-			<button id="poke_button">poke</button>
+				size="12em"></input>
+			<input id="pass_buffer"
+				type="text"
+				placeholder="password"
+				size="12em"></input>
+			<button id="reg_button">connect</button>
+<!--
+			<button id="reg_button">reg</button>
+			<button id="conn_button">conn</button>
+-->
 			<br>
+
+			send:<br>
 			<input id="dest_buffer"
 				type="text"
-				placeholder="enter ids"
-				size="15em"></input>
+				placeholder="to:"
+				size="30em"></input>
+			<button id="who_button">who</button>
+			<br>
 			<input id="message_buffer"
 				type="text"
-				placeholder="enter message"
-				size="25em"></input>
-			<br>
-			<button id="send_button">send</button>
+				placeholder="message:"
+				size="30em"></input>
+			<button id="send_fwd_button">send</button>
 			<p>
 
 			log:
 			<br>
 			<textarea id="output_log" readonly=true rows="12" cols="40"></textarea>
+			<br>
+			<button id="storage_button">storage</button>
+			<button id="clear_storage_button">clear</button>
 
 		</div>
 

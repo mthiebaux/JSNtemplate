@@ -1,9 +1,9 @@
 
+import fs from "fs";
 import express from 'express';
 import requestID from 'express-request-id';
 import localtunnel from 'localtunnel';
 import * as readline from "readline";
-
 import { WebSocket, WebSocketServer } from 'ws';
 
 //////////////////////////////////////////////////////
@@ -38,22 +38,75 @@ if( process.argv.length > 3 )	{
 
 //////////////////////////////////////////////////////
 
-let reg_list = [];
+const profiles_filename = "profiles.json";
 
-function print_clients()	{
+let client_connections = {};
 
-	console.log( "registered clients:" );
-	for( let r of reg_list )	{
-		console.log( r.client );
-	}
-	console.log( "connected clients:" );
-	for( let r of reg_list )	{
-		if( r.socket !== null ) {
-			if( r.socket.readyState === WebSocket.OPEN ) {
-				console.log( r.client );
-			}
+// IIFE for automatic storage loading
+( function load_profiles()	{
+
+	try	{
+		let profiles = JSON.parse( fs.readFileSync( profiles_filename ) );
+		for( let name in profiles )	{
+
+			let conn_obj = {
+				profile: profiles[ name ],
+				socket: null
+			};
+			client_connections[ name ] = conn_obj;
+		}
+	} catch( err )	{
+
+		if( err.code === 'ENOENT' ) { // no such file or directory
+
+			client_connections = {}; // scratch
+
+		} else {
+		  throw err;
 		}
 	}
+} )();
+
+function save_profiles()	{
+
+	let profiles = {};
+	for( let name in client_connections )	{
+
+		profiles[ name ] = client_connections[ name ].profile;
+	}
+
+	fs.writeFileSync(
+		profiles_filename,
+		JSON.stringify( profiles, null, 4 ),
+		(err) => {
+			if (err) console.log( err );
+		}
+	);
+}
+
+function update_profile( name, password, uuid )	{
+
+	if( client_connections[ name ] )	{
+
+		if( client_connections[ name ].profile.password !== password )	{
+			console.log( "ERR: password incorrect" );
+			return( false );
+		}
+	}
+	else	{
+
+		client_connections[ name ] = {
+			profile: {
+				password: password,
+				registration: ""
+			}
+		};
+	}
+
+	client_connections[ name ].profile.registration = uuid;
+
+	save_profiles();
+	return( true );
 }
 
 //////////////////////////////////////////////////////
@@ -70,30 +123,30 @@ function build_request_report( request )	{
 	} );
 }
 
-server.get(
+server.post(
 	'/register',
 	( request, response ) => {
 
-		let c = reg_list.length;
-		let client_obj = {
-			id: c,
-			uuid: request.id // from: express-request-id
-		};
-
-		let register_obj = {
-			client: client_obj,
-			socket: null,
-			ival_id: null
-		}
-		reg_list.push( register_obj );
+		let uuid = request.id; // registration key
 
 		let output = {
-			report: build_request_report( request ),
-			client: client_obj
+			report: build_request_report( request )
 		};
-		console.log( "REGISTER CLIENT:" );
-		console.log( output );
+		console.log( "register request:" );
+		console.log( request.body );
 
+		if( update_profile( request.body.name, request.body.password, uuid ) )	{
+
+			output.result = {
+				msg: "registered",
+				registration: uuid
+			}
+		}
+		else	{
+			output.result = {
+				msg: "registration failed"
+			}
+		}
 		response.send( output );
 	}
 );
@@ -102,142 +155,121 @@ server.get(
 
 function process_message_token( socket, data_obj )	{
 
+	let client = client_connections[ data_obj.client.name ];
+	if( client )	{
+		if( data_obj.client.registration !== client.profile.registration )	{
+
+			socket.send( JSON.stringify( { token: "ERROR", msg: "stale registration" } ) );
+			return;
+		}
+	}
+	else	{
+		socket.send(
+			JSON.stringify( {
+				token: "ERROR",
+				msg: "name \'" + data_obj.client.name + "\' not found"
+			} )
+		);
+		return;
+	}
+
 	let tok = data_obj.token;
 
-	if( tok === "REGISTER" )	{ // client has uuid
+	if( tok === "connect" )	{
 
-		// check UUID, destroy pre-existing or block mismatched registration ?
+		console.log( data_obj );
 
-		if( ( data_obj.client.id >= 0 )&&( data_obj.client.id < reg_list.length ) )	{
+		if( client.socket )	{
+			if( client.socket.readyState === WebSocket.OPEN ) {
 
-			if( data_obj.client.uuid === reg_list[ data_obj.client.id ].client.uuid )	{
-
-				if( reg_list[ data_obj.client.id ].ival_id  !== null )	{
-
-					clearInterval( reg_list[ data_obj.client.id ].ival_id );
-				}
-				if( reg_list[ data_obj.client.id ].socket !== null ) {
-
-		//			reg_list[ data_obj.client.id ].socket.close();
-					reg_list[ data_obj.client.id ].socket.terminate();
-				}
-				reg_list[ data_obj.client.id ].socket = socket;
-
-				console.log( "CONNECT CLIENT:" );
-				console.log( data_obj.client );
-
-				if( 1 ) {
-					let HEARTBEAT = 30000; // 30 second sustain connection before 60 sec timeout
-
-					reg_list[ data_obj.client.id ].ival_id = setInterval( () =>	{
-
-						let poke = {
-							token: "POKE"
-						};
-						socket.send( JSON.stringify( poke ) );
-
-					}, HEARTBEAT );
-				}
-			}
-			else	{
-				// uuid not matched
-				console.log( "REGISTER ERR: mismatched UUID" );
-				console.log( data_obj.client );
+				client.socket.send(
+					JSON.stringify( {
+						token: "DISCONNECT",
+						msg: "logged in elsewhere"
+					} )
+				);
+				client.socket.close();		// graceful
+				client.socket.terminate();
+				client.socket = null
 			}
 		}
-		else	{
-			// id out of bounds
-			console.log( "REGISTER ERR: ID out of bounds" );
-			console.log( data_obj.client );
-		}
+		client.socket = socket;
 
-	}
-	else
-	if( tok === "PING" )	{ // client initiated
-		// not sufficient to sustain connection
-		// used to auto-reconnect with server restart
-
-//		console.log( data_obj );
-		socket.send( JSON.stringify( { token: "PONG" } ) );
-	}
-	else
-	if( tok === "ALIVE" )	{ // client responds to server POKE
-		// sustaining connection
-
-//		console.log( data_obj );
-	}
-	else
-	if( tok === "poke" )	{ // broadcast poke to all peers
-
-		// broadcast to client Set:
-		let bcast = {
-			token: "poke"
-		};
-		for( let r of reg_list )	{
-		//	if( r.socket !== socket ) // send to self ?
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-					r.socket.send( JSON.stringify( bcast ) );
+		socket.send(
+			JSON.stringify(
+				{
+					token: "CONNECT",
+					msg: "HELLO from server"
 				}
-			}
-		}
+			)
+		);
 	}
 	else
 	if( tok === "who" )	{
 
 		let id_arr = [];
-		for( let r of reg_list )	{
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-					id_arr.push( r.client.id );
+		for( let name in client_connections )	{
+			id_arr.push( name );
+		}
+		let client_arr_obj = {
+			token: "CLIENTS",
+			payload: id_arr
+		}
+		socket.send( JSON.stringify( client_arr_obj ) );
+
+		let forward_obj = {
+			token: "recv",
+			from: data_obj.client.name,
+			payload: {
+				token: "message",
+				message: "poke"
+			}
+		};
+		let forward_str = JSON.stringify( forward_obj );
+
+		for( let name in client_connections )	{
+
+			let socket = client_connections[ name ].socket;
+			if( socket )	{
+				if( socket.readyState === WebSocket.OPEN ) {
+
+					socket.send( forward_str );
 				}
 			}
 		}
-		let clients = {
-			token: "clients",
-			payload: id_arr
-		}
-		socket.send( JSON.stringify( clients ) );
-
 	}
 	else
-	if( tok === "send" )	{
+	if( tok === "forward" )	{
 
-		let message = {
-			token: "message",
-			from: data_obj.client.id,
-			to: data_obj.to,
+		let forward_obj = {
+			token: "recv",
+			from: data_obj.client.name,
 			payload: data_obj.payload
-		}
-		for( let r of reg_list )	{
+		};
+		let forward_str = JSON.stringify( forward_obj );
 
-			if( data_obj.to.includes( r.client.id ) )	{
+		for( let name of data_obj.to )	{
 
-				if( r.socket !== null ) {
-					if( r.socket.readyState === WebSocket.OPEN ) {
-						r.socket.send( JSON.stringify( message ) );
+			let client = client_connections[ name ];
+			if( client )	{
+				if( client.socket )	{
+					if( client.socket.readyState === WebSocket.OPEN ) {
+
+						client.socket.send( forward_str );
 					}
 				}
 			}
 		}
+	}
+	else
+	if( tok === "PING" )	{
+		// client initiated
+		// used to auto-reconnect with server restart
 
+		socket.send( JSON.stringify( { token: "PONG" } ) );
 	}
 	else	{
-
-		console.log( "broadcast message token:" );
-		console.log( data_obj );
-
-		let bcast = {
-			token: tok,
-			payload: data_obj.payload
-		};
-		for( let r of reg_list )	{
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
-					r.socket.send( JSON.stringify( bcast ) );
-				}
-			}
-		}
+		console.log( "unhandled token: " + tok );
 	}
 }
 
@@ -273,18 +305,6 @@ wsserver.on(
 			( code, reason ) => {
 
 				console.log( "WEBSOCK DISCONNECT:" );
-
-				// identify which client id...
-				for( let r of reg_list )	{
-					if( r.socket === socket	)	{
-
-						console.log( "  client: " + JSON.stringify( r.client ) );
-
-						clearInterval( r.ival_id );
-						r.ival_id = null;
-						r.socket = null;
-					}
-				}
 				console.log( "  code: " + code );
 				console.log( "  reason: " + reason );
 			}
@@ -321,23 +341,14 @@ function console_loop()	{
 		else	{
 			if( input.length )	{
 
-				if( input == "who" || input == "clients" )	{
+				if( input == "who" )	{
 
-					print_clients();
+
 				}
 				else
 				if( input == "push" )	{
 
-					for( let r of reg_list )	{
-						if( r.socket !== null ) {
-							if( r.socket.readyState === WebSocket.OPEN ) {
 
-//								console.log( "push: " + r.client.id );
-
-								r.socket.send( JSON.stringify( { token: "push" } ) );
-							}
-						}
-					}
 				}
 				else	{
 					console.log( "prompt_handler ERR: uncaught input key: " + input );
@@ -457,20 +468,14 @@ process.on(
 	() => {
 		console.log( "process: SIGTERM" );
 
-		for( let r of reg_list )	{
-			if( r.socket !== null ) {
-				if( r.socket.readyState === WebSocket.OPEN ) {
+		for( let name in client_connections )	{
 
-	// This will disable client auto-reconnect
-//					r.socket.send( JSON.stringify( { token: "close" } ) );
-
-					if( r.ival_id  !== null )	{
-						clearInterval( r.ival_id );
-						r.ival_id = null;
-					}
-					r.socket.close();		// graceful
-					r.socket.terminate();
-					r.socket = null
+			let socket = client_connections[ name ].socket;
+			if( socket )	{
+				if( socket.readyState === WebSocket.OPEN ) {
+					socket.close();		// graceful
+					socket.terminate();
+					socket = null
 				}
 			}
 		}

@@ -1,48 +1,138 @@
 
 export {
 	app_init,
+	app_register,
+//	app_connect,
+	app_who,
 	app_send,
-	reg_info
+	print_local_storage,
+	clear_storage_profiles
 };
 
-/*
-import from app.js
-	client_page_index_id
-	process_client_token
-	output_client_log
-*/
+const local_storage_app_key = "jsntemplate-storage-app";
 
-let client_page_index_id = "";
-let process_client_token = null;
-let output_client_log = null;
+let set_dest_buffer = null;
+let app_receive_msg = null;
+let output_log = null;
 
-let reg_info = {
-	client: {
-		id: -1,
-		uuid: ""
-	},
-	uri: "",
-	socket: null,
-	ival_id: null
+let client_info = {
+	name: 			"",
+	registration:	null,
+	socket:			null,
+	interval:		null,
+	pingout:		false
 };
-
-let srv_ping_out = false;
 
 /////////////////////////////////////////////////////////
 
-function app_init( page_client_id, process_token_f, output_log_f )	{
+function app_init( set_dest_f, receive_msg_f, output_log_f )	{
 
-	client_page_index_id = page_client_id;
-	process_client_token = process_token_f;
-	output_client_log = output_log_f;
-
-	open_registration();
+	set_dest_buffer = set_dest_f;
+	app_receive_msg = receive_msg_f;
+	output_log = output_log_f;
 }
 
-function app_send( submit_obj )	{
+function register_request_handler( response_obj )	{
 
-	if( reg_info.socket )	{
-		reg_info.socket.send( JSON.stringify( submit_obj ) );
+	output_log( response_obj.result );
+
+	if( response_obj.result.registration )	{
+
+		client_info.registration = response_obj.result.registration;
+
+		update_profile_field(
+			client_info.name,
+			"registration",
+			client_info.registration
+		);
+
+		open_socket();
+	}
+	else	{
+		output_log( "registration failed" );
+	}
+}
+
+function app_register( name, pass )	{
+
+	client_info.name = name;
+
+	let profile = get_local_storage_profile( name );
+	client_info.registration = profile.registration;
+
+	if( client_info.registration === null )	{
+
+		output_log( "ERR: profile should already exist: " + name );
+		return;
+	}
+
+	let register_obj = {
+		name:		name,
+		password:	pass
+	}
+	fetch_post_request(
+		"register",
+		register_obj,
+		register_request_handler
+	);
+}
+
+/*
+function app_connect( name )	{
+
+	client_info.name = name;
+
+	if( client_info.name )	{
+
+		let profile = get_local_storage_profile( name );
+		client_info.registration = profile.registration;
+
+		output_log( "Connect: " + name + " : " + client_info.registration );
+
+		open_socket();
+	}
+	else	{
+		console.log( "ERR: no name specified" );
+	}
+}
+*/
+
+function app_who()	{
+
+//	active_peers = [];
+
+	if( client_info.socket )	{
+
+		let who_obj = {
+			token: "who",
+			client: {
+				name: client_info.name,
+				registration: client_info.registration
+			}
+		};
+
+		set_dest_buffer( "" );
+		client_info.socket.send( JSON.stringify( who_obj ) );
+	}
+	else	{
+		console.log( "app_who ERR: socket not registered" );
+	}
+}
+
+function app_send( token, to_arr, payload )	{
+
+	if( client_info.socket )	{
+
+		let send_obj = {
+			token: token,
+			client: {
+				name: client_info.name,
+				registration: client_info.registration
+			},
+			to: to_arr,
+			payload: payload
+		};
+		client_info.socket.send( JSON.stringify( send_obj ) );
 	}
 	else	{
 		console.log( "app_send ERR: socket not registered" );
@@ -51,72 +141,68 @@ function app_send( submit_obj )	{
 
 /////////////////////////////////////////////////////////
 
-function display_client_index()	{
+function stop_interval()	{
 
-	var id_div = document.getElementById( client_page_index_id );
-	id_div.innerHTML = reg_info.client.id;
+	client_info.pingout = false;
+	if( client_info.interval !== null )	{
+
+		clearInterval( client_info.interval );
+		client_info.interval = null;
+	}
 }
-
-/////////////////////////////////////////////////////////
 
 function close_socket()	{
 
-	if( reg_info.ival_id !== null )	{
+	stop_interval();
+	if( client_info.socket !== null ) {
 
-		clearInterval( reg_info.ival_id );
-		reg_info.ival_id = null;
+		client_info.socket.close();
+		client_info.socket = null;
 	}
-	if( reg_info.socket !== null ) {
-
-		reg_info.socket.close();
-		reg_info.socket = null;
-	}
-
 }
 
 function open_socket()	{
 
-	close_socket();
+	close_socket(); // always close previous
 
-	reg_info.socket = new WebSocket( reg_info.uri );
+	let websock_uri = "ws://" + window.location.host;
+	console.log( "WebSocket URI: " + websock_uri );
 
-	reg_info.socket.addEventListener(
+	client_info.socket = new WebSocket( websock_uri ); // always produce new socket
+
+	client_info.socket.addEventListener(
 		"open",
 		function( event ) {
 
-			display_client_index();
 			console.log( "Client open event." );
 
-			let websock_reg = {
-				token: "REGISTER",
-				client: reg_info.client
+			let connect_obj = {
+				token: "connect",
+				client: {
+					name: client_info.name,
+					registration: client_info.registration
+				}
 			};
-			reg_info.socket.send( JSON.stringify( websock_reg ) );
+			client_info.socket.send( JSON.stringify( connect_obj ) );
 
-			if( 1 )	{
-			// not sufficient to sustain connection against timeouts
-			// used to auto-reconnect with server restart
+			if( 1 )	{ // used to auto-reconnect with server restart
 
-//				let HEARTBEAT = 120000; // outside of 60 sec timeout
 				let HEARTBEAT = 10000; // inside of 30 sec server poke
 
-				reg_info.ival_id = setInterval( () =>	{
+				client_info.interval = setInterval( () =>	{
 
-					if( srv_ping_out )	{
+					if( client_info.pingout )	{
 
 						console.log( "ERR: PONG not received after " + HEARTBEAT );
-						srv_ping_out = false;
+						client_info.pingout = false;
 
-						open_registration();
+						open_socket();
 					}
 					else	{
 
-						let server_ping = {
-							token: "PING",
-							client: reg_info.client
-						};
-						srv_ping_out = true;
-						reg_info.socket.send( JSON.stringify( server_ping ) );
+						client_info.pingout = true;
+						app_send( "PING", [], {} );
+
 					}
 
 				}, HEARTBEAT );
@@ -125,7 +211,7 @@ function open_socket()	{
 		}
 	);
 
-	reg_info.socket.addEventListener(
+	client_info.socket.addEventListener(
 		'message',
 		function( event ) {
 
@@ -135,45 +221,51 @@ function open_socket()	{
 
 				let tok = data_obj.token;
 
+				if( tok === "CONNECT" )	{
+
+					output_log( data_obj );
+				}
+				else
+				if( tok === "DISCONNECT" )	{
+
+					stop_interval();
+					output_log( data_obj );
+				}
+				else
+				if( tok === "ERROR" )	{
+
+					output_log( data_obj );
+				}
+				else
 				if( tok === "PONG" )	{
 
-					srv_ping_out = false;
-					console.log( "server PONG" );
+					client_info.pingout = false;
+//					output_log( data_obj );
 				}
 				else
-				if( tok === "POKE" )	{
+				if( tok === "CLIENTS" )	{ // server response to client who
 
-					let server_alive = {
-						token: "ALIVE",
-						client: reg_info.client
-					};
-					reg_info.socket.send( JSON.stringify( server_alive ) );
+					output_log( data_obj.payload );
 				}
 				else
-				if( tok === "push" )	{ // server initiated push token
+				if( tok === "recv" )	{ // forwarded client peer send
 
-					output_client_log( { msg: "server push." } );
-					console.log( "server push" );
-				}
-				else
-				if( tok === "close" )	{ // server initiated close on exit
+					let pay_tok = data_obj.payload.token;
 
-	// This will disable client auto-reconnect
-					close_socket();
-					reg_info.client.id = -1;
-					reg_info.client.uuid = "";
-					display_client_index();
+					if( pay_tok === "message" )	{
 
-					output_client_log( { msg: "server closed." } );
-					console.log( "Server closed." );
+						app_receive_msg( data_obj.from, data_obj.payload );
+					}
+					else	{
+
+						console.log( "Client unhandled payload token event:" );
+						console.log( JSON.stringify( data_obj, null, 2 ) );
+					}
 				}
 				else	{
 
-					if( process_client_token( data_obj ) == false )	{ // hand off to app
-
-						console.log( "Client unhandled token event:" );
-						console.log( JSON.stringify( data_obj, null, 2 ) );
-					}
+					console.log( "Client unhandled token event:" );
+					console.log( JSON.stringify( data_obj, null, 2 ) );
 				}
 			}
 			else	{
@@ -181,11 +273,10 @@ function open_socket()	{
 				console.log( "Client unhandled event:" );
 				console.log( JSON.stringify( data_obj, null, 2 ) );
 			}
-
 		}
 	);
 
-	reg_info.socket.addEventListener(
+	client_info.socket.addEventListener(
 		'error',
 		function( event ) {
 
@@ -193,24 +284,6 @@ function open_socket()	{
 			console.log( " event: ", event );
 		}
 	);
-}
-
-function register_request_handler( result_obj )	{
-
-	console.log( "register result_obj:" );
-	console.log( JSON.stringify( result_obj, null, 2 ) );
-
-	reg_info.client = result_obj.client;
-
-	reg_info.uri = "ws://" + window.location.host;
-	console.log( "WebSocket URI: " + reg_info.uri );
-
-	open_socket();
-}
-
-function open_registration()	{
-
-	fetch_get_request( "register", register_request_handler );
 }
 
 /////////////////////////////////////////////////////////
@@ -273,4 +346,100 @@ function fetch_post_request( url, cmd_obj, callback )	{
 		callback
 	);
 }
+
+/////////////////////////////////////////////////////////
+
+if( 0 )	{
+	localStorage.clear(); // force sratch
+}
+
+// IIFE for automatic storage loading
+( function init_local_storage_app_profiles()	{ // create if none exists
+
+	if( localStorage.getItem( local_storage_app_key ) === null )	{
+
+		console.log( "Creating new storage: " + local_storage_app_key );
+
+		localStorage.setItem(
+			local_storage_app_key,
+			JSON.stringify( { profiles: {} } ) // scratch
+		);
+	}
+} )();
+
+function clear_storage_profiles()	{
+
+	localStorage.clear();
+	localStorage.setItem(
+		local_storage_app_key,
+		JSON.stringify( { profiles: {} } ) // scratch
+	);
+
+	output_log( "local storage profiles cleared" );
+}
+
+///////////////////////////
+
+function print_local_storage()	{
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+	output_log( app_storage_obj );
+}
+
+function create_local_storage_profile( name )	{
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+	if( app_storage_obj.profiles.hasOwnProperty( name ) )	{
+
+		output_log( "Create profile ERR: name exists: " + name );
+	}
+	else	{
+		output_log( "Creating new profile: " + name );
+
+		app_storage_obj.profiles[ name ] = {
+			registration: ""
+		};
+		localStorage.setItem(
+			local_storage_app_key,
+			JSON.stringify( app_storage_obj )
+		);
+	}
+	return( app_storage_obj.profiles[ name ] );
+}
+
+function get_local_storage_profile( name )	{
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+	if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
+
+		return( app_storage_obj.profiles[ name ] );
+	}
+	return( create_local_storage_profile( name ) );
+}
+
+function update_profile_field( name, field, uuid )	{
+
+//	const recognized_fields = [];
+
+	let app_storage_obj = JSON.parse( localStorage.getItem( local_storage_app_key ) );
+
+	if( app_storage_obj.profiles.hasOwnProperty( name )	)	{
+
+		let profile = app_storage_obj.profiles[ name ];
+		profile[ field ] = uuid;
+
+		localStorage.setItem(
+			local_storage_app_key,
+			JSON.stringify( app_storage_obj )
+		);
+		return;
+	}
+	output_log( "Update \'" + field + "\' ERR: name does not exist: " + name );
+}
+
+
+
+
 
