@@ -4,7 +4,7 @@
 
 <img src="./images/express_client.png" width="500">
 
-* Comparing a bare-bones CJS server with full featured 'express' server module and beyond. This is a series of independent client-server web apps, which build progressively on each other by introducing functionality from established node modules.
+* Comparing a bare-bones CJS server with full featured 'express' server module and beyond. This is a series of independent client-server web apps, which build progressively on each other by introducing functionality from established npm modules.
 
 * These utility templates make implementing a flexible server API an easy task, and demonstrate versatile vanilla RPC (remote procedure) support. With RPC, the challenge was to share a single library source file that both client and server can call, which can create conflicts between CJS and ESM module configurations.
 
@@ -67,8 +67,6 @@ Building a clean, exemplary websocket client to replace fragile long polling and
 ### *Session*
 
 Building on *WebSock* message exchange, with persistent named profiles and session states using client-side localStorage, and server-side client profile storage.
-
-The localStorage allocations persist across system reboot, and can become polluted during app testing and development. These are cleared through the browser's cookies/website-data management tools, listed as 'localhost', 'loca.lt', etc.
 
 
 ## Installation
@@ -363,5 +361,46 @@ connected clients:
 ## Testing Session
 
 <img src="./images/session_client.png" width="500">
+
+The *Session* app replaces incrementing ids with persistent string names, which are maintained in storage on both the client and server ends with a UUID registration key. The password defaults to lower-case/last-letter of the provided name, and is kept only in the server storage.
+
+Persistent named sessions reduce the need for some internal periodic maintenance messages that keep connections alive. Logging in from a second location will automatically disconnect the prior session.
+
+The localStorage allocations persist across system reboot, and can become polluted during app testing and development. These are cleared through the browser's cookies/website-data management tools, listed as 'localhost', 'loca.lt', etc.
+
+The *who* button sends a 'poke' message to all registered clients, and populates the *send-to* field automatically as they respond. As in prior apps, *ping* and *stop* messages will engage clients in a rapid ping pong session.
+
+Client-to-client communication is implemented through several layers of token based parsing. A simple *ping* message begins with a "forward" token, credentials, destination, and payload:
+
+```
+let send_obj = {
+	token: "forward",
+	client: {
+		name: "Myname",
+		registration: "XXX-XXX-..."
+	},
+	to: [ "Yourname" ],
+	payload: {
+		token: "message",
+		message: "ping"
+	}
+};
+```
+
+The server converts this to a forward-object and sends it to the named client:
+
+```
+let forward_obj = {
+	token: "recv",
+	from: "Myname",
+	payload: {
+		token: "message",
+		message: "ping"
+	}
+};
+```
+
+The receiving client utility passes "message" tokens to the front-end app code in index.html, where the message body is checked for recognized operations. Otherwise it is dumped to the output log buffer. These layers help distinguish top level client-to-client message passing from other internal messages.
+
 
 
