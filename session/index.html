@@ -44,6 +44,9 @@
 					document.getElementById( "send_fwd_button" ).addEventListener(
 						'click', submit_send_button );
 
+					document.getElementById( "message_buffer" ).addEventListener(
+						'keydown', default_enter_event );
+
 
 					function submit_reg_button()	{
 
@@ -102,15 +105,26 @@
 						let to_arr = gsi.split( ',' ).join( ' ' ).split( ' ' ).filter(
 							s => { let t = s.trim(); return( t.length ); }	// strip out any ''
 						);
+						let msg = document.getElementById( "message_buffer" ).value.trim();
 
 						Client.app_send(
 							"forward",
 							to_arr,
 							{
 								token: "message",
-								message: document.getElementById( "message_buffer" ).value
+								message: msg
 							}
 						);
+						output_log( "Message sent: " + msg );
+					}
+
+					function default_enter_event( text_event ) {
+
+						// text utility: on enter
+						if( text_event.code == "Enter" ) 	{
+							console.log( "default_enter_event: send" );
+							submit_send_button();
+						}
 					}
 
 					function receive_message( from, payload )	{
@@ -230,13 +244,13 @@
 				type="text"
 				placeholder="to:"
 				size="30em"></input>
-			<button id="who_button">who</button>
+			<button id="who_button" style="background-color:lightgrey">who</button>
 			<br>
 			<input id="message_buffer"
 				type="text"
 				placeholder="message:"
 				size="30em"></input>
-			<button id="send_fwd_button">send</button>
+			<button id="send_fwd_button" style="background-color:lightblue">send</button>
 			<p>
 
 			log:

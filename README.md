@@ -271,12 +271,6 @@ Client 1 automatically responds with a 'pong' message, entering into a loop with
 1: stop
 ```
 
-Once stopped, the client will not join a loop again until it receives a 'start' message:
-
-```
-1: start
-```
-
 
 ### *Localtunnel*
 
@@ -364,6 +358,7 @@ connected clients:
 { id: 1, uuid: 'bd4f5363-d040-40a1-9708-b15717d1f75d' }
 { id: 2, uuid: '6d1c1cf7-dac5-4543-8613-727215278464' }
 ```
+
 
 ## Testing Session
 

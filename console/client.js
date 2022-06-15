@@ -226,6 +226,7 @@ function ping_pong( from, gsi )	{
 				respond_p2p_message( from, "pong" );
 			}, ping_pong_timeout_ms );
 		}
+		ping_mode = true;
 
 		return( true );
 	}
@@ -240,6 +241,7 @@ function ping_pong( from, gsi )	{
 				respond_p2p_message( from, "ping" );
 			}, pong_ping_timeout_ms );
 		}
+		ping_mode = true;
 
 		return( true );
 	}
@@ -252,6 +254,7 @@ function ping_pong( from, gsi )	{
 
 		return( true );
 	}
+/*
 	if( token === "start" )	{
 
 		console.log( "START" );
@@ -260,7 +263,7 @@ function ping_pong( from, gsi )	{
 
 		return( true );
 	}
-
+*/
 	return( false );
 }
 
