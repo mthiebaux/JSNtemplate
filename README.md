@@ -336,9 +336,9 @@ Each *WebSock* channel is kept open against network timeouts using hidden POKE a
 
 Auxiliary client buttons are used to analyze fault tolerance procedures, server restart, etc:
 
-    * *rld* will reload entire page from server, acquiring a new id.
-    * *reg* will re-register existing page with server, with new id.
-    * *sock* will reconnect with a new socket using existing id.
+* *rld* will reload entire page from server, acquiring a new id.
+* *reg* will re-register existing page with server, with new id.
+* *sock* will reconnect with a new socket using existing id.
 
 The client's *who* button logs the server's active client list, and the *poke* button logs client 'alive' response tokens.
 
@@ -374,16 +374,16 @@ Client-to-client communication is implemented through several layers of token ba
 
 ```
 let send_obj = {
-	token: "forward",
-	client: {
-		name: "Myname",
-		registration: "XXX-XXX-..."
-	},
-	to: [ "Yourname" ],
-	payload: {
-		token: "message",
-		message: "ping"
-	}
+    token: "forward",
+    client: {
+        name: "Myname",
+        registration: "XXX-XXX-..."
+    },
+    to: [ "Yourname" ],
+    payload: {
+        token: "message",
+        message: "ping"
+    }
 };
 ```
 
@@ -391,12 +391,12 @@ The server converts this to a forward-object and sends it to the named client:
 
 ```
 let forward_obj = {
-	token: "recv",
-	from: "Myname",
-	payload: {
-		token: "message",
-		message: "ping"
-	}
+    token: "recv",
+    from: "Myname",
+    payload: {
+        token: "message",
+        message: "ping"
+    }
 };
 ```
 
