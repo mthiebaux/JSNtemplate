@@ -10,7 +10,7 @@
 
 * An interactive server console facilitates development and diagnostics of more complex communication. Clients are identified by simple id and UUID using 'express-request-id', *localtunnel* enables external testing, and push notifications are implemented with both long polling and websocket connections.
 
-* The final project, *Session*, demonstrates a rudimentary account-based, password protected, client-to-client and client-to-group text messaging service.
+* The final project template, *Session*, demonstrates a rudimentary account-based, password protected, client-to-client and client-to-group text messaging service.
 
 
 | template      | dependency  | size   |
