@@ -1,5 +1,6 @@
 .DS_store
 
+README_update.txt
 node_modules/
 package-lock.json
 package.json
