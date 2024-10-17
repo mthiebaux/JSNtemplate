@@ -45,7 +45,7 @@ The example GET/POST handlers in server.mjs demonstrate parameter passing via tr
 
 | param type    | example query      | parsed request inputs
 | ------------- |:------------------:|:----------------------------:|
-| Query string  | /api?arg1=1&arg2=2 | query: { arg1: 1, arg1: 2 }  |
+| Query string  | /api?arg1=1&arg2=2 | query: { arg1: 1, arg2: 2 }  |
 | URL params    | /api/v1/v2         | params: { arg1: 'v1', arg2: 'v2' }  |
 
 A POST request adds the option to pass arbitrary JSON contents to the server in the request body, without requiring that these parameters be exposed in the URL.
